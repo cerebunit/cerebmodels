@@ -5,11 +5,41 @@ class PathFinder(object):
     """Operator working under FileManager.
 
     Available methods:
+    list_dirs -- returns list of of available same-level directories
     path_to_dir -- returns path to a desired directory or subdirectory
     path_to_file -- returns path to a desired file in given directory path
     show_files -- returns dictionary of filenames and its path
 
     """
+
+    def list_dirs(self, search_path=None):
+        """instantiated method that returns all same-level directores.
+
+        Keyword arguments:
+        search_path -- string; "path/to/search/for/subdir/in/a/dir"
+
+        Returned value:
+        list of available directory names.
+
+        Note:
+        If the search_path does not exist ValueError is returned.
+        But is there are no directories within the search_path,
+        an empty list is returned.
+
+        Use case:
+        **** List the available model scales ****
+        list_dirs(search_path=os.getcwd()+os.sep+"models")
+
+        """
+        current_path = os.getcwd()
+        try:
+            os.chdir(search_path) # temporarily change pwd to search_path
+            list_ans = [ item for item in os.listdir(os.getcwd())
+                                  if os.path.isdir(item) ]
+            os.chdir(current_path) # reset to original path
+            return list_ans
+        except OSError:
+            raise ValueError("The search path does not exist")
 
     @staticmethod
     def search_and_find(search_type=None, working_dir=None, desired_name=None):

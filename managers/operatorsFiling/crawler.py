@@ -1,8 +1,8 @@
 # ../managers/operatorsFiling/crawler.py
 import os
 
-class PathFinder(object):
-    """Operator working under FileManager.
+class Crawler(object):
+    """Operator working under SimManager.
 
     Available methods:
     list_dirs -- returns list of of available same-level directories

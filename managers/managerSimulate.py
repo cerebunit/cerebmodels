@@ -1,9 +1,9 @@
-# ../managers/managerSimulate.py
+# ../managers/managerAccount.py
 import os
 
 from operatorsFiling.crawler import Crawler
 
-class SimManager(object):
+class AccountManager(object):
 
     def __init__(self):
         self.cr = Crawler()
@@ -21,8 +21,8 @@ class SimManager(object):
         ValueError if there are no model_scale
 
         Use case:
-        sm = SimManager()
-        sm.available_modelscales()
+        am = AccountManager()
+        am.available_modelscales()
 
         """
 

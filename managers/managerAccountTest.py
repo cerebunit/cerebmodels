@@ -3,7 +3,7 @@ import unittest
 import os
 import shutil
 
-from managerSimulate import AccountManager
+from managerAccount import AccountManager
 
 class AccountManagerTest(unittest.TestCase):
 

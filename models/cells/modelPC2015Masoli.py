@@ -3,4 +3,5 @@
 class PurkinjeCell(object):
 
     def __init__(self):
-        pass
+        self.modelscale = "cells"
+        self.modelname = "PC2015Masoli"

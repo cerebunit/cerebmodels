@@ -88,8 +88,7 @@ class Crawler(object):
             for name in choice:
                 if name==desired_name:
                     return dirpath + os.sep + name
-                else:
-                    raise ValueError("Given directory/file name does not exist")
+            raise ValueError("Given directory/file name does not exist")
 
     @classmethod
     def path_to_dir(cls, dir_names=None):
@@ -222,3 +221,52 @@ class Crawler(object):
         else:
             dir_path = self.path_to_dir(dir_names)
             return self.show_files_with_path(dir_path)
+
+    def smoke_out(self, search_type=None, working_dir=None, desired_name=None):
+        """staticmethod that searches for and finds files or directories.
+
+        Keyword arguments:
+        search_type -- valid strings; "files" or "directories"
+        working_dir -- path string; "current/working/directory"
+        desired_name -- string or list of strings;
+                        strings for "file.name" or "a_directory_name";
+                        list of strings for ["a_dir_name", "its_subdir"]
+
+        Returned value:
+        full path (os specific) to the directory/subdirectory/file
+
+        Raised Exceptions:
+        ValueError if search_type is anything else other than "files" or "directories"
+        ValueError if directory or file does not exist.
+
+        Use case:
+        present_dirpath = "/path/to/current/working/directory"
+        ###### To search for a subdirectory ######
+        search_for = ["a_dir_name", "its_subdir"]
+        search_and_find(search_type="directories",
+                        working_dir=present_dirpath,
+                        desired_name=search_for)
+        ###### To search for a directory ######
+        search_for = "a_dir_name"
+        search_and_find(search_type="directories",
+                        working_dir=present_dirpath,
+                        desired_name=search_for)
+        ###### To search for a file ####
+        search_for = "filename.ext"
+        search_and_find(search_type="files",
+                        working_dir=present_dirpath,
+                        desired_name=search_for)
+
+        """
+        for (dirpath, dirnames, filenames) in os.walk(working_dir):
+            if search_type=="directories":
+                choice = dirnames
+            elif search_type=="files":
+                choice = filenames
+            else:
+                raise ValueError("search_type value must be files or directories")
+            for name in choice:
+                if name==desired_name:
+                    return dirpath + os.sep + name
+                else:
+                    raise ValueError("Given directory/file name does not exist")

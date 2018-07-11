@@ -8,8 +8,6 @@ class ExecutiveControl(object):
 
     def __init__(self):
         self.am = AccountManager()
-        self.modelscale = None
-        self.modelname = None
 
     def list_modelscales(self):
         return self.am.available_modelscales()
@@ -21,3 +19,5 @@ class ExecutiveControl(object):
         modelmodule = importlib.import_module("models."+modelscale+"."+"model"+modelname)
         self.chosenmodel = getattr(modelmodule, uu.classesinmodule(modelmodule)[0].__name__)
         return self.chosenmodel
+        # NOTE: all model __init__ method will have the attributes
+        # modelscale and modelname => self.chosenmodel().modelscale/modelname

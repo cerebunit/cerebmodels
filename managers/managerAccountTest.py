@@ -28,10 +28,12 @@ class AccountManagerTest(unittest.TestCase):
                           model_scale="molecules")
 
     def test_4_modelscale_inventory_nomodels(self):
-        os.chdir("..") # move up one directory
+        #os.chdir("..") # move up one directory
+        os.mkdir(self.pwd+os.sep+"cells")
         self.assertRaises(ValueError, self.am.modelscale_inventory,
-                          model_scale="cell")
-        os.chdir(self.pwd) # come back to where this .py resides
+                          model_scale="cells")
+        os.rmdir("cells")
+        #os.chdir(self.pwd) # come back to where this .py resides
 
     def test_5_modelscale_inventory_model_exists(self):
         os.chdir("..") # move up one directory

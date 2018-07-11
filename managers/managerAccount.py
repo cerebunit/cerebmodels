@@ -37,7 +37,7 @@ class AccountManager(object):
         """method that returns a list of available model for given model_scale.
 
         Keyword arguments:
-        model_scale -- string; egs. "cell", "microcircuit", "network"
+        model_scale -- string; egs. "cells", "microcircuits", "networks"
 
         Returned value:
         list of model names (model directory names)
@@ -48,7 +48,7 @@ class AccountManager(object):
 
         Use case:
         sm = SimManager()
-        sm.modelscale_inventory(model_scale="cell")
+        sm.modelscale_inventory(model_scale="cells")
 
         """
 

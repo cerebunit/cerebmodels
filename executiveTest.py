@@ -31,7 +31,7 @@ class ExecutiveControlTest(unittest.TestCase):
         # self.modelname = "PC2015Masoli.py"
         x = self.ec.choose_model( modelscale="cells",
                                   modelname="PC2015Masoli" )
-        self.assertEqual( x().modelname, "PC2015Masoli" )
+        self.assertEqual( x.modelname, "PC2015Masoli" )
  
 if __name__ == '__main__':
     unittest.main()

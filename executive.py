@@ -17,7 +17,11 @@ class ExecutiveControl(object):
 
     def choose_model(self, modelscale=None, modelname=None):
         modelmodule = importlib.import_module("models."+modelscale+"."+"model"+modelname)
-        self.chosenmodel = getattr(modelmodule, uu.classesinmodule(modelmodule)[0].__name__)
+        chosenmodel = getattr(modelmodule, uu.classesinmodule(modelmodule)[0].__name__)
+        self.chosenmodel = chosenmodel()
         return self.chosenmodel
         # NOTE: all model __init__ method will have the attributes
-        # modelscale and modelname => self.chosenmodel().modelscale/modelname
+        # modelscale and modelname => self.chosenmodel.modelscale/modelname
+
+    def prepare_model(self, parameters=None):
+        pass

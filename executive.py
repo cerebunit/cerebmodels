@@ -23,5 +23,6 @@ class ExecutiveControl(object):
         # NOTE: all model __init__ method will have the attributes
         # modelscale and modelname => self.chosenmodel.modelscale/modelname
 
-    def prepare_model(self, parameters=None):
+    def launch_model(self, parameters=None):
         pass
+        #self.sm.prepare_model(self.chosenmodel)

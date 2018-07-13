@@ -51,3 +51,24 @@ class SimInspector(object):
             return "nmodl was already compiled"
         # load the mod files, i.e, directory containing x86_64
         neuron.load_mechanisms(os.path.dirname(mod_path))
+
+    def check_compatibility(self, capability_name=None, CerebUnit_capability=None):
+        """if model capability is known to be consistent with cerebunit module this module is not necessary to run.
+
+        Keyword arguments:
+        capability_name -- string; eg., "produce_spike_train"
+        CerebUnit_capability -- imported class; eg., ProducesSpikeTrain
+
+        Returned values:
+        Nothing is returned
+
+        """
+
+        #if capability_name is not None and CerebUnit_capability is not None:
+        #    if not capability_name in dir(CerebUnit_capability):
+        #        raise AttributeError(CerebUnit_capability.__name__ +
+        #                             " has no method " +
+        #                             capability_name)
+        #    else:
+        #        return CerebUnit_capability.__name__ + " has the method " + capability_name
+        pass

@@ -6,7 +6,7 @@ from neuron import h
 
 # import modules from other directories
 # set to ~/cerebmodels
-sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
+#sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 #
 from utilities import UsefulUtils as uu
 

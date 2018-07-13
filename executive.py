@@ -1,13 +1,17 @@
 # ~/executive.py
 import importlib
 
+from neuron import h
+
 from utilities import UsefulUtils as uu
 from managers.managerAccount import AccountManager
+from managers.managerSimulation import SimulationManager
 
 class ExecutiveControl(object):
 
     def __init__(self):
         self.am = AccountManager()
+        self.sm = SimulationManger()
 
     def list_modelscales(self):
         return self.am.available_modelscales()
@@ -25,4 +29,8 @@ class ExecutiveControl(object):
 
     def launch_model(self, parameters=None):
         pass
-        #self.sm.prepare_model(self.chosenmodel)
+        #self.sm.prepare_model_NEURON(parameters, self.chosenmodel)
+        #h.finitialize()
+        #start_time = time.clock()
+        #h.run()
+        #print("--- %s seconds ---" % (time.clock() - start_time))

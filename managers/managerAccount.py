@@ -1,7 +1,7 @@
 # ../managers/managerAccount.py
 import os
 
-from operatorsFiling.crawler import Crawler
+from managers.operatorsFiling.crawler import Crawler
 
 class AccountManager(object):
 

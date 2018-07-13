@@ -1,6 +1,15 @@
 # ~/managers/operatorsSimaudit/assemblerTest.py
 import unittest
 
+import os
+import sys
+# import modules from other directories
+# set to ~/cerebmodels
+sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
+# this is required for
+# from utilities import UsefulUtils as uu
+# called in assembler.py 
+
 from assembler import SimAssembler
 
 class SimAssemblerTest(unittest.TestCase):

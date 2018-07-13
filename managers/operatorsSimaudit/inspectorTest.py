@@ -4,6 +4,13 @@ import os
 import shutil
 import sys
 
+# import modules form other directories
+# set to ~/cerebmodels
+sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
+# this is required for 
+# from managers.operatorsFiling.pathspawner import PathSpawner
+# called in inspector.py
+
 from inspector import SimInspector
 
 class SimInspectorTest(unittest.TestCase):

@@ -3,6 +3,14 @@ import unittest
 import os
 import shutil
 
+import sys
+# import modules from other directories
+# set to ~/cerebmodels
+sys.path.append(os.path.dirname(os.getcwd()))
+# this is required for
+# from managers.operatorsFiling.crawler import Crawler
+# called in managerAccount.py
+
 from managerAccount import AccountManager
 
 class AccountManagerTest(unittest.TestCase):

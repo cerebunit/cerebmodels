@@ -8,7 +8,7 @@ import neuron
 
 # import modules from other directories
 # set to ~/cerebmodels
-sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
+#sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 #
 from managers.operatorsFiling.pathspawner import PathSpawner
 

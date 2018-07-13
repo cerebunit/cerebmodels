@@ -29,3 +29,4 @@ class HardwareConfigurator(object):
         p = h.ParallelComputeTool()
         p.change_nthread(cores, 1)
         p.multisplit(1)
+        return "cores are activated" # for hardwareTest.py

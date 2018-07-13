@@ -30,4 +30,30 @@ class SimAssembler(object):
 
         """
         Fixed_step = h.CVode()
-        Fixed_step.activate(0)
+        Fixed_step.active(0)
+        return "timestep is fixed" # for assemblerTest.py
+
+    @classmethod
+    def set_runtime_NEURON(cls, parameters=None):
+        """sets runtime parameters to neuron.h
+
+        Keyword Arguments:
+        parameters -- dictionary with keys: dt, celsius, tstop & v_init
+
+        Returned values:
+        Nothing is returned
+
+        PS: set_fixed_timesteps() is called here.
+
+        """
+
+        if parameters is None:
+            raise ValueError("parameters must be a dictionary with keys: dt, celsius, tstop, and v_init")
+        else:
+            cls.set_fixed_timesteps()
+            for key, value in parameters.iteritems():
+                if key in h.__dict__:
+                    setattr(h, key, value)
+                    return "parameters are set" # for assemblerTest.py
+                else:
+                    raise AttributeError(key + "is not an attribute in h. Try loading the model mod files.")

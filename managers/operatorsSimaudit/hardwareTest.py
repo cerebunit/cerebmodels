@@ -9,7 +9,8 @@ class HardwareConfiguratorTest(unittest.TestCase):
         self.hc = HardwareConfigurator()
 
     def test_1_activate_cores(self):
-        self.assertFalse(not self.hc.activate_cores)
+        self.assertEqual(self.hc.activate_cores(),
+                         "cores are activated")
 
 if __name__ == '__main__':
     unittest.main()

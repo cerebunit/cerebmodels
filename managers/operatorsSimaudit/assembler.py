@@ -10,7 +10,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 #
 from utilities import UsefulUtils as uu
 
-class ModelAssembler(object):
+class SimAssembler(object):
     """Operator working under SimulationManager.
 
     Available methods:

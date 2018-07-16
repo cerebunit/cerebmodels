@@ -21,7 +21,7 @@ class SimInspectorTest(unittest.TestCase):
 
     def test_1_lock_and_load_nmodl_compile_libnrnmech(self):
         modelscale = "cells"
-        modelname = "PC2015Masoli"
+        modelname = "DummyTest"
         os.chdir("..") # this moves you up to ~/managers
         os.chdir("..") # you are now in root
         compile_path = os.getcwd() + os.sep + "models" + os.sep + modelscale + os.sep + modelname
@@ -37,7 +37,7 @@ class SimInspectorTest(unittest.TestCase):
 
     def test_2_lock_and_load_nmodl_alreadycompiled(self):
         modelscale = "cells"
-        modelname = "PC2015Masoli"
+        modelname = "DummyTest"
         os.chdir("..") # this moves you up to ~/managers
         os.chdir("..") # you are now in root
         compile_path = os.getcwd() + os.sep + "models" + os.sep + modelscale + os.sep + modelname

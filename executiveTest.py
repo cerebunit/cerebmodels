@@ -2,6 +2,7 @@
 import unittest
 import os
 import shutil
+import importlib
 
 from executive import ExecutiveControl
 
@@ -30,8 +31,16 @@ class ExecutiveControlTest(unittest.TestCase):
         # 'minimal' => a class with __init__ method with
         # self.modelname = "PC2015Masoli.py"
         x = self.ec.choose_model( modelscale="cells",
-                                  modelname="PC2015Masoli" )
-        self.assertEqual( x.modelname, "PC2015Masoli" )
- 
+                                  modelname="DummyTest" )
+        self.assertEqual( x.modelname, "DummyTest" )
+
+    def test_4_launch_model_NEURON(self):
+        pickedmodel = self.ec.choose_model( modelscale="cells",
+                                            modelname="DummyTest" )
+        parameters = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
+        self.assertEqual( self.ec.launch_model (parameters = parameters,
+                                                onmodel = pickedmodel),
+                         "model was successfully simulated")
+
 if __name__ == '__main__':
     unittest.main()

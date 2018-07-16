@@ -29,7 +29,7 @@ class SimulationManagerTest(unittest.TestCase):
         os.chdir("..") # move up to load the model
         #from utilities import UsefulUtils as uu
         # pick the model
-        modelmodule = importlib.import_module("models.cells.modelPC2015Masoli")
+        modelmodule = importlib.import_module("models.cells.modelDummyTest")
         pickedmodel = getattr(modelmodule,
                               self.uu.classesinmodule(modelmodule)[0].__name__)
         chosenmodel = pickedmodel()

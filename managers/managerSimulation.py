@@ -38,7 +38,7 @@ class SimulationManager(object):
 
         self.si.lock_and_load_nmodl(modelscale = chosenmodel.modelscale,
                                     modelname = chosenmodel.modelname)
-        self.si.check_compatibility(capability_name=modelcapability,
+        self.si.check_compatibility(capability_name = modelcapability,
                                     CerebUnit_capability = cerebunitcapability)
         self.hc.activate_cores()
         self.sa.set_runtime_NEURON(parameters = parameters)

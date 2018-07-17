@@ -19,7 +19,7 @@ class ExecutiveControl(object):
 
     def list_models(self, modelscale=None):
         x =  self.am.modelscale_inventory(model_scale=modelscale)
-        if "DummyTest" in x:
+        if "DummyTest" in x: # DummyTest is the Dummy model for running test
             x.remove("DummyTest")
         return x
 
@@ -31,9 +31,11 @@ class ExecutiveControl(object):
         # NOTE: all model __init__ method will have the attributes
         # modelscale and modelname => self.chosenmodel.modelscale/modelname
 
-    def launch_model(self, parameters=None, onmodel=None):
-        pass
-        self.sm.prepare_model_NEURON(parameters, onmodel)
+    def launch_model( self, parameters = None, onmodel = None,
+                      capabilities = {'model':None, 'test':None} ):
+        self.sm.prepare_model_NEURON( parameters, onmodel,
+                                      modelcapability = capabilities['model'],
+                                      cerebunitcapability = capabilities['test'] )
         h.finitialize()
         start_time = time.clock()
         h.run()

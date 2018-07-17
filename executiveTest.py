@@ -34,12 +34,24 @@ class ExecutiveControlTest(unittest.TestCase):
                                   modelname="DummyTest" )
         self.assertEqual( x.modelname, "DummyTest" )
 
-    def test_4_launch_model_NEURON(self):
+    def test_4_launch_model_NEURON_with_capability(self):
         pickedmodel = self.ec.choose_model( modelscale="cells",
                                             modelname="DummyTest" )
         parameters = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
-        self.assertEqual( self.ec.launch_model (parameters = parameters,
-                                                onmodel = pickedmodel),
+        self.assertEqual( self.ec.launch_model (
+                              parameters = parameters,
+                              onmodel = pickedmodel,
+                              capabilities = {'model': 'produce_spike_train',
+                                              'test': None} ),
+                         "model was successfully simulated")
+
+    def test_5_launch_model_NEURON_raw(self):
+        pickedmodel = self.ec.choose_model( modelscale="cells",
+                                            modelname="DummyTest" )
+        parameters = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
+        self.assertEqual( self.ec.launch_model (
+                              parameters = parameters,
+                              onmodel = pickedmodel),
                          "model was successfully simulated")
 
 if __name__ == '__main__':

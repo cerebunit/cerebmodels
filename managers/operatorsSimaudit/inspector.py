@@ -64,11 +64,11 @@ class SimInspector(object):
 
         """
 
-        #if capability_name is not None and CerebUnit_capability is not None:
-        #    if not capability_name in dir(CerebUnit_capability):
-        #        raise AttributeError(CerebUnit_capability.__name__ +
-        #                             " has no method " +
-        #                             capability_name)
-        #    else:
-        #        return CerebUnit_capability.__name__ + " has the method " + capability_name
-        pass
+        if capability_name is not None and CerebUnit_capability is not None:
+            if not capability_name in dir(CerebUnit_capability):
+                raise AttributeError(CerebUnit_capability.__name__ +
+                                     " has no method " +
+                                     capability_name)
+            else:
+                return CerebUnit_capability.__name__ + " has the method " + capability_name
+        #pass

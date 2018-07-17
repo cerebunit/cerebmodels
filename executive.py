@@ -36,8 +36,15 @@ class ExecutiveControl(object):
         self.sm.prepare_model_NEURON( parameters, onmodel,
                                       modelcapability = capabilities['model'],
                                       cerebunitcapability = capabilities['test'] )
-        h.finitialize()
-        start_time = time.clock()
-        h.run()
+        if capabilities['model'] is not None:
+            start_time = time.clock()
+            self.sm.lock_and_load_capability( onmodel,
+                                              modelcapability = capabilities['model'] )
+            #run_model = getattr(onmodel, capabilities['model'])
+            #run_model()
+        else:
+            h.finitialize()
+            start_time = time.clock()
+            h.run()
         print("--- %s seconds ---" % (time.clock() - start_time))
         return "model was successfully simulated" # for executiveTest.py

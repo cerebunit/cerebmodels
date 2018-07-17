@@ -39,5 +39,20 @@ class SimulationManagerTest(unittest.TestCase):
                          "NEURON model is ready")
         os.chdir(self.pwd) # return to the location of this test file
 
+    def test_2_lock_and_load_capability(self):
+        os.chdir("..") # move up to load the model
+        #from utilities import UsefulUtils as uu
+        # pick the model
+        modelmodule = importlib.import_module("models.cells.modelDummyTest")
+        pickedmodel = getattr(modelmodule,
+                              self.uu.classesinmodule(modelmodule)[0].__name__)
+        chosenmodel = pickedmodel()
+        #
+        #parameters = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
+        self.assertEqual(self.sm.lock_and_load_capability(
+                             chosenmodel, modelcapability="produce_spike_train"),
+                         "DummyTest model just finished run for produce_spike_train")
+        os.chdir(self.pwd) # return to the location of this test file
+
 if __name__ == '__main__':
     unittest.main()

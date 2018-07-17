@@ -43,8 +43,9 @@ class ExecutiveControl(object):
             #run_model = getattr(onmodel, capabilities['model'])
             #run_model()
         else:
-            h.finitialize()
+            #h.finitialize()
             start_time = time.clock()
-            h.run()
+            #h.run()
+            self.sm.engage_NEURON(h)
         print("--- %s seconds ---" % (time.clock() - start_time))
         return "model was successfully simulated" # for executiveTest.py

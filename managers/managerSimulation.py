@@ -67,3 +67,11 @@ class SimulationManager(object):
         run_model = getattr(chosenmodel, modelcapability)
         return run_model()
 
+    def engage_NEURON(self,h):
+        """method for running a NEURON based model
+
+        Argument:
+        h = neuron.h
+        """
+        h.finitialize()
+        h.run()

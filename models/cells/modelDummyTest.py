@@ -1,8 +1,13 @@
 # ~/models/cells/modelDummyTest.py
 
+#from managers.managerSimulation import SimulationManager
+
+from models.cells.DummyTest.Dummy import Dummy
+
 class DummyTest(object):
 
     def __init__(self):
+        self.cell = Dummy()
         self.modelscale = "cells"
         self.modelname = "DummyTest"
 

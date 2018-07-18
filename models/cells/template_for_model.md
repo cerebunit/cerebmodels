@@ -18,7 +18,8 @@ Note:
 * the main `directory/` should have the `__init__.py` file and the `Cellname.py` file which is where the code for the template of the cell is located. Generally, the file name corresponds with the cell name. For instance, for Purkinje cell the file would be `Purkinje.py`. 
 * this main `directory/` may also have other associated files need for constructing the cell. This will depend on the model.
 * the naming of the main `directory/` is of the form
-  ```<UpperCaseLetters><Year><FirstAuthor>``` such that `<UpperCaseLetters>` are PC for Purkinje Cell, GoC for Golgi Cell and GrC for Granular Cell.
+  ```<UpperCaseLetters><Year><FirstAuthor>```
+such that `<UpperCaseLetters>` are PC for Purkinje Cell, GoC for Golgi Cell and GrC for Granular Cell.
 ---
 
 ## Cell Template

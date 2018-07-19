@@ -5,6 +5,8 @@ from managers.operatorsSimaudit.inspector import SimInspector
 from managers.operatorsSimaudit.hardware import HardwareConfigurator
 from managers.operatorsSimaudit.assembler import SimAssembler
 
+from neuron import h
+
 class SimulationManager(object):
 
     def __init__(self):
@@ -67,7 +69,7 @@ class SimulationManager(object):
         run_model = getattr(chosenmodel, modelcapability)
         return run_model()
 
-    def engage_NEURON(self,h):
+    def engage_NEURON(self):
         """method for running a NEURON based model
 
         Argument:

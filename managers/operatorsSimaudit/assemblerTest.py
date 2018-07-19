@@ -12,13 +12,16 @@ sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 
 from assembler import SimAssembler
 
+from neuron import h
+h.load_file("stdrun.hoc")
+
 class SimAssemblerTest(unittest.TestCase):
 
     def setUp(self):
-        self.sa = SimAssembler()
+        self.sa = SimAssembler(h)
 
     def test_1_set_fixed_timesteps(self):
-        self.assertEqual(SimAssembler.set_fixed_timesteps(),
+        self.assertEqual(SimAssembler.set_fixed_timesteps(h),
                          "timestep is fixed")
 
     def test_2_set_runtime_NEURON_noparams(self):
@@ -30,7 +33,7 @@ class SimAssemblerTest(unittest.TestCase):
                          "parameters are set")
 
     def test_4_set_runtime_NEURON_parameterkey_not_in_h(self):
-        param = {"dt": 1, "celsisus": 2, "tstop": 3}
+        param = {"dt": 1, "c": 2, "does_not_exist": 3}
         self.assertRaises(AttributeError, self.sa.set_runtime_NEURON,
                           parameters = param)
 

@@ -17,12 +17,6 @@ class PurkinjeCell(object):
         self.cell = Purkinje()
         # ------specify cell-regions from with response are recorded-------
         self.cell_regions = {"vm_soma": 0.0, "vm_NOR3": 0.0}
-        # NOTE:
-        # 1. This must be as dictionary in form key = "region-name" and its
-        #    value = threshold for considering spike,i.e, >=0.0 then spike.
-        # 2. The key name is arbitrary in the sense that if it is 'defined
-        #    in' the cell template within CellYearAuthor the region-name
-        #    should be consistent with it.
         ### ===============================================================
         #
         ### =====================Essential Attributes======================

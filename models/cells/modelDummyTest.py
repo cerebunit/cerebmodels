@@ -1,5 +1,6 @@
 # ~/models/cells/modelDummyTest.py
 
+#from managers.managerRecord import RecordManager
 #from managers.managerSimulation import SimulationManager
 
 from models.cells.DummyTest.Dummy import Dummy
@@ -10,6 +11,8 @@ class DummyTest(object):
         self.cell = Dummy()
         self.modelscale = "cells"
         self.modelname = "DummyTest"
+        # instantiate
+        #self.rc = RecordManager()
 
     def produce_voltage_response(self):
         return "DummyTest model just finished run for produce_voltage_response"

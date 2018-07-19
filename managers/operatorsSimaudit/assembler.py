@@ -13,10 +13,6 @@ from utilities import UsefulUtils as uu
 class SimAssembler(object):
     """Operator working under SimulationManager.
 
-    This manager must be instantiated by passing neuron.h
-    Eg: from neuron import h
-        sm = SimAssembler(h)
-
     Available methods:
     set_runtime_NEURON
 
@@ -65,5 +61,5 @@ class SimAssembler(object):
                     # set run-time parameters
                     setattr(h, key, value)
                 else:
-                    raise AttributeError(key + "is not an attribute in h. Try loading the model mod files.")
+                    raise AttributeError(key + " is not an attribute in h. Try loading the model mod files.")
             return "parameters are set" # for assemblerTest.py

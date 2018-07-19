@@ -77,3 +77,4 @@ class SimulationManager(object):
         """
         h.finitialize()
         h.run()
+        #print(str(h.dt) + " " + str(h.tstop))

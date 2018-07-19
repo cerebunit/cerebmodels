@@ -46,11 +46,13 @@ class SimInspector(object):
             # if it does not exist, create it
             paths = os.path.split(mod_path)
             subprocess.call("cd " + paths[0] + ";nrnivmodl " + paths[1], shell=True)
+            # load the mod files, i.e, directory containing x86_64
+            neuron.load_mechanisms(os.path.dirname(mod_path))
             return "nmodl has just been compiled"
         else:
+            # load the mod files, i.e, directory containing x86_64
+            neuron.load_mechanisms(os.path.dirname(mod_path))
             return "nmodl was already compiled"
-        # load the mod files, i.e, directory containing x86_64
-        neuron.load_mechanisms(os.path.dirname(mod_path))
 
     def check_compatibility(self, capability_name=None, CerebUnit_capability=None):
         """if model capability is known to be consistent with cerebunit module this module is not necessary to run.
@@ -72,3 +74,4 @@ class SimInspector(object):
             else:
                 return CerebUnit_capability.__name__ + " has the method " + capability_name
         #pass
+        # no check is performed if capability_name=None or CerebUnit_capability=None

@@ -1,7 +1,7 @@
 # ~/managers/operatorsSimaudit/hardware.py
 import multiprocessing
 
-#from neuron import h
+from neuron import h
 
 class HardwareConfigurator(object):
     """Operator working under SimulationManager.
@@ -15,8 +15,9 @@ class HardwareConfigurator(object):
 
     """
 
-    def __init__(self, neuron_dot_h):
-        self.h = neuron_dot_h
+    def __init__(self):
+        #self.h = neuron_dot_h
+        pass
 
     def activate_cores(self):
         """
@@ -29,8 +30,8 @@ class HardwareConfigurator(object):
 
         """
         cores = multiprocessing.cpu_count()
-        self.h.load_file("parcom.hoc")
-        p = self.h.ParallelComputeTool()
+        h.load_file("parcom.hoc")
+        p = h.ParallelComputeTool()
         p.change_nthread(cores, 1)
         p.multisplit(1)
         return "cores are activated" # for hardwareTest.py

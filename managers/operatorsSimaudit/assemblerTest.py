@@ -18,10 +18,10 @@ h.load_file("stdrun.hoc")
 class SimAssemblerTest(unittest.TestCase):
 
     def setUp(self):
-        self.sa = SimAssembler(h)
+        self.sa = SimAssembler()
 
     def test_1_set_fixed_timesteps(self):
-        self.assertEqual(SimAssembler.set_fixed_timesteps(h),
+        self.assertEqual(SimAssembler.set_fixed_timesteps(),
                          "timestep is fixed")
 
     def test_2_set_runtime_NEURON_noparams(self):

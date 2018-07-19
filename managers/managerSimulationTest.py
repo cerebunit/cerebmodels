@@ -48,10 +48,40 @@ class SimulationManagerTest(unittest.TestCase):
                               self.uu.classesinmodule(modelmodule)[0].__name__)
         chosenmodel = pickedmodel()
         #
-        #parameters = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
-        self.assertEqual(self.sm.lock_and_load_capability(
-                             chosenmodel, modelcapability="produce_spike_train"),
+        self.assertEqual(SimulationManager.lock_and_load_capability(
+                                              chosenmodel,
+                                              modelcapability="produce_spike_train"),
                          "DummyTest model just finished run for produce_spike_train")
+        os.chdir(self.pwd) # return to the location of this test file
+
+    def test_3_trigger_NEURON_with_capability(self):
+        os.chdir("..") # move up to load the model
+        # pick the model
+        modelmodule = importlib.import_module("models.cells.modelDummyTest")
+        pickedmodel = getattr(modelmodule,
+                              self.uu.classesinmodule(modelmodule)[0].__name__)
+        chosenmodel = pickedmodel()
+        #
+        parameters = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
+        self.sm.prepare_model_NEURON(parameters, chosenmodel)
+        self.assertEqual( self.sm.trigger_NEURON (
+                                          chosenmodel,
+                                          modelcapability="produce_spike_train"),
+                          "model was successfully triggered via NEURON" )
+        os.chdir(self.pwd) # return to the location of this test file
+
+    def test_4_trigger_NEURON_raw(self):
+        os.chdir("..") # move up to load the model
+        # pick the model
+        modelmodule = importlib.import_module("models.cells.modelDummyTest")
+        pickedmodel = getattr(modelmodule,
+                              self.uu.classesinmodule(modelmodule)[0].__name__)
+        chosenmodel = pickedmodel()
+        #
+        parameters = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
+        self.sm.prepare_model_NEURON(parameters, chosenmodel)
+        self.assertEqual( self.sm.trigger_NEURON ( chosenmodel ),
+                          "model was successfully triggered via NEURON" )
         os.chdir(self.pwd) # return to the location of this test file
 
 if __name__ == '__main__':

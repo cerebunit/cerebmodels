@@ -59,15 +59,16 @@ class StimulatorTest(unittest.TestCase):
         # load nmodl file for using the custom IRamp
         self.si.lock_and_load_nmodl(modelscale="cells", modelname="DummyTest")
         #
-        injparam = [ {"amp_initial": 0.0, "amp_final": 1.0, "dur": 5.0, "delay": 5.0},
-                     {"amp_initial": 1.0, "amp_final": 2.0, "dur": 5.0, "delay": 10.0},
-                     {"amp_initial": 2.0, "amp_final": 1.0, "dur": 5.0, "delay": 15.0},
-                     {"amp_initial": 1.0, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ]
+        injparam = [ {"amp_initial": 0.0, "amp_final": 0.5, "dur": 5.0, "delay": 5.0},
+                     {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0, "delay": 10.0},
+                     {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
+                     {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ]
         curr_stimuli = Stimulator.inject_IRamp(injparam, self.chosenmodel.cell.soma)
         # here based on the injparm
         # increasing ramp is from injparam[0] to injparam[1] while
         # decreading ramp if from injparam[2] to injparam[3]. Thus,
-        slopes = [ 1, 1, -1, -1 ]
+        slopes = [ 0.5, 0.5, -0.5, -0.5 ]
+        # NOTE: the magnitude for each slope is |amp_final - amp_initial| respectively.
         #
         curr_slopes = []
         for i in range(len(curr_stimuli)):

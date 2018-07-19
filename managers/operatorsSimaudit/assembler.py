@@ -22,8 +22,8 @@ class SimAssembler(object):
 
     """
 
-    def __init__(self, h):
-        self.h = h
+    def __init__(self, neuron_dot_h):
+        self.h = neuron_dot_h
 
     @staticmethod
     def set_fixed_timesteps(h):

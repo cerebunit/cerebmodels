@@ -32,11 +32,13 @@ class ExecutiveControl(object):
         # modelscale and modelname => self.chosenmodel.modelscale/modelname
 
     def launch_model( self, parameters = None, onmodel = None,
+                      stimparameters = None, stimloc = None,
                       capabilities = {'model':None, 'test':None} ):
-        self.sm.prepare_model_NEURON( parameters, onmodel,
-                                      modelcapability = capabilities['model'],
-                                      cerebunitcapability = capabilities['test'] )
         if onmodel.modelscale is "cells":
+            self.sm.prepare_model_NEURON( parameters, onmodel,
+                                          modelcapability = capabilities['model'],
+                                          cerebunitcapability = capabilities['test'] )
+            self.sm.stimulate_model_NEURON( stimparameters, stimloc )
             self.sm.trigger_NEURON( onmodel,
                                     modelcapability = capabilities['model'] )
         return "model was successfully simulated" # for executiveTest.py

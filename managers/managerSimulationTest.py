@@ -84,5 +84,57 @@ class SimulationManagerTest(unittest.TestCase):
                           "model was successfully triggered via NEURON" )
         os.chdir(self.pwd) # return to the location of this test file
 
+    def test_5_stimulate_model_NEURON_parameter_None(self):
+        os.chdir("..") # move up to load the model
+        # pick the model
+        modelmodule = importlib.import_module("models.cells.modelDummyTest")
+        pickedmodel = getattr(modelmodule,
+                              self.uu.classesinmodule(modelmodule)[0].__name__)
+        chosenmodel = pickedmodel()
+        #
+        parameters = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
+        self.sm.prepare_model_NEURON(parameters, chosenmodel)
+        self.assertEqual( self.sm.stimulate_model_NEURON(),
+                          "Model is not stimulated" )
+        os.chdir(self.pwd) # return to the location of this test file
+
+    def test_6_stimulate_model_NEURON_parameter_error(self):
+        os.chdir("..") # move up to load the model
+        # pick the model
+        modelmodule = importlib.import_module("models.cells.modelDummyTest")
+        pickedmodel = getattr(modelmodule,
+                              self.uu.classesinmodule(modelmodule)[0].__name__)
+        chosenmodel = pickedmodel()
+        #
+        parameters = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
+        #currparameters = {"type": ["current", "IClamp"]} # default
+        currparameters = {"type": "current"} # alternative
+        self.sm.prepare_model_NEURON(parameters, chosenmodel)
+        self.assertRaises( ValueError,
+                           self.sm.stimulate_model_NEURON,
+                           stimparameters = currparameters,
+                           modelsite = chosenmodel.cell.soma )
+        os.chdir(self.pwd) # return to the location of this test file
+
+    def test_7_stimulate_model_NEURON_current(self):
+        os.chdir("..") # move up to load the model
+        # pick the model
+        modelmodule = importlib.import_module("models.cells.modelDummyTest")
+        pickedmodel = getattr(modelmodule,
+                              self.uu.classesinmodule(modelmodule)[0].__name__)
+        chosenmodel = pickedmodel()
+        #
+        parameters = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
+        currparameters = {"type": ["current", "IClamp"],
+                          "stimlist": [ {'amp': 0.5, 'dur': 100.0, 'delay': 10.0},
+                                        {'amp': 1.0, 'dur': 50.0, 'delay': 10.0+100.0} ] }
+        self.sm.prepare_model_NEURON(parameters, chosenmodel)
+        self.assertEqual( len( self.sm.stimulate_model_NEURON(
+                                                stimparameters = currparameters,
+                                                modelsite = chosenmodel.cell.soma ) ),
+                          len(currparameters["stimlist"]) )
+        os.chdir(self.pwd) # return to the location of this test file
+
+
 if __name__ == '__main__':
     unittest.main()

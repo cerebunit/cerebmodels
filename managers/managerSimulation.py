@@ -31,7 +31,7 @@ class SimulationManager(object):
 
         Argument (mandatory):
         instantiated NEURON based model
-        parameters -- dictionary wit keys: dt, celsius, tstop, v_init
+        parameters -- dictionary with keys: dt, celsius, tstop, v_init
 
         Keyword arguments (optional):
         modelcapability -- string; eg "produces_spike_train"
@@ -40,12 +40,18 @@ class SimulationManager(object):
         Returned value:
         nothing is returned
 
+        NOTE:
+            - although not manadatory it is recommended to use the keyword arguments
+            - also modelcapability and cerebunitcapability is recommended especially
+              if you want to use CerebUnit
+
         Use case:
         modelmodule = importlib.import_module("models.cells.modelPC2015Masoli")
         pickedmodel = getattr(modelmodule, uu.classesinmodule(modelmodule)[0].__name__)
         chosenmodel = pickedmodel()
+        parameters = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
         sm = SimulationManager()
-        sm.prepare_model_NEURON(chosenmodel)
+        sm.prepare_model_NEURON(parameters, chosenmodel)
 
         """
 
@@ -57,11 +63,17 @@ class SimulationManager(object):
         self.sa.set_runtime_NEURON(parameters = parameters)
         return "NEURON model is ready" # for managerSimulationTest.py
 
-    def stimulate_model_NEURON(self, stimparameters, chosenmodel):
+    def stimulate_model_NEURON(self, stimparameters=None, modelsite=None):
         """method that stimulates the prepared model but before locking & loading the capability or before engaging the simulator.
 
-        Argument (mandatory):
-        stimparameters -- list with elements as dictionary; like [ {}, {}, ... ]
+        Keyword Arguments (mandatory):
+        stimparameters -- dictionary with keys "type" and "stimlist" where
+                          "type": 2 element list of strings
+                                  <stimulus category> <specific type of that category>
+                                  NOTE: First element is ALWAYS <stimulus category>
+                          Eg: for current inject on cellular model
+                              ["current", "IClamp"]
+                          "stimlist": is a list with elements as dictionary; like [ {}, {}, ... ]
                           Eg: [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
                                 {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]
                           Eg: [ {"amp_initial": 0.0, "amp_final": 0.5, "dur": 5.0, "delay": 5.0},
@@ -69,7 +81,7 @@ class SimulationManager(object):
                                 {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
                                 {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0},
 
-        chosenmodelsection -- section of the instantiated NEURON based model where you want to stimulate. For eg. chosenmodel.cell.soma
+        modelsite -- section of the instantiated NEURON based model where you want to stimulate. For eg. chosenmodel.cell.soma
 
         Returned value:
         stimuli_list -- each element is hoc object
@@ -79,17 +91,37 @@ class SimulationManager(object):
         modelmodule = importlib.import_module("models.cells.modelPC2015Masoli")
         pickedmodel = getattr(modelmodule, uu.classesinmodule(modelmodule)[0].__name__)
         chosenmodel = pickedmodel()
+        runparameters = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
+        currparameters = {"type": ["current", "IClamp"],
+                          "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
+                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
         sm = SimulationManager()
-        sm.prepare_model_NEURON(chosenmodel)
-        sm.
+        sm.prepare_model_NEURON(runparameters, chosenmodel)
+        sm.stimulate_model_NEURON(stimparameters = currparamters,
+                                  modelsite=chosenmodel.cell.soma)
 
         """
-        pass
-        #stimuli_list = self.st.inject_current_NEURON(
-        #                               currenttype = ,
-        #                               injparameters = ,
-        #                               neuronsection = ) 
-        #return stimuli_list
+        if stimparameters is None or modelsite is None:
+            return "Model is not stimulated"
+        elif ( "type" not in stimparameters or
+             "stimlist" not in stimparameters or
+             len(stimparameters["type"]) != 2 ):
+            raise ValueError("stimparameters should be a dictionary with " 
+                             "keys 'type' and 'stimlist' where" 
+                             "'type': 2 element list of strings"
+                                     "<stimulus category> <specific type of that category>" 
+                                     "Eg: for current inject on cellular model" 
+                                         "['current', 'IClamp']" 
+                             "'stimlist': is a list with elements as dictionary"
+                             "Eg: [ {'amp': 0.5, 'dur': 100.0, 'delay': 10.0}," 
+                                   "{'amp': 1.0, 'dur': 50.0, 'delay': 10.0+100.0} ]")
+        else:
+            if stimparameters["type"][0] is "current":
+                stimuli_list = self.st.inject_current_NEURON(
+                                           currenttype = stimparameters["type"][1],
+                                           injparameters = stimparameters["stimlist"],
+                                           neuronsection = modelsite) 
+                return stimuli_list
 
     @staticmethod
     def lock_and_load_capability(chosenmodel, modelcapability):

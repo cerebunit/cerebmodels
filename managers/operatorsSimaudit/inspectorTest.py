@@ -21,6 +21,7 @@ class SimInspectorTest(unittest.TestCase):
         self.si = SimInspector() # instance for non: static & class methods
         self.pwd = os.getcwd()
 
+    #@unittest.skip("reason for skipping")
     def test_1_lock_and_load_nmodl_compile_libnrnmech(self):
         modelscale = "cells"
         modelname = "DummyTest"
@@ -37,6 +38,7 @@ class SimInspectorTest(unittest.TestCase):
                          "nmodl has just been compiled")
         os.chdir(self.pwd) # reset to the location of this inspectorTest.py
 
+    #@unittest.skip("reason for skipping")
     def test_2_lock_and_load_nmodl_alreadycompiled(self):
         modelscale = "cells"
         modelname = "DummyTest"
@@ -48,6 +50,7 @@ class SimInspectorTest(unittest.TestCase):
                          "nmodl was already compiled")
         os.chdir(self.pwd) # reset to the location of this inspectorTest.py
 
+    #@unittest.skip("reason for skipping")
     def test_3_check_compatibility_modelcapability_notin_cerbunit(self):
         modelscale = "cells"
         modelname = "DummyTest"
@@ -60,6 +63,7 @@ class SimInspectorTest(unittest.TestCase):
                            CerebUnit_capability = ProducesSpikeTrain )
         os.chdir(self.pwd) # reset to the location of this inspectorTest.py
 
+    #@unittest.skip("reason for skipping")
     def test_4_check_compatibility_modelcapability_in_cerbunit(self):
         modelscale = "cells"
         modelname = "DummyTest"

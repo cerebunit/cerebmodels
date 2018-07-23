@@ -19,22 +19,26 @@ class AccountManagerTest(unittest.TestCase):
         self.am = AccountManager() #instance for non: static & class methods.
         self.pwd = os.getcwd()
 
+    #@unittest.skip("reason for skipping")
     def test_1_available_modelscales_nomodelscales(self):
         # modelscales are under models/
         # this test is under managers/ Thus mimicking case when there
         # are no modelscales 
         self.assertRaises(ValueError, self.am.available_modelscales)
 
+    #@unittest.skip("reason for skipping")
     def test_2_available_modelscales_modelscales_exists(self):
         os.chdir("..") # move up one directory
         x = len(self.am.available_modelscales()) != 0
         self.assertEqual(x, True)
         os.chdir(self.pwd) # come back to where this .py resides
 
+    #@unittest.skip("reason for skipping")
     def test_3_modelscale_inventory_nomodelscales(self):
         self.assertRaises(ValueError, self.am.modelscale_inventory,
                           model_scale="molecules")
 
+    #@unittest.skip("reason for skipping")
     def test_4_modelscale_inventory_nomodels(self):
         #os.chdir("..") # move up one directory
         os.mkdir(self.pwd+os.sep+"cells")
@@ -43,6 +47,7 @@ class AccountManagerTest(unittest.TestCase):
         os.rmdir("cells")
         #os.chdir(self.pwd) # come back to where this .py resides
 
+    #@unittest.skip("reason for skipping")
     def test_5_modelscale_inventory_model_exists(self):
         os.chdir("..") # move up one directory
         dummyscale_path = os.getcwd()+os.sep+"models"+os.sep+"dummyscale"

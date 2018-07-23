@@ -7,7 +7,7 @@ import sys
 # set to ~/cerebmodels
 sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 # this is required for
-from models.cells.modelDummyTest import DummyTest
+from models.cells.modelDummyTest import DummyCell
 
 # because IRamp is not by default its nmodl files need to be loaded
 # testing for inject_IRamp requires SimInspector
@@ -24,10 +24,11 @@ class StimulatorTest(unittest.TestCase):
     def setUp(self):
         self.st = Stimulator()
         self.pwd = os.getcwd()
-        self.chosenmodel = DummyTest()
+        self.chosenmodel = DummyCell()
         self.si = SimInspector()
         #self.sm = SimulationManager()
 
+    #@unittest.skip("reason for skipping")
     def test_1_inject_IClamp_wrong_key_in_parameter(self):
         os.chdir("..") # this moves you up to ~/managers
         os.chdir("..") # you are now in root
@@ -44,6 +45,7 @@ class StimulatorTest(unittest.TestCase):
                            self.chosenmodel.cell.soma )
         os.chdir(self.pwd) # reset to the location of this stimulatorTest.py
 
+    #@unittest.skip("reason for skipping")
     def test_2_inject_IClamp(self):
         os.chdir("..") # this moves you up to ~/managers
         os.chdir("..") # you are now in root
@@ -53,6 +55,7 @@ class StimulatorTest(unittest.TestCase):
         self.assertEqual( len(curr_stimuli ), len(injparam) )
         os.chdir(self.pwd) # reset to the location of this stimulatorTest.py
 
+    #@unittest.skip("reason for skipping")
     def test_3_inject_IRamp(self):
         os.chdir("..") # this moves you up to ~/managers
         os.chdir("..") # you are now in root
@@ -77,6 +80,7 @@ class StimulatorTest(unittest.TestCase):
         self.assertEqual( curr_slopes, slopes )
         os.chdir(self.pwd) # reset to the location of this stimulatorTest.py
 
+    #@unittest.skip("reason for skipping")
     def test_4_inject_current_NEURON_without_currenttype(self):
         os.chdir("..") # this moves you up to ~/managers
         os.chdir("..") # you are now in root
@@ -88,6 +92,7 @@ class StimulatorTest(unittest.TestCase):
                            neuronsection = self.chosenmodel.cell.soma )
         os.chdir(self.pwd) # reset to the location of this stimulatorTest.py
 
+    #@unittest.skip("reason for skipping")
     def test_5_inject_current_NEURON_wrong_currenttype(self):
         os.chdir("..") # this moves you up to ~/managers
         os.chdir("..") # you are now in root
@@ -100,6 +105,7 @@ class StimulatorTest(unittest.TestCase):
                            neuronsection = self.chosenmodel.cell.soma )
         os.chdir(self.pwd) # reset to the location of this stimulatorTest.py
 
+    #@unittest.skip("reason for skipping")
     def test_6_inject_current_NEURON_IClamp(self):
         os.chdir("..") # this moves you up to ~/managers
         os.chdir("..") # you are now in root
@@ -112,6 +118,7 @@ class StimulatorTest(unittest.TestCase):
                           len(injparam) )
         os.chdir(self.pwd) # reset to the location of this stimulatorTest.py
 
+    #@unittest.skip("reason for skipping")
     def test_7_inject_current_NEURON_IRamp(self):
         os.chdir("..") # this moves you up to ~/managers
         os.chdir("..") # you are now in root

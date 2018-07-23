@@ -25,6 +25,7 @@ class SimulationManagerTest(unittest.TestCase):
         self.uu = UsefulUtils() #for alternative approach see managerRecordTest.py
         self.pwd = os.getcwd()
 
+    #@unittest.skip("reason for skipping")
     def test_1_prepare_model_NEURON(self):
         os.chdir("..") # move up to load the model
         #from utilities import UsefulUtils as uu
@@ -39,6 +40,7 @@ class SimulationManagerTest(unittest.TestCase):
                          "NEURON model is ready")
         os.chdir(self.pwd) # return to the location of this test file
 
+    #@unittest.skip("reason for skipping")
     def test_2_lock_and_load_capability(self):
         os.chdir("..") # move up to load the model
         #from utilities import UsefulUtils as uu
@@ -54,6 +56,7 @@ class SimulationManagerTest(unittest.TestCase):
                          "DummyTest model just finished run for produce_spike_train")
         os.chdir(self.pwd) # return to the location of this test file
 
+    #@unittest.skip("reason for skipping")
     def test_3_trigger_NEURON_with_capability(self):
         os.chdir("..") # move up to load the model
         # pick the model
@@ -70,6 +73,7 @@ class SimulationManagerTest(unittest.TestCase):
                           "model was successfully triggered via NEURON" )
         os.chdir(self.pwd) # return to the location of this test file
 
+    #@unittest.skip("reason for skipping")
     def test_4_trigger_NEURON_raw(self):
         os.chdir("..") # move up to load the model
         # pick the model
@@ -84,6 +88,7 @@ class SimulationManagerTest(unittest.TestCase):
                           "model was successfully triggered via NEURON" )
         os.chdir(self.pwd) # return to the location of this test file
 
+    #@unittest.skip("reason for skipping")
     def test_5_stimulate_model_NEURON_parameter_None(self):
         os.chdir("..") # move up to load the model
         # pick the model
@@ -98,6 +103,7 @@ class SimulationManagerTest(unittest.TestCase):
                           "Model is not stimulated" )
         os.chdir(self.pwd) # return to the location of this test file
 
+    #@unittest.skip("reason for skipping")
     def test_6_stimulate_model_NEURON_parameter_error(self):
         os.chdir("..") # move up to load the model
         # pick the model
@@ -116,6 +122,7 @@ class SimulationManagerTest(unittest.TestCase):
                            modelsite = chosenmodel.cell.soma )
         os.chdir(self.pwd) # return to the location of this test file
 
+    #@unittest.skip("reason for skipping")
     def test_7_stimulate_model_NEURON_current(self):
         os.chdir("..") # move up to load the model
         # pick the model

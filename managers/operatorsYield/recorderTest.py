@@ -7,7 +7,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 # this is required for
 #from utilities import UsefulUtils as uu
-from models.cells.modelDummyTest import DummyTest
+from models.cells.modelDummyTest import DummyCell
 from managers.managerSimulation import SimulationManager
 
 from recorder import Recorder
@@ -18,7 +18,7 @@ class RecorderTest(unittest.TestCase):
         self.rc = Recorder()
         #self.uu = UsefulUtils()
         self.pwd = os.getcwd()
-        self.chosenmodel = DummyTest()
+        self.chosenmodel = DummyCell()
         self.sm = SimulationManager()
 
     #@unittest.skip("reason for skipping")

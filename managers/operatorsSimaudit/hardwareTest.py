@@ -9,6 +9,7 @@ class HardwareConfiguratorTest(unittest.TestCase):
     def setUp(self):
         self.hc = HardwareConfigurator()
 
+    #@unittest.skip("reason for skipping")
     def test_1_activate_cores(self):
         self.assertEqual(self.hc.activate_cores(),
                          "cores are activated")

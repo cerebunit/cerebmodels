@@ -11,12 +11,14 @@ class PathSpawnerTest(unittest.TestCase):
         self.ps = PathSpawner() #instance for non: static & class methods.
         self.pwd = os.getcwd()
 
+    #@unittest.skip("reason for skipping")
     def test_1_hatch_path_to_model(self):
         mod_path, lib_path = self.ps.hatch_path_to_nmodl(modelscale="cells",
                                                          modelname="XY2000Author")
         self.assertEqual(os.path.dirname(mod_path),
                          os.path.dirname(os.path.dirname(os.path.dirname(lib_path))))
 
+    #@unittest.skip("reason for skipping")
     def test_2_exception_hatch_path_to_model(self):
         self.assertRaises(ValueError, self.ps.hatch_path_to_nmodl, )
  

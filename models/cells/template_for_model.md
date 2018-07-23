@@ -82,12 +82,13 @@ NOTE:
   ```
 Therefore, the `self.regions` in the corresponding model-template `~/cells/modelDummyTest.py` will look like
   ```
-  self.regions = {self.cell.soma: 0.0, self.cell.axon: 0.0}
+  self.regions = {'soma': 0.0, 'axon': 0.0}
   ```
 Notice that dendrite is not a region because it is not in the cell-template. However, `self.regions` does not have to include all the the NEURON sections. For instance it is prefectly fine for the `self.regions` in the model-template `~/cells/modelDummyTest.py` to be like
   ```
-  self.regions = {self.cell.soma: 0.0}
+  self.regions = {'soma': 0.0}
   ```
 Its upto the user what he/she wants to do with the model.
+* it is good practice to have both the name of the section (eg soma inside `h.Section('soma'`) and name of the cell attribute be the same (eg, soma in `self.soma`). The keys in `self.regions` are the cell attribute name. Therefore, the key 'soma' in `self.regions` corresponds to 'soma' of `self.soma` NOT 'soma' in `h.Section('soma').
 * generally, `float=0.0` which means that the membrane voltage taken from the respective `self.regions` 'whenever' required to transform them to spike-trains (zeros & ones) takes 0.0mV as the threshold for considering spike.
 ---

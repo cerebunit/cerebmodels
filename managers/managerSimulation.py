@@ -66,7 +66,7 @@ class SimulationManager(object):
     def stimulate_model_NEURON(self, stimparameters=None, modelsite=None):
         """method that stimulates the prepared model but before locking & loading the capability or before engaging the simulator.
 
-        Keyword Arguments (mandatory):
+        Keyword Arguments (optional):
         stimparameters -- dictionary with keys "type" and "stimlist" where
                           "type": 2 element list of strings
                                   <stimulus category> <specific type of that category>
@@ -84,8 +84,16 @@ class SimulationManager(object):
         modelsite -- section of the instantiated NEURON based model where you want to stimulate. For eg. chosenmodel.cell.soma
 
         Returned value:
+        if stimparameters are given
         stimuli_list -- each element is hoc object
                         For current inject it is h.IClamp or h.IRamp depending on currenttype.
+        if no argument is given
+        string -- "Model is not stimulated"
+
+        NOTE:
+            - even if the stimulation does not involve stimulation it is recommended to evoke this function
+            - in such case just evoke stimulate_model_NEURON without arguments
+            - the returned value will be "Model is not stimulated"
 
         Use case:
         modelmodule = importlib.import_module("models.cells.modelPC2015Masoli")

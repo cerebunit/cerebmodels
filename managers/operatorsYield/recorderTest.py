@@ -21,6 +21,7 @@ class RecorderTest(unittest.TestCase):
         self.chosenmodel = DummyTest()
         self.sm = SimulationManager()
 
+    #@unittest.skip("reason for skipping")
     def test_1_time_NEURON_without_engaging(self):
         os.chdir("..") # this moves you up to ~/managers
         os.chdir("..") # you are now in root
@@ -35,6 +36,7 @@ class RecorderTest(unittest.TestCase):
                         )
         os.chdir(self.pwd) # reset to the location of this recorderTest.py
 
+    #@unittest.skip("reason for skipping")
     def test_2_time_NEURON(self):
         os.chdir("..") # this moves you up to ~/managers
         os.chdir("..") # you are now in root
@@ -50,6 +52,7 @@ class RecorderTest(unittest.TestCase):
                         )
         os.chdir(self.pwd) # reset to the location of this recorderTest.py
 
+    #@unittest.skip("reason for skipping")
     def test_3_response_voltage_NEURON(self):
         os.chdir("..") # this moves you up to ~/managers
         os.chdir("..") # you are now in root
@@ -62,6 +65,45 @@ class RecorderTest(unittest.TestCase):
                           len( range(0,
                                      int(parameters["tstop"]/parameters["dt"]) )
                              ) + 1 # for the additional dt  step
+                        )
+        os.chdir(self.pwd) # reset to the location of this recorderTest.py
+
+    #@unittest.skip("reason for skipping")
+    def test_4_stimulus_individual_currents_NEURON(self):
+        os.chdir("..") # this moves you up to ~/managers
+        os.chdir("..") # you are now in root
+        parameters = {"dt": 0.1, "celsius": 20, "tstop": 10, "v_init": 65}
+        currparameters = {"type": ["current", "IClamp"],
+                          "stimlist": [ {'amp': 0.5, 'dur': 10.0, 'delay': 5.0},
+                                        {'amp': 1.0, 'dur': 20.0, 'delay': 5.0+10.0} ] }
+        self.sm.prepare_model_NEURON(parameters, self.chosenmodel)
+        stimuli_list = self.sm.stimulate_model_NEURON(stimparameters = currparameters,
+                                               modelsite = self.chosenmodel.cell.soma)
+        rec_i_indivs = self.rc.stimulus_individual_currents_NEURON(stimuli_list)
+        self.sm.engage_NEURON()
+        # check the length of the rec_v = 0:dt:tstop
+        self.assertEqual( len( rec_i_indivs ), len( currparameters["stimlist"] ) )
+        os.chdir(self.pwd) # reset to the location of this recorderTest.py
+
+    #@unittest.skip("reason for skipping")
+    def test_5_stimulus_overall_currents_NEURON(self):
+        os.chdir("..") # this moves you up to ~/managers
+        os.chdir("..") # you are now in root
+        parameters = {"dt": 0.1, "celsius": 20, "tstop": 10, "v_init": 65}
+        currparameters = {"type": ["current", "IClamp"],
+                          "stimlist": [ {'amp': 0.5, 'dur': 10.0, 'delay': 5.0},
+                                        {'amp': 1.0, 'dur': 20.0, 'delay': 5.0+10.0} ] }
+        self.sm.prepare_model_NEURON(parameters, self.chosenmodel)
+        stimuli_list = self.sm.stimulate_model_NEURON(stimparameters = currparameters,
+                                               modelsite = self.chosenmodel.cell.soma)
+        rec_i_indivs = self.rc.stimulus_individual_currents_NEURON(stimuli_list)
+        self.sm.engage_NEURON()
+        rec_i = self.rc.stimulus_overall_current_NEURON(rec_i_indivs)
+        # check the length of the rec_v = 0:dt:tstop
+        self.assertEqual( len( rec_i ),
+                          len( range(-1,
+                                     int(parameters["tstop"]/parameters["dt"]) )
+                             )
                         )
         os.chdir(self.pwd) # reset to the location of this recorderTest.py
 

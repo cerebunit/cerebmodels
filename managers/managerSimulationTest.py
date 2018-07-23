@@ -22,7 +22,7 @@ class SimulationManagerTest(unittest.TestCase):
 
     def setUp(self):
         self.sm = SimulationManager() #instance for non: static & class methods.
-        self.uu = UsefulUtils()
+        self.uu = UsefulUtils() #for alternative approach see managerRecordTest.py
         self.pwd = os.getcwd()
 
     def test_1_prepare_model_NEURON(self):

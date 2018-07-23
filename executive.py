@@ -7,12 +7,14 @@ from neuron import h
 from utilities import UsefulUtils as uu
 from managers.managerAccount import AccountManager
 from managers.managerSimulation import SimulationManager
+from managers.managerRecord import RecordManager
 
 class ExecutiveControl(object):
 
     def __init__(self):
         self.am = AccountManager()
         self.sm = SimulationManager()
+        self.rm = RecordManager()
 
     def list_modelscales(self):
         return self.am.available_modelscales()
@@ -38,7 +40,13 @@ class ExecutiveControl(object):
             self.sm.prepare_model_NEURON( parameters, onmodel,
                                           modelcapability = capabilities['model'],
                                           cerebunitcapability = capabilities['test'] )
-            self.sm.stimulate_model_NEURON( stimparameters, stimloc )
+            stimuli_list = self.sm.stimulate_model_NEURON(
+                                          stimparameters = stimparameters,
+                                          modelsite = stimloc )
+            rec_t, rec_v, rec_i_indivs = self.rm.prepare_recording_NEURON(
+                                                  onmodel,
+                                                  stimuli = stimuli_list )
             self.sm.trigger_NEURON( onmodel,
                                     modelcapability = capabilities['model'] )
+            rec_i = self.rm.postrun_record_NEURON( injectedcurrents = rec_i_indivs )
         return "model was successfully simulated" # for executiveTest.py

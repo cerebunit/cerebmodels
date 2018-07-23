@@ -6,7 +6,7 @@ h.load_file("stdrun.hoc")
 class Dummy(object):
     def __init__(self):
         self.soma = h.Section(name='soma')
-        self.axon = h.Section(nmae='axon')
+        self.axon = h.Section(name='axon')
         
         ### ====== STANDARDIZED FOR cerebmodels =======
         ### ===== mandatory for all NEURON models =====

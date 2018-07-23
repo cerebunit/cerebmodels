@@ -40,7 +40,13 @@ class RecordManager(object):
         stimuli -- list, eg, [h.IClamp(0.5,sec=soma), h.IClamp(0.5,sec=soma)]
 
         Returned value:
-        variable number of elements but it will always return recorded time.
+        three elements in the following order
+        recorded time -- list
+        recorded response -- dictionary; region-name for key whose value is
+                             response from the region as list
+        recorded injections -- 
+                 list of individual injections; if model was stimulated with currents
+                 string "Model is not stimulated"; if model was not stimulated
 
         The voltage recordings will depend on the number of sections.
         For eg.,
@@ -49,8 +55,8 @@ class RecordManager(object):
         vm_soma = rec_v[0]
         On the other hand, for chosenmodel.regions = {'soma': 0.0, 'axon': 0.0}
         rec_t, rec_v = rm.prepare_recording_NEURON(chosenmodel)
-        vm_soma = rec_v[0]
-        vm_NOR3 = rec_v[1]
+        vm_soma = rec_v['soma']
+        vm_NOR3 = rec_v['axon']
 
         Another important consideration is the stimuli. If the model is stimulated
         with multiple current injection zones like

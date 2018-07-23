@@ -15,6 +15,7 @@ class ExecutiveControl(object):
         self.am = AccountManager()
         self.sm = SimulationManager()
         self.rm = RecordManager()
+        self.recordings = {"time": None, "response": None, "stimulus": None}
 
     def list_modelscales(self):
         return self.am.available_modelscales()
@@ -36,6 +37,7 @@ class ExecutiveControl(object):
     def launch_model( self, parameters = None, onmodel = None,
                       stimparameters = None, stimloc = None,
                       capabilities = {'model':None, 'test':None} ):
+        uu.check_not_None_in_arg({'parameters': parameters, 'onmodel': onmodel})
         if onmodel.modelscale is "cells":
             self.sm.prepare_model_NEURON( parameters, onmodel,
                                           modelcapability = capabilities['model'],
@@ -43,10 +45,11 @@ class ExecutiveControl(object):
             stimuli_list = self.sm.stimulate_model_NEURON(
                                           stimparameters = stimparameters,
                                           modelsite = stimloc )
-            rec_t, rec_v, rec_i_indivs = self.rm.prepare_recording_NEURON(
-                                                  onmodel,
-                                                  stimuli = stimuli_list )
+            self.recordings["time"], self.recordings["response"], rec_i_indivs = \
+                    self.rm.prepare_recording_NEURON( onmodel,
+                                                      stimuli = stimuli_list )
             self.sm.trigger_NEURON( onmodel,
                                     modelcapability = capabilities['model'] )
-            rec_i = self.rm.postrun_record_NEURON( injectedcurrents = rec_i_indivs )
+            self.recordings["stimulus"] = \
+                    self.rm.postrun_record_NEURON( injectedcurrents = rec_i_indivs )
         return "model was successfully simulated" # for executiveTest.py

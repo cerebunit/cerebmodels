@@ -12,10 +12,12 @@ class ExecutiveControlTest(unittest.TestCase):
         self.ec = ExecutiveControl() #instance for non: static & class methods.
         self.pwd = os.getcwd()
 
+    #@unittest.skip("reason for skipping")
     def test_1_list_modelscales(self):
         x = len(self.ec.list_modelscales()) != 0
         self.assertEqual(x, True)
 
+    #@unittest.skip("reason for skipping")
     def test_2_list_models(self):
         dummyscale_path = self.pwd+os.sep+"models"+os.sep+"dummyscale"
         for i in range(3): # create three dummymodels
@@ -25,6 +27,7 @@ class ExecutiveControlTest(unittest.TestCase):
             3)
         shutil.rmtree(dummyscale_path)
 
+    #@unittest.skip("reason for skipping")
     def test_3_choose_model(self):
         # NOTE: this only works if the 'minimal' script
         # ~/models/cells/model2015Masoli.py exists
@@ -34,7 +37,8 @@ class ExecutiveControlTest(unittest.TestCase):
                                   modelname="DummyTest" )
         self.assertEqual( x.modelname, "DummyTest" )
 
-    def test_4_launch_model_NEURON_with_capability(self):
+    #@unittest.skip("reason for skipping")
+    def test_4_launch_model_NEURON_nostimulus_with_capability(self):
         pickedmodel = self.ec.choose_model( modelscale="cells",
                                             modelname="DummyTest" )
         parameters = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
@@ -45,7 +49,8 @@ class ExecutiveControlTest(unittest.TestCase):
                                               'test': None} ),
                          "model was successfully simulated")
 
-    def test_5_launch_model_NEURON_raw(self):
+    #@unittest.skip("reason for skipping")
+    def test_5_launch_model_NEURON_nostimulus_raw(self):
         pickedmodel = self.ec.choose_model( modelscale="cells",
                                             modelname="DummyTest" )
         parameters = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
@@ -53,6 +58,8 @@ class ExecutiveControlTest(unittest.TestCase):
                               parameters = parameters,
                               onmodel = pickedmodel),
                          "model was successfully simulated")
+
+    #@unittest.skip("reason for skipping")
 
 if __name__ == '__main__':
     unittest.main()

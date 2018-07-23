@@ -22,3 +22,17 @@ class UsefulUtils(object):
                 isinstance(md[c], type) and md[c].__module__ == module.__name__
             )
         ]
+
+    @classmethod
+    def check_not_None_in_arg(cls,args):
+        for argname, argvalue in args.iteritems():
+            if argvalue is None:
+                raise ValueError( ", ".join(list(args.keys())) + " must be given.")
+
+    @classmethod
+    # https://stackoverflow.com/questions/3844801/check-if-all-elements-in-a-list-are-identical
+    def check_allNone_in_arg(cls,args):
+        if len(set(list(args.values()))) != 1: # if all are not None
+            raise ValueError( ", ".join(list(args.keys())) + " must all be given if one of them is given (i.e, one of them is NOT None.")
+        # do nothing if all args are None
+

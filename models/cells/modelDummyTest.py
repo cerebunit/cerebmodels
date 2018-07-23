@@ -9,7 +9,8 @@ class DummyTest(object):
 
     def __init__(self):
         self.cell = Dummy()
-        self.regions = [self.cell.soma, self.cell.axon] # refer Dummy.py to choose regions
+        self.regions = {self.cell.soma: 0.0, # refer Dummy.py to choose regions
+                        self.cell.axon: 0.0}
         self.modelscale = "cells"
         self.modelname = "DummyTest"
         # instantiate

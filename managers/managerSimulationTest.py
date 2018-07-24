@@ -26,7 +26,11 @@ class SimulationManagerTest(unittest.TestCase):
         self.pwd = os.getcwd()
 
     #@unittest.skip("reason for skipping")
-    def test_1_prepare_model_NEURON(self):
+    def test_1_prepare_model_NEURON_nomodel(self):
+        self.assertRaises( ValueError, self.sm.prepare_model_NEURON, )
+
+    #@unittest.skip("reason for skipping")
+    def test_2_prepare_model_NEURON(self):
         os.chdir("..") # move up to load the model
         #from utilities import UsefulUtils as uu
         # pick the model
@@ -36,12 +40,13 @@ class SimulationManagerTest(unittest.TestCase):
         chosenmodel = pickedmodel()
         #
         parameters = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
-        self.assertEqual(self.sm.prepare_model_NEURON(parameters, chosenmodel),
+        self.assertEqual(self.sm.prepare_model_NEURON(
+                                parameters=parameters, chosenmodel=chosenmodel),
                          "NEURON model is ready")
         os.chdir(self.pwd) # return to the location of this test file
 
     #@unittest.skip("reason for skipping")
-    def test_2_lock_and_load_capability(self):
+    def test_3_lock_and_load_capability(self):
         os.chdir("..") # move up to load the model
         #from utilities import UsefulUtils as uu
         # pick the model
@@ -57,7 +62,7 @@ class SimulationManagerTest(unittest.TestCase):
         os.chdir(self.pwd) # return to the location of this test file
 
     #@unittest.skip("reason for skipping")
-    def test_3_trigger_NEURON_with_capability(self):
+    def test_4_trigger_NEURON_with_capability(self):
         os.chdir("..") # move up to load the model
         # pick the model
         modelmodule = importlib.import_module("models.cells.modelDummyTest")
@@ -66,7 +71,7 @@ class SimulationManagerTest(unittest.TestCase):
         chosenmodel = pickedmodel()
         #
         parameters = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
-        self.sm.prepare_model_NEURON(parameters, chosenmodel)
+        self.sm.prepare_model_NEURON(parameters=parameters, chosenmodel=chosenmodel)
         self.assertEqual( self.sm.trigger_NEURON (
                                           chosenmodel,
                                           modelcapability="produce_spike_train"),
@@ -74,7 +79,7 @@ class SimulationManagerTest(unittest.TestCase):
         os.chdir(self.pwd) # return to the location of this test file
 
     #@unittest.skip("reason for skipping")
-    def test_4_trigger_NEURON_raw(self):
+    def test_5_trigger_NEURON_raw(self):
         os.chdir("..") # move up to load the model
         # pick the model
         modelmodule = importlib.import_module("models.cells.modelDummyTest")
@@ -83,13 +88,13 @@ class SimulationManagerTest(unittest.TestCase):
         chosenmodel = pickedmodel()
         #
         parameters = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
-        self.sm.prepare_model_NEURON(parameters, chosenmodel)
+        self.sm.prepare_model_NEURON(parameters=parameters, chosenmodel=chosenmodel)
         self.assertEqual( self.sm.trigger_NEURON ( chosenmodel ),
                           "model was successfully triggered via NEURON" )
         os.chdir(self.pwd) # return to the location of this test file
 
     #@unittest.skip("reason for skipping")
-    def test_5_stimulate_model_NEURON_parameter_None(self):
+    def test_6_stimulate_model_NEURON_parameter_None(self):
         os.chdir("..") # move up to load the model
         # pick the model
         modelmodule = importlib.import_module("models.cells.modelDummyTest")
@@ -98,13 +103,13 @@ class SimulationManagerTest(unittest.TestCase):
         chosenmodel = pickedmodel()
         #
         parameters = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
-        self.sm.prepare_model_NEURON(parameters, chosenmodel)
+        self.sm.prepare_model_NEURON(parameters=parameters, chosenmodel=chosenmodel)
         self.assertEqual( self.sm.stimulate_model_NEURON(),
                           "Model is not stimulated" )
         os.chdir(self.pwd) # return to the location of this test file
 
     #@unittest.skip("reason for skipping")
-    def test_6_stimulate_model_NEURON_parameter_error(self):
+    def test_7_stimulate_model_NEURON_parameter_error(self):
         os.chdir("..") # move up to load the model
         # pick the model
         modelmodule = importlib.import_module("models.cells.modelDummyTest")
@@ -115,7 +120,7 @@ class SimulationManagerTest(unittest.TestCase):
         parameters = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
         #currparameters = {"type": ["current", "IClamp"]} # default
         currparameters = {"type": "current"} # alternative
-        self.sm.prepare_model_NEURON(parameters, chosenmodel)
+        self.sm.prepare_model_NEURON(parameters=parameters, chosenmodel=chosenmodel)
         self.assertRaises( ValueError,
                            self.sm.stimulate_model_NEURON,
                            stimparameters = currparameters,
@@ -123,7 +128,7 @@ class SimulationManagerTest(unittest.TestCase):
         os.chdir(self.pwd) # return to the location of this test file
 
     #@unittest.skip("reason for skipping")
-    def test_7_stimulate_model_NEURON_current(self):
+    def test_8_stimulate_model_NEURON_current(self):
         os.chdir("..") # move up to load the model
         # pick the model
         modelmodule = importlib.import_module("models.cells.modelDummyTest")
@@ -135,7 +140,7 @@ class SimulationManagerTest(unittest.TestCase):
         currparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {'amp': 0.5, 'dur': 100.0, 'delay': 10.0},
                                         {'amp': 1.0, 'dur': 50.0, 'delay': 10.0+100.0} ] }
-        self.sm.prepare_model_NEURON(parameters, chosenmodel)
+        self.sm.prepare_model_NEURON(parameters=parameters, chosenmodel=chosenmodel)
         self.assertEqual( len( self.sm.stimulate_model_NEURON(
                                                 stimparameters = currparameters,
                                                 modelsite = chosenmodel.cell.soma ) ),

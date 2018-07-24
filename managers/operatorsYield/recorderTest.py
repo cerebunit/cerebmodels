@@ -26,7 +26,7 @@ class RecorderTest(unittest.TestCase):
         os.chdir("..") # this moves you up to ~/managers
         os.chdir("..") # you are now in root
         parameters = {"dt": 0.1, "celsius": 20, "tstop": 10, "v_init": 65}
-        self.sm.prepare_model_NEURON(parameters, self.chosenmodel)
+        self.sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
         rec_t = self.rc.time_NEURON()
         # the length of the rec_time != 0:dt:tstop since recording was not done
         self.assertNotEqual( len( rec_t ),
@@ -41,7 +41,7 @@ class RecorderTest(unittest.TestCase):
         os.chdir("..") # this moves you up to ~/managers
         os.chdir("..") # you are now in root
         parameters = {"dt": 0.1, "celsius": 20, "tstop": 10, "v_init": 65}
-        self.sm.prepare_model_NEURON(parameters, self.chosenmodel)
+        self.sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
         rec_t = self.rc.time_NEURON()
         self.sm.engage_NEURON()
         # check the length of the recorded time = 0:dt:tstop
@@ -57,7 +57,7 @@ class RecorderTest(unittest.TestCase):
         os.chdir("..") # this moves you up to ~/managers
         os.chdir("..") # you are now in root
         parameters = {"dt": 0.1, "celsius": 20, "tstop": 10, "v_init": 65}
-        self.sm.prepare_model_NEURON(parameters, self.chosenmodel)
+        self.sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
         rec_v = self.rc.response_voltage_NEURON(self.chosenmodel.cell.soma)
         self.sm.engage_NEURON()
         # check the length of the rec_v = 0:dt:tstop
@@ -76,7 +76,7 @@ class RecorderTest(unittest.TestCase):
         currparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {'amp': 0.5, 'dur': 10.0, 'delay': 5.0},
                                         {'amp': 1.0, 'dur': 20.0, 'delay': 5.0+10.0} ] }
-        self.sm.prepare_model_NEURON(parameters, self.chosenmodel)
+        self.sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
         stimuli_list = self.sm.stimulate_model_NEURON(stimparameters = currparameters,
                                                modelsite = self.chosenmodel.cell.soma)
         rec_i_indivs = self.rc.stimulus_individual_currents_NEURON(stimuli_list)
@@ -93,7 +93,7 @@ class RecorderTest(unittest.TestCase):
         currparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {'amp': 0.5, 'dur': 10.0, 'delay': 5.0},
                                         {'amp': 1.0, 'dur': 20.0, 'delay': 5.0+10.0} ] }
-        self.sm.prepare_model_NEURON(parameters, self.chosenmodel)
+        self.sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
         stimuli_list = self.sm.stimulate_model_NEURON(stimparameters = currparameters,
                                                modelsite = self.chosenmodel.cell.soma)
         rec_i_indivs = self.rc.stimulus_individual_currents_NEURON(stimuli_list)

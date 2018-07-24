@@ -25,12 +25,12 @@ class SimulationManager(object):
         self.sa = SimAssembler()
         self.st = Stimulator()
 
-    def prepare_model_NEURON(self, parameters, chosenmodel, modelcapability = None,
+    def prepare_model_NEURON(self, parameters=None, chosenmodel=None, modelcapability = None,
                       cerebunitcapability = None):
         """method that checks for compiled nmodl and optionally for capability.
 
-        Argument (mandatory):
-        instantiated NEURON based model
+        Keyword arguments (mandatory):
+        chosenmodel -- instantiated NEURON based model
         parameters -- dictionary with keys: dt, celsius, tstop, v_init
 
         Keyword arguments (optional):
@@ -51,17 +51,20 @@ class SimulationManager(object):
         chosenmodel = pickedmodel()
         parameters = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
         sm = SimulationManager()
-        sm.prepare_model_NEURON(parameters, chosenmodel)
+        sm.prepare_model_NEURON(parameters=parameters, chosenmodel=chosenmodel)
 
         """
 
-        self.si.lock_and_load_nmodl(modelscale = chosenmodel.modelscale,
-                                    modelname = chosenmodel.modelname)
-        self.si.check_compatibility(capability_name = modelcapability,
-                                    CerebUnit_capability = cerebunitcapability)
-        self.hc.activate_cores()
-        self.sa.set_runtime_NEURON(parameters = parameters)
-        return "NEURON model is ready" # for managerSimulationTest.py
+        if (parameters is None) or (chosenmodel is None):
+            raise ValueError("an instantiated model must be given for 'chosenmodel' with its runtime 'parameters'")
+        else:
+            self.si.lock_and_load_nmodl(modelscale = chosenmodel.modelscale,
+                                        modelname = chosenmodel.modelname)
+            self.si.check_compatibility(capability_name = modelcapability,
+                                        CerebUnit_capability = cerebunitcapability)
+            self.hc.activate_cores()
+            self.sa.set_runtime_NEURON(parameters = parameters)
+            return "NEURON model is ready" # for managerSimulationTest.py
 
     def stimulate_model_NEURON(self, stimparameters=None, modelsite=None):
         """method that stimulates the prepared model but before locking & loading the capability or before engaging the simulator.

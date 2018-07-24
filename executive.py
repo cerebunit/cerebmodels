@@ -39,7 +39,7 @@ class ExecutiveControl(object):
                       capabilities = {'model':None, 'test':None} ):
         uu.check_not_None_in_arg({'parameters': parameters, 'onmodel': onmodel})
         if onmodel.modelscale is "cells":
-            self.sm.prepare_model_NEURON( parameters, onmodel,
+            self.sm.prepare_model_NEURON( parameters=parameters, chosenmodel=onmodel,
                                           modelcapability = capabilities['model'],
                                           cerebunitcapability = capabilities['test'] )
             stimuli_list = self.sm.stimulate_model_NEURON(

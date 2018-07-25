@@ -24,7 +24,7 @@ class RecorderTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_1_time_NEURON_without_engaging(self):
         os.chdir("..") # this moves you up to ~/managers
-        os.chdir("..") # you are now in root
+        os.chdir("..") # you are now in parent /cerebmodels
         parameters = {"dt": 0.1, "celsius": 20, "tstop": 10, "v_init": 65}
         self.sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
         rec_t = self.rc.time_NEURON()
@@ -39,7 +39,7 @@ class RecorderTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_2_time_NEURON(self):
         os.chdir("..") # this moves you up to ~/managers
-        os.chdir("..") # you are now in root
+        os.chdir("..") # you are now in parent /cerebmodels
         parameters = {"dt": 0.1, "celsius": 20, "tstop": 10, "v_init": 65}
         self.sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
         rec_t = self.rc.time_NEURON()
@@ -55,7 +55,7 @@ class RecorderTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_3_response_voltage_NEURON(self):
         os.chdir("..") # this moves you up to ~/managers
-        os.chdir("..") # you are now in root
+        os.chdir("..") # you are now in parent /cerebmodels
         parameters = {"dt": 0.1, "celsius": 20, "tstop": 10, "v_init": 65}
         self.sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
         rec_v = self.rc.response_voltage_NEURON(self.chosenmodel.cell.soma)
@@ -71,7 +71,7 @@ class RecorderTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_4_stimulus_individual_currents_NEURON(self):
         os.chdir("..") # this moves you up to ~/managers
-        os.chdir("..") # you are now in root
+        os.chdir("..") # you are now in parent /cerebmodels
         parameters = {"dt": 0.1, "celsius": 20, "tstop": 10, "v_init": 65}
         currparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {'amp': 0.5, 'dur': 10.0, 'delay': 5.0},
@@ -88,7 +88,7 @@ class RecorderTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_5_stimulus_overall_currents_NEURON(self):
         os.chdir("..") # this moves you up to ~/managers
-        os.chdir("..") # you are now in root
+        os.chdir("..") # you are now in parent /cerebmodels
         parameters = {"dt": 0.1, "celsius": 20, "tstop": 10, "v_init": 65}
         currparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {'amp': 0.5, 'dur': 10.0, 'delay': 5.0},

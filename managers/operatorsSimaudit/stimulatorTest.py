@@ -31,7 +31,7 @@ class StimulatorTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_1_inject_IClamp_wrong_key_in_parameter(self):
         os.chdir("..") # this moves you up to ~/managers
-        os.chdir("..") # you are now in root
+        os.chdir("..") # you are now in parent /cerebmodels
         #parameters = {"dt": 0.1, "celsius": 20, "tstop": 15, "v_init": 65}
         #injparam = [ {"amp": 0.5, "dur": 5.0, "delay": 5.0},
         #             {"amp": 1.0, "dur": 5.0, "delay": parameters["tstop"]-5.0} ]
@@ -48,7 +48,7 @@ class StimulatorTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_2_inject_IClamp(self):
         os.chdir("..") # this moves you up to ~/managers
-        os.chdir("..") # you are now in root
+        os.chdir("..") # you are now in parent /cerebmodels
         injparam = [ {"amp": 0.5, "dur": 5.0, "delay": 5.0},
                      {"amp": 1.0, "dur": 5.0, "delay": 10.0} ]
         curr_stimuli = Stimulator.inject_IClamp(injparam, self.chosenmodel.cell.soma)
@@ -58,7 +58,7 @@ class StimulatorTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_3_inject_IRamp(self):
         os.chdir("..") # this moves you up to ~/managers
-        os.chdir("..") # you are now in root
+        os.chdir("..") # you are now in parent /cerebmodels
         # load nmodl file for using the custom IRamp
         self.si.lock_and_load_nmodl(modelscale="cells", modelname="DummyTest")
         #
@@ -83,7 +83,7 @@ class StimulatorTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_4_inject_current_NEURON_without_currenttype(self):
         os.chdir("..") # this moves you up to ~/managers
-        os.chdir("..") # you are now in root
+        os.chdir("..") # you are now in parent /cerebmodels
         injparam = [ {"amp": 0.5, "dur": 5.0, "delay": 5.0},
                      {"amp": 1.0, "dur": 5.0, "delay": 10.0} ]
         self.assertRaises( ValueError,
@@ -95,7 +95,7 @@ class StimulatorTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_5_inject_current_NEURON_wrong_currenttype(self):
         os.chdir("..") # this moves you up to ~/managers
-        os.chdir("..") # you are now in root
+        os.chdir("..") # you are now in parent /cerebmodels
         injparam = [ {"amp": 0.5, "dur": 5.0, "delay": 5.0},
                      {"amp": 1.0, "dur": 5.0, "delay": 10.0} ]
         self.assertRaises( ValueError,
@@ -108,7 +108,7 @@ class StimulatorTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_6_inject_current_NEURON_IClamp(self):
         os.chdir("..") # this moves you up to ~/managers
-        os.chdir("..") # you are now in root
+        os.chdir("..") # you are now in parent /cerebmodels
         injparam = [ {"amp": 0.5, "dur": 5.0, "delay": 5.0},
                      {"amp": 1.0, "dur": 5.0, "delay": 10.0} ]
         self.assertEqual( len( self.st.inject_current_NEURON(
@@ -121,7 +121,7 @@ class StimulatorTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_7_inject_current_NEURON_IRamp(self):
         os.chdir("..") # this moves you up to ~/managers
-        os.chdir("..") # you are now in root
+        os.chdir("..") # you are now in parent /cerebmodels
         # load nmodl file for using the custom IRamp
         self.si.lock_and_load_nmodl(modelscale="cells", modelname="DummyTest")
         #

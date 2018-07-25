@@ -4,7 +4,7 @@ import numpy as np
 from neuron import h
 
 class Recorder(object):
-    """Operator working under RecordManager
+    """Operators working under RecordManager
 
     Available methods:
     time_NEURON
@@ -66,19 +66,3 @@ class Recorder(object):
             recorded_currents["stim0"].add( recorded_currents[key] )
         return recorded_currents["stim0"]
         
-
-    def transcribe_voltage_NEURON(self, model):
-        # create container (dictionary) to store model response
-        response = {"voltage": {}}
-        # get the times associated with each voltage response
-        time = np.array( getattr( model.cell, "rec_t" ) )
-        # loop through each cell region
-        for cell_region, with_thresh in model.cell_regions.iteritems():
-            # create array of time and voltage response
-            t_vm_array = np.column_stack( 
-                             ( time,
-                               np.array( getattr( model.cell, cell_region ) )
-                              ) )
-            # attach the array to respective cell-region key
-            response["voltage"].update( {cell_region: t_vm_array} )
-        return response

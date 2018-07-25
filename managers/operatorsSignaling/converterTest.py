@@ -40,7 +40,7 @@ class ConverterTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_3_voltage_to_spiketrain_without_stimulation(self):
         os.chdir("..") # this moves you up to ~/managers
-        os.chdir("..") # you are now in root
+        os.chdir("..") # you are now in parent /cerebmodels
         parameters = {"dt": 0.1, "celsius": 20, "tstop": 10, "v_init": 65}
         self.sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
         self.rec["time"], self.rec["response"], self.rec["stimulus"] = \
@@ -58,7 +58,7 @@ class ConverterTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_4_voltage_to_spiketrain_with_stimulation(self):
         os.chdir("..") # this moves you up to ~/managers
-        os.chdir("..") # you are now in root
+        os.chdir("..") # you are now in parent /cerebmodels
         parameters = {"dt": 0.1, "celsius": 20, "tstop": 10, "v_init": 65}
         currparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {'amp': 0.5, 'dur': 10.0, 'delay': 5.0},

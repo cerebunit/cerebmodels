@@ -26,7 +26,7 @@ class SimInspectorTest(unittest.TestCase):
         modelscale = "cells"
         modelname = "DummyTest"
         os.chdir("..") # this moves you up to ~/managers
-        os.chdir("..") # you are now in root
+        os.chdir("..") # you are now in parent /cerebmodels
         compile_path = os.getcwd() + os.sep + "models" + os.sep + modelscale + os.sep + modelname
         try:
             # try deleting previous compiled files
@@ -43,7 +43,7 @@ class SimInspectorTest(unittest.TestCase):
         modelscale = "cells"
         modelname = "DummyTest"
         os.chdir("..") # this moves you up to ~/managers
-        os.chdir("..") # you are now in root
+        os.chdir("..") # you are now in parent /cerebmodels
         compile_path = os.getcwd() + os.sep + "models" + os.sep + modelscale + os.sep + modelname
         self.assertEqual(self.si.lock_and_load_nmodl(modelscale=modelscale,
                                                      modelname=modelname),
@@ -55,7 +55,7 @@ class SimInspectorTest(unittest.TestCase):
         modelscale = "cells"
         modelname = "DummyTest"
         os.chdir("..") # this moves you up to ~/managers
-        os.chdir("..") # you are now in root
+        os.chdir("..") # you are now in parent /cerebmodels
         compile_path = os.getcwd() + os.sep + "models" + os.sep + modelscale + os.sep + modelname
         self.assertRaises( AttributeError,
                            self.si.check_compatibility,
@@ -68,7 +68,7 @@ class SimInspectorTest(unittest.TestCase):
         modelscale = "cells"
         modelname = "DummyTest"
         os.chdir("..") # this moves you up to ~/managers
-        os.chdir("..") # you are now in root
+        os.chdir("..") # you are now in parent /cerebmodels
         compile_path = os.getcwd() + os.sep + "models" + os.sep + modelscale + os.sep + modelname
         self.assertEqual( self.si.check_compatibility(
                                    capability_name = "produce_spike_train",

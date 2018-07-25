@@ -82,7 +82,7 @@ class SimulationManager(object):
                           Eg: [ {"amp_initial": 0.0, "amp_final": 0.5, "dur": 5.0, "delay": 5.0},
                                 {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0, "delay": 10.0},
                                 {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
-                                {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0},
+                                {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ]
 
         modelsite -- section of the instantiated NEURON based model where you want to stimulate. For eg. chosenmodel.cell.soma
 

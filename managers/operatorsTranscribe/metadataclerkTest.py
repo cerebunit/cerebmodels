@@ -116,5 +116,39 @@ class MetadataClerkTest(unittest.TestCase):
         compare1 = epochmd["epoch"+str(no_of_stimulus_epochs_per_region)+"axon"]["stop"]
         self.assertEqual( compare2, compare1 )
 
+    #@unittest.skip("reason for skipping")
+    def test_8_cellelectrode_stimulus(self):
+        stimparameters = {"type": ["current", "IClamp"],
+                          "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
+                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
+        elec = MetadataClerk.cellelectrode_stimulus("soma", stimparameters)
+        self.assertEqual( elec["name"], "electrode_IClamp_soma" )
+
+    #@unittest.skip("reason for skipping")
+    def test_9_cellelectrode_nostimulus(self):
+        elec = MetadataClerk.cellelectrode_nostimulus("axon")
+        self.assertEqual( elec["name"], "electrode_axon" )
+
+    #@unittest.skip("reason for skipping")
+    def test_10_forelectrode_stimulus(self):
+        stimparameters = {"type": ["current", "IClamp"],
+                          "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
+                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
+        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
+        elecmd = self.md.forelectrode( chosenmodel = self.chosenmodel,
+                                       parameters = stimparameters )
+        self.assertEqual( elecmd["soma"]["name"]+" and "+elecmd["axon"]["name"],
+                          "electrode_IClamp_soma and electrode_IClamp_axon" )
+
+    #@unittest.skip("reason for skipping")
+    def test_11_forelectrode_nostimulus(self):
+        runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
+        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
+        elecmd = self.md.forelectrode( chosenmodel = self.chosenmodel,
+                                       parameters = runtimeparam )
+        self.assertEqual( elecmd["soma"]["name"]+" and "+elecmd["axon"]["name"],
+                          "electrode_soma and electrode_axon" )
+
+
 if __name__ == '__main__':
     unittest.main()

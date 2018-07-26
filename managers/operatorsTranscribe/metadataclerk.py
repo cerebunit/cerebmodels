@@ -6,6 +6,8 @@ import pkg_resources
 
 import neuron
 
+#import numpy.core.defchararray as npd
+
 class MetadataClerk(object):
     """Operators working under TranscribeManager
 
@@ -280,6 +282,17 @@ class MetadataClerk(object):
                 "initial_access_resistance": "0 Ohm",
                 "device": "NEURON "+pkg_resources.get_distribution("neuron").version +" version" }
 
+    @classmethod
+    def forcellelectrode( cls, chosenmodel, parameters ):
+        y = {}
+        if "stimlist" not in parameters:
+            for cellregion in chosenmodel.regions.keys():
+                y.update( {cellregion: cls.cellelectrode_nostimulus(cellregion)} )
+        else: # for stimulus
+            for cellregion in chosenmodel.regions.keys():
+                y.update( {cellregion: cls.cellelectrode_stimulus(cellregion, parameters)} )
+        return y
+
     def forelectrode( self, chosenmodel=None, parameters=None ):
         """method that creates the NWB formatted metadata forfile.
 
@@ -322,10 +335,113 @@ class MetadataClerk(object):
         if (chosenmodel is None) or (parameters is None):
             raise ValueError("passing an instantiated chosenmodel and parameters (for runtime or stimulation) are  mandatory")
         elif chosenmodel.modelscale == "cells":
-            if "stimlist" not in parameters:
-                for cellregion in chosenmodel.regions.keys():
-                    x.update( {cellregion: self.cellelectrode_nostimulus(cellregion)} )
-            else: # for stimulus
-                for cellregion in chosenmodel.regions.keys():
-                    x.update( {cellregion: self.cellelectrode_stimulus(cellregion, parameters)} )
+            x.update( self.forcellelectrode( chosenmodel, parameters ) )
         return x
+
+    @staticmethod
+    def cellrecordings_response_nostimulus(model, cellregion, rec_t, rec_v, parameters):
+        return {"type": "GenericTimeSeries",
+                "name": model.modelname+"_nostim_Vm_"+cellregion,
+                "source": cellregion,
+                "data": rec_v,
+                "unit": "mV",
+                "resolution": parameters["dt"],
+                "conversion": 1000.0, # 1000 => 1ms
+                "timestamps": rec_t,
+                "starting_time": 0.0,
+                "rate": 1/parameters["dt"],
+                "comment": "voltage response without stimulation",
+                "description": "whole single array of voltage response from "+cellregion+" of "+ model.modelname}
+
+    @staticmethod
+    def cellrecordings_response_stimulus(model, cellregion, rec_t, rec_v, parameters):
+        return {"type": "CurrentClampSeries",
+                "name": model.modelname+"_stim_Vm_"+cellregion,
+                "source": cellregion,
+                "data": rec_v,
+                "unit": "mV",
+                "gain": 0.0,
+                "bias_current": 0.0,
+                "bridge_balance": 0.0,
+                "capacitance_compensation": 0.0,
+                "resolution": parameters["dt"],
+                "conversion": 1000.0, # 1000 => 1ms
+                "timestamps": rec_t,
+                "starting_time": 0.0,
+                "rate": 1/parameters["dt"],
+                "comment": "voltage response with stimulation",
+                "description": "whole single array of voltage response from "+cellregion+" of "+model.modelname}
+
+    @staticmethod
+    def cellrecordings_stimulus(model, rec_t, rec_i, parameters, stimparameters):
+        return {"type": "CurrentClampStimulusSeries",
+                "name": model.modelname+"_stimulus",
+                "source": stimparameters["type"],
+                "data": rec_i,
+                "unit": "nA",
+                "gain": 0.0,
+                "resolution": parameters["dt"],
+                "conversion": 1000.0, # 1000 => 1ms
+                "timestamps": rec_t,
+                "starting_time": 0.0,
+                "rate": 1/parameters["dt"],
+                "comment": "current injection, "+stimparameters["type"][1],
+                "description": "whole single array of stimulus" }
+
+    @classmethod
+    def forcellrecordings_nostimulus(cls, chosenmodel, recordings, runtimeparameters):
+        y = {}
+        for cellregion in chosenmodel.regions.keys():
+            y.update( {cellregion:
+                       cls.cellrecordings_response_nostimulus(
+                                            chosenmodel, cellregion,
+                                            recordings["time"],
+                                            recordings["response"][cellregion],
+                                            runtimeparameters )} )
+        return y
+
+    @classmethod
+    def forcellrecordings_stimulus(cls, chosenmodel, recordings,
+                              runtimeparameters, stimparameters):
+        y = {}
+        y.update( {"stimulus":
+                   cls.cellrecordings_stimulus(
+                                            chosenmodel,
+                                            recordings["time"],
+                                            recordings["stimulus"],
+                                            runtimeparameters, stimparameters )} )
+        for cellregion in chosenmodel.regions.keys():
+            y.update( {cellregion:
+                       cls.cellrecordings_response_stimulus(
+                                            chosenmodel, cellregion,
+                                            recordings["time"],
+                                            recordings["response"][cellregion],
+                                            runtimeparameters )} )
+        return y
+
+    def forcellrecording( self, chosenmodel=None, recordings=None,
+                          runtimeparameters=None, stimparameters=None ):
+        y = {}
+        #if npd.equal(recordings["stimulus"], "Model is not stimulated").item((0)):
+        # str because recordings has numpy array as dictionary values resulting in
+        # numpy FutureWarning bug as it expects this to be an array as well
+        if str(recordings["stimulus"])=="Model is not stimulated":
+            y.update( self.forcellrecordings_nostimulus( chosenmodel, recordings,
+                                                         runtimeparameters ) )
+        else: # for stimulus
+            if (stimparameters is None):
+                raise ValueError("for recording stimuli passing stimparameters is mandatory")
+            else:
+                y.update( self.forcellrecordings_stimulus( chosenmodel, recordings,
+                                              runtimeparameters, stimparameters ) )
+        return y
+
+    def forrecording( self, chosenmodel=None, recordings=None,
+                      runtimeparameters=None, stimparameters=None ):
+        if (chosenmodel is None) or (recordings is None) or (runtimeparameters is None):
+            raise ValueError("passing an instantiated chosenmodel, the recordings (dictionary) and runtimeparameters are  mandatory")
+        elif chosenmodel.modelscale == "cells":
+            return self.forcellrecording( chosenmodel=chosenmodel,
+                                          recordings=recordings,
+                                          runtimeparameters=runtimeparameters,
+                                          stimparameters=stimparameters )

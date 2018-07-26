@@ -425,6 +425,7 @@ class MetadataClerk(object):
         #if npd.equal(recordings["stimulus"], "Model is not stimulated").item((0)):
         # str because recordings has numpy array as dictionary values resulting in
         # numpy FutureWarning bug as it expects this to be an array as well
+        # https://stackoverflow.com/questions/40659212/futurewarning-elementwise-comparison-failed-returning-scalar-but-in-the-futur
         if str(recordings["stimulus"])=="Model is not stimulated":
             y.update( self.forcellrecordings_nostimulus( chosenmodel, recordings,
                                                          runtimeparameters ) )

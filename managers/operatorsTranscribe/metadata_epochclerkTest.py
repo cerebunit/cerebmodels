@@ -39,6 +39,7 @@ class EpochClerkTest(unittest.TestCase):
         compare2 = len(filler) - 1 # exclude the key 'epoch_tags'
         no_of_epochs_per_region = 1
         compare1 = no_of_regions * no_of_epochs_per_region 
+        #print filler # how does the epochcontainer metadata look?
         self.assertEqual( compare2, compare1 )
 
     #@unittest.skip("reason for skipping")
@@ -50,7 +51,8 @@ class EpochClerkTest(unittest.TestCase):
         filler = self.epc.epochcontainer(self.chosenmodel, stimparameters)
         compare2 = len(filler) - 1 # exclude the key 'epoch_tags'
         no_of_epochs_per_region = 1 + len(stimparameters["stimlist"])
-        compare1 = no_of_regions * no_of_epochs_per_region 
+        compare1 = no_of_regions * no_of_epochs_per_region
+        #print filler # how does the epochcontainer metadata look?
         self.assertEqual( compare2, compare1 )
 
     #@unittest.skip("reason for skipping")
@@ -61,6 +63,7 @@ class EpochClerkTest(unittest.TestCase):
         epoch_value = EpochClerk.an_epoch( 0, "soma", stimparameters)
         compare2 = epoch_value["start"] + epoch_value["stop"]
         compare1 = 0.0 + stimparameters["stimlist"][0]["delay"]
+        #print epoch_value # how does an epoch metadata look?
         self.assertEqual( compare2, compare1 )
 
     #@unittest.skip("reason for skipping")
@@ -72,6 +75,7 @@ class EpochClerkTest(unittest.TestCase):
         compare2 = epoch_value["description"]
         compare1 = "IClamp stimulation of model with amplitude = " + \
                        str(stimparameters["stimlist"][0]["amp"]) + " nA"
+        #print epoch_value # hows does an epoch metadata look?
         self.assertEqual( compare2, compare1 )
 
     #@unittest.skip("reason for skipping")
@@ -83,6 +87,7 @@ class EpochClerkTest(unittest.TestCase):
         no_of_stimulus_epochs_per_region = 0 
         compare2 = epochmd["epoch"+str(no_of_stimulus_epochs_per_region)+"soma"]["stop"]
         compare1 = epochmd["epoch"+str(no_of_stimulus_epochs_per_region)+"axon"]["stop"]
+        #print epochmd # hows does the main epoch metadata look?
         self.assertEqual( compare2, compare1 )
 
     #@unittest.skip("reason for skipping")
@@ -98,6 +103,7 @@ class EpochClerkTest(unittest.TestCase):
         no_of_stimulus_epochs_per_region = len(stimparameters["stimlist"])
         compare2 = epochmd["epoch"+str(no_of_stimulus_epochs_per_region)+"soma"]["stop"]
         compare1 = epochmd["epoch"+str(no_of_stimulus_epochs_per_region)+"axon"]["stop"]
+        #print epochmd # how does the main epoch metadata look?
         self.assertEqual( compare2, compare1 )
 
 if __name__ == '__main__':

@@ -59,6 +59,16 @@ class FileClerk(object):
         labname -- string
         institutename -- string
 
+        Returned value:
+        dictionary -- {'source':  string,
+                       'session_description': string;
+                       'identifier': string,
+                       'session_start_time': string,
+                       'experimenter': string,
+                       'experiment_description': string,
+                       'session_id': string,
+                       'lab': string,
+                       'institution': string}
         NOTE:
             - vtest is not given for raw stimulation of the chosenmodel
 
@@ -76,12 +86,13 @@ class FileClerk(object):
         if chosenmodel is None:
             raise ValueError("passing an instantiated chosenmodel is mandatory")
         else:
-            return {'source': platform.platform(),
-                    'session_description': "simulation of " + chosenmodel.modelname,
-                    'identifier': self.get_modelID(chosenmodel),
-                    'session_start_time': time.asctime(time.gmtime(time.time()))+' '+time.tzname[0],
-                    'experimenter': self.get_username(username),
-                    'experiment_description': self.get_testdescription(vtest),
-                    'session_id': str(hash(str(uuid.uuid1()))),
-                    'lab': self.get_labname(labname),
-                    'institution': self.get_institution(institutename) }
+            return {
+              'source': platform.platform(), #string
+              'session_description': "simulation of " + chosenmodel.modelname,
+              'identifier': self.get_modelID(chosenmodel), #string
+              'session_start_time': time.asctime(time.gmtime(time.time()))+' '+time.tzname[0],
+              'experimenter': self.get_username(username), #string
+              'experiment_description': self.get_testdescription(vtest), #string
+              'session_id': str(hash(str(uuid.uuid1()))),
+              'lab': self.get_labname(labname), #string
+              'institution': self.get_institution(institutename) }

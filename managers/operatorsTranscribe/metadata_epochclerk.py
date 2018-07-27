@@ -65,6 +65,15 @@ class EpochClerk(object):
                                 {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0, "delay": 10.0},
                                 {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
                                 {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ]
+        Returned Value:
+        assuming chosenmodel.regions = {'soma': 0.0, 'axon': 0.0} and no of epochs/region=3 (i.e initial state regardless of stimulus is epoch0)
+        returned value is a dictionary of the form
+        dictionary -- {"epoch0soma": None, "epoch1soma": None, "epoch2soma": None,
+                       "epoch0axon": None, "epoch1axon": None, "epoch2axon": None,
+                       "epoch_tags": ('3_epoch_responses',)}
+        however without stimulation, no of epochs/region = 1 (i.e, only epoch0)
+        dictionary -- {"epoch0soma": None, "epoch0axon": None,
+                       "epoch_tags": ('1_epoch_responses',)}
         NOTE:
             - no_of_regions = len(list(chosenmodel.regions.keys()))
             - no_of_stimulus = 2
@@ -103,6 +112,12 @@ class EpochClerk(object):
                                 {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0, "delay": 10.0},
                                 {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
                                 {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ]
+        Returned Value:
+        assuming chosenmodel.regions = {'soma': 0.0, 'axon': 0.0} the epoch metadata for a region, say "soma" is a dictionary
+        dictionary -- {"source": "soma", "start": float, "stop": float,
+                       "description": string}
+        NOTE:
+            - the returned value thas these same four-keys regardless of stimulus (or lack of)
         """
         if "stimlist" not in parameters:
             return {"source": theregion, "start": 0.0, "stop": parameters["tstop"],
@@ -149,6 +164,24 @@ class EpochClerk(object):
                                 {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0, "delay": 10.0},
                                 {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
                                 {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ]
+        Returned Value:
+        assuming chosenmodel.regions = {'soma': 0.0, 'axon': 0.0} and no of epochs/region=2 (i.e initial state regardless of stimulus is epoch0)
+        returned value is a dictionary of the form
+        dictionary -- {"epoch0soma": {"source": "soma", "start": float, "stop": float,
+                                      "description": string},
+                       "epoch1soma": {"source": "soma", "start": float, "stop": float,
+                                      "description": string},
+                       "epoch0axon": {"source": "soma", "start": float, "stop": float,
+                                      "description": string},
+                       "epoch1axon": {"source": "soma", "start": float, "stop": float,
+                                      "description": string},
+                       "epoch_tags": ('2_epoch_responses',)}
+        however without stimulation, no of epochs/region = 1 (i.e, only epoch0)
+        dictionary -- {"epoch0soma": {"source": "soma", "start": float, "stop": float,
+                                      "description": string},
+                       "epoch0axon": {"source": "soma", "start": float, "stop": float,
+                                      "description": string},
+                       "epoch_tags": ('1_epoch_responses',)}
         Use case:
         epc = EpochClerk()
         model = Xyz()

@@ -77,6 +77,11 @@ class Fabricator(object):
                                   "description": string}
                    "epoch_tags": ('1_epoch_responses',)}
         updated_nwbfile = insert_a_nwbepoch( "epoch0soma", epochmd, nwbfile )
+
+        NOTE:
+            - for nwb epoch attributes see
+              https://github.com/AllenInstitute/nwb-api/blob/master/ainwb/nwb/nwbep.py
+              https://pynwb.readthedocs.io/en/latest/pynwb.file.html#pynwb.file.NWBFile.create_epoch
         """
         nwbfile.create_epoch( name = epoch_i_cellregion,
                               source = epochmd[epoch_i_cellregion]["source"],

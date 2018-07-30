@@ -1,7 +1,7 @@
-# ~/managers/operatorsTranscribe/metadata_timeseriesclerk.py
+# ~/managers/operatorsTranscribe/metadata_timeseriesgenerator.py
 #import numpy.core.defchararray as npd
 
-class TimeseriesClerk(object):
+class TimeseriesGenerator(object):
     """Operators working under TranscribeManager
 
     Available methods:
@@ -194,7 +194,7 @@ class TimeseriesClerk(object):
                                 {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
                                 {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ]
         Use case:
-        tsc = TimeseriesClerk()
+        tg = TimeseriesGenerator()
         # get dummy model
         from models.cells.modelDummyTest import DummyCell
         model = DummyCell()
@@ -208,7 +208,7 @@ class TimeseriesClerk(object):
         For simulation without stimulation
         recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1]},
                       "stimulus": "Model is not stimulated"}
-        respmd = tsc.forcellrecording(chosenmodel = model, recordings = recordings,
+        respmd = tg.forcellrecording(chosenmodel = model, recordings = recordings,
                                      parameters = runtimeparam)
         Simulation with stimulation
         stimparameters = {"type": ["current", "IClamp"],
@@ -216,7 +216,7 @@ class TimeseriesClerk(object):
                                         {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
         recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1]},
                       "stimulus": rec_i}
-        respmd = tsc.forcellrecording(chosenmodel = model, recordings = recordings,
+        respmd = tg.forcellrecording(chosenmodel = model, recordings = recordings,
                                      parameters = runtimeparam, stimparameters = stimparameters)
         NOTE:
             - if there is NO stimulation and chosenmodel.regions={"soma": 0.0, "axon": 0.0} then len(respmd) = 2 since there are two cell regions
@@ -264,7 +264,7 @@ class TimeseriesClerk(object):
                                 {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
                                 {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ]
         Use case: [For modelscale="cells"]
-        tsc = TimeseriesClerk()
+        tg = TimeseriesGenerator()
         # get dummy model
         from models.cells.modelDummyTest import DummyCell
         model = DummyCell()
@@ -278,7 +278,7 @@ class TimeseriesClerk(object):
         For simulation without stimulation
         recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1]},
                       "stimulus": "Model is not stimulated"}
-        respmd = tsc.forcellrecording(chosenmodel = model, recordings = recordings,
+        respmd = tg.forcellrecording(chosenmodel = model, recordings = recordings,
                                      parameters = runtimeparam)
         Simulation with stimulation
         stimparameters = {"type": ["current", "IClamp"],
@@ -286,7 +286,7 @@ class TimeseriesClerk(object):
                                         {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
         recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1]},
                       "stimulus": rec_i}
-        respmd = tsc.forcellrecording(chosenmodel = model, recordings = recordings,
+        respmd = tg.forcellrecording(chosenmodel = model, recordings = recordings,
                                      parameters = runtimeparam, stimparameters = stimparameters)
         NOTE:
             - if there is NO stimulation and chosenmodel.regions={"soma": 0.0, "axon": 0.0} then len(respmd) = 2 since there are two cell regions

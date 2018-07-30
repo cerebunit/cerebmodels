@@ -183,16 +183,16 @@ class EpochGenerator(object):
                                       "description": string},
                        "epoch_tags": ('1_epoch_responses',)}
         Use case:
-        epc = EpochClerk()
+        eg = EpochGenerator()
         model = Xyz()
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
         For simulation without stimulation
-        epochmd = epc.forepoch(chosenmodel = model, parameters = runtimeparam)
+        epochmd = eg.forepoch(chosenmodel = model, parameters = runtimeparam)
         Simulation with stimulation
         stimparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
                                         {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
-        epochmd = epc.forepoch(chosenmodel = model, parameters = stimparameters)
+        epochmd = eg.forepoch(chosenmodel = model, parameters = stimparameters)
         """
 
         if (chosenmodel is None) or (parameters is None):

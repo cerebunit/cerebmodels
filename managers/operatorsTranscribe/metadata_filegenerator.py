@@ -73,13 +73,13 @@ class FileGenerator(object):
             - vtest is not given for raw stimulation of the chosenmodel
 
         Use case:
-        fc = FileClerk()
+        fg = FileGenerator()
         model = Xyz()
         For simulation without validation test
-        filemd = fc.forfile(chosenmodel = model)
+        filemd = fg.forfile(chosenmodel = model)
         Simulation with validation test
         vtest = Pqr()
-        filemd = fc.forfile(chosenmodel=model, test=vtest, username='john',
+        filemd = fg.forfile(chosenmodel=model, test=vtest, username='john',
                             labname='hbp brain sim lab', institute='CNRS-UNIC')
         """
 

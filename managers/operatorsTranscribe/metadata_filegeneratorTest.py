@@ -1,4 +1,4 @@
- #/managers/operatorsTranscribe/metadata_fileclerkTest.py
+ #/managers/operatorsTranscribe/metadata_filegeneratorTest.py
 import unittest
 
 import os
@@ -8,22 +8,22 @@ sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 # this is required for
 from models.cells.modelDummyTest import DummyCell
 
-from metadata_fileclerk import FileClerk
+from metadata_filegenerator import FileGenerator
 
-class MetadataClerkTest(unittest.TestCase):
+class FileGeneratoryTest(unittest.TestCase):
 
     def setUp(self):
-        self.fc = FileClerk()
+        self.fg = FileGenerator()
         self.pwd = os.getcwd()
         self.chosenmodel = DummyCell()
 
     #@unittest.skip("reason for skipping")
     def test_1_forfile_without_model(self):
-        self.assertRaises(ValueError, self.fc.forfile,)
+        self.assertRaises(ValueError, self.fg.forfile,)
 
     #@unittest.skip("reason for skipping")
     def test_2_forfile_with_model(self):
-        filemd = self.fc.forfile(chosenmodel = self.chosenmodel)
+        filemd = self.fg.forfile(chosenmodel = self.chosenmodel)
         compare1 = [ "no_model_uuid", "anonymous",
                      "raw simulation without running any CerebUnit test",
                      "no lab name was provided",

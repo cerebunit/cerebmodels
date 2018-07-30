@@ -1,9 +1,9 @@
-# ~/managers/operatorsTranscribe/metadata_fileclerk.py
+# ~/managers/operatorsTranscribe/metadata_filegenerator.py
 import platform
 import uuid
 import time
 
-class FileClerk(object):
+class FileGenerator(object):
     """Operators working under TranscribeManager
 
     Available methods:

@@ -1,6 +1,6 @@
-# ~/managers/operatorsTranscribe/metadata_epochclerk.py
+# ~/managers/operatorsTranscribe/metadata_epochgenerator.py
 
-class EpochClerk(object):
+class EpochGenerator(object):
     """Operators working under TranscribeManager
 
     Available methods:

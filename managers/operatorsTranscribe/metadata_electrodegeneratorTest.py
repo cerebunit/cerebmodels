@@ -1,4 +1,4 @@
- #/managers/operatorsTranscribe/metadata_electrodeclerkTest.py
+ #/managers/operatorsTranscribe/metadata_electrodegeneratorTest.py
 import unittest
 
 import os
@@ -8,12 +8,12 @@ sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 # this is required for
 from models.cells.modelDummyTest import DummyCell
 
-from metadata_electrodeclerk import ElectrodeClerk
+from metadata_electrodegenerator import ElectrodeGenerator
 
-class ElectrodeClerkTest(unittest.TestCase):
+class ElectrodeGeneratorTest(unittest.TestCase):
 
     def setUp(self):
-        self.elc = ElectrodeClerk()
+        self.eg = ElectrodeGenerator()
         self.pwd = os.getcwd()
         self.chosenmodel = DummyCell()
 
@@ -22,12 +22,12 @@ class ElectrodeClerkTest(unittest.TestCase):
         stimparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
                                         {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
-        elec = ElectrodeClerk.cellelectrode_stimulus("soma", stimparameters)
+        elec = ElectrodeGenerator.cellelectrode_stimulus("soma", stimparameters)
         self.assertEqual( elec["name"], "electrode_IClamp_soma" )
 
     #@unittest.skip("reason for skipping")
     def test_2_cellelectrode_nostimulus(self):
-        elec = ElectrodeClerk.cellelectrode_nostimulus("axon")
+        elec = ElectrodeGenerator.cellelectrode_nostimulus("axon")
         self.assertEqual( elec["name"], "electrode_axon" )
 
     #@unittest.skip("reason for skipping")
@@ -36,7 +36,7 @@ class ElectrodeClerkTest(unittest.TestCase):
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
                                         {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
         # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
-        elecmd = self.elc.forcellelectrode( chosenmodel = self.chosenmodel,
+        elecmd = self.eg.forcellelectrode( chosenmodel = self.chosenmodel,
                                            parameters = stimparameters )
         self.assertEqual( elecmd["soma"]["name"]+" and "+elecmd["axon"]["name"],
                           "electrode_IClamp_soma and electrode_IClamp_axon" )
@@ -47,7 +47,7 @@ class ElectrodeClerkTest(unittest.TestCase):
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
                                         {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
         # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
-        elecmd = self.elc.forelectrode( chosenmodel = self.chosenmodel,
+        elecmd = self.eg.forelectrode( chosenmodel = self.chosenmodel,
                                        parameters = stimparameters )
         self.assertEqual( elecmd["soma"]["name"]+" and "+elecmd["axon"]["name"],
                           "electrode_IClamp_soma and electrode_IClamp_axon" )
@@ -56,7 +56,7 @@ class ElectrodeClerkTest(unittest.TestCase):
     def test_5_forelectrode_nostimulus(self):
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
         # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
-        elecmd = self.elc.forelectrode( chosenmodel = self.chosenmodel,
+        elecmd = self.eg.forelectrode( chosenmodel = self.chosenmodel,
                                        parameters = runtimeparam )
         self.assertEqual( elecmd["soma"]["name"]+" and "+elecmd["axon"]["name"],
                           "electrode_soma and electrode_axon" )

@@ -1,11 +1,11 @@
-# ~/managers/operatorsTranscribe/metadata_electrodeclerk.py
+# ~/managers/operatorsTranscribe/metadata_electrodegenerator.py
 import pkg_resources
 
 import neuron
 
 #import numpy.core.defchararray as npd
 
-class ElectrodeClerk(object):
+class ElectrodeGenerator(object):
     """Operators working under TranscribeManager
 
     Available methods:
@@ -62,16 +62,16 @@ class ElectrodeClerk(object):
                                 {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
                                 {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ]
         Use case:
-        elc = ElectrodeClerk()
+        eg = ElectrodeGenerator()
         model = Xyz()
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
         For simulation without stimulation
-        elecmd = elc.forcellelectrode(chosenmodel = model, parameters = runtimeparam)
+        elecmd = eg.forcellelectrode(chosenmodel = model, parameters = runtimeparam)
         Simulation with stimulation
         stimparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
                                         {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
-        elecmd = elc.forcellelectrode(chosenmodel = model, parameters = stimparameters)
+        elecmd = eg.forcellelectrode(chosenmodel = model, parameters = stimparameters)
 
         NOTE:
             - if chosenmodel.regions={"soma": 0.0, "axon": 0.0} then len(elecmd) = 2 since there are two cell regions
@@ -108,16 +108,16 @@ class ElectrodeClerk(object):
                                 {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
                                 {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ]
         Use case: [For modelscale="cells"]
-        elc = ElectrodeClerk()
+        eg = ElectrodeGenerator()
         model = Xyz()
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
         For simulation without stimulation
-        elecmd = elc.forelectrode(chosenmodel = model, parameters = runtimeparam)
+        elecmd = eg.forelectrode(chosenmodel = model, parameters = runtimeparam)
         Simulation with stimulation
         stimparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
                                         {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
-        elecmd = elc.forelectrode(chosenmodel = model, parameters = stimparameters)
+        elecmd = eg.forelectrode(chosenmodel = model, parameters = stimparameters)
 
         NOTE:
             - if chosenmodel.regions={"soma": 0.0, "axon": 0.0} then len(elecmd) = 2 since there are two cell regions

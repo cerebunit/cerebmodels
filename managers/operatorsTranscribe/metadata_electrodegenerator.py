@@ -20,7 +20,7 @@ class ElectrodeGenerator(object):
                 "location": cellregion,
                 "slice": "sec=0.5", # default
                 "seal": "no seal",
-                "description": "virtual patch-clamp electrode in "+cellregion,
+                "description": "virtual patch-clamp electrode in "+cellregion+" with stimulation",
                 "resistance": "0 Ohm",
                 "filtering": "no filter function",
                 "initial_access_resistance": "0 Ohm",
@@ -33,7 +33,7 @@ class ElectrodeGenerator(object):
                 "location": cellregion,
                 "slice": "sec=0.5", # default
                 "seal": "no seal",
-                "description": "virtual patch-clamp electrode in "+cellregion,
+                "description": "virtual patch-clamp electrode in "+cellregion+" without stimulation",
                 "resistance": "0 Ohm",
                 "filtering": "no filter function",
                 "initial_access_resistance": "0 Ohm",

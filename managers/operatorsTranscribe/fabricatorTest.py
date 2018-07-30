@@ -153,5 +153,112 @@ class FabricatorTest(unittest.TestCase):
         compare2 = ["soma", 10.0, 10.0, "second epoch"]
         self.assertEqual( compare1, compare2 )
 
+    #@unittest.skip("reason for skipping")
+    def test_6_insert_an_intracell_electrode_stimulus(self):
+        file_metadata = {
+                "source": "Where is the data from?, i.e, platform",
+                "session_description": "How was the data generated?, i.e, simulation of __",
+                "identifier": "a unique modelID, uuid",
+                "session_start_time": '01-12-2017 00:00:00', #"when simulation starts"
+                "experimenter": "name of the experimenter/username",
+                "experiment_description": "described experiment/test description",
+                "session_id": "str(hash(str(uuid.uuid1())))",
+                "lab": "name of the lab",
+                "institution": "name of the institution" }
+        # since self.chosenmodel.regions = {'soma': 0.0, 'axon': 0.0}
+        electrode_metadata_of_soma_stimulus = \
+              {"name": 'electrode_IClamp_soma', "source": 'from neuron import h >> h.IClamp',
+               "location": 'soma', "slice": 'sec=0.5', "seal": 'no seal',
+               "filtering": 'no filter function', "resistance": '0 Ohm',
+               "initial_access_resistance": '0 Ohm', "device": 'NEURON 7.4 version',
+               "description": 'virtual patch-clamp electrode in soma with stimulation'}
+        mynwbfile = self.fab.build_nwbfile(file_metadata)
+        updated_mynwbfile, anelectrode = Fabricator.insert_an_intracell_electrode(
+                                                   electrode_metadata_of_soma_stimulus,
+                                                   mynwbfile)
+        self.assertEqual( updated_mynwbfile.ic_electrodes[0].description,
+                          anelectrode.description )
+
+    #@unittest.skip("reason for skipping")
+    def test_7_insert_intracell_electrodes_nostimulus(self):
+        file_metadata = {
+                "source": "Where is the data from?, i.e, platform",
+                "session_description": "How was the data generated?, i.e, simulation of __",
+                "identifier": "a unique modelID, uuid",
+                "session_start_time": '01-12-2017 00:00:00', #"when simulation starts"
+                "experimenter": "name of the experimenter/username",
+                "experiment_description": "described experiment/test description",
+                "session_id": "str(hash(str(uuid.uuid1())))",
+                "lab": "name of the lab",
+                "institution": "name of the institution" }
+        # since self.chosenmodel.regions = {'soma': 0.0, 'axon': 0.0}
+        electrode_metadata_nostimulus = \
+              {"soma": {"name": 'electrode_soma', "source": 'from neuron import h',
+                        "location": 'soma', "slice": 'sec=0.5', "seal": 'no seal',
+                        "filtering": 'no filter function', "resistance": '0 Ohm',
+                        "initial_access_resistance": '0 Ohm',
+                        "description": 'virtual patch-clamp electrode in soma without stimulation',
+                        "device": 'NEURON 7.4 version'},
+               "axon": {"name": 'electrode_axon', "source": 'from neuron import h',
+                        "location": 'axon', "slice": 'sec=0.5', "seal": 'no seal',
+                        "filtering": 'no filter function', "resistance": '0 Ohm',
+                        "initial_access_resistance": '0 Ohm', 
+                        "description": 'virtual patch-clamp electrode in axon without stimulation',
+                        "device": 'NEURON 7.4 version'}}
+        mynwbfile = self.fab.build_nwbfile(file_metadata)
+        updated_mynwbfile, electrodes = self.fab.insert_intracell_electrodes(
+                                                   self.chosenmodel,
+                                                   electrode_metadata_nostimulus,
+                                                   mynwbfile)
+        compare1 = [ updated_mynwbfile.ic_electrodes[0].description,
+                     updated_mynwbfile.ic_electrodes[1].description ]
+        compare2 = [ electrodes['soma'].description, electrodes['axon'].description ]
+        self.assertEqual( collections.Counter(compare1),
+                          collections.Counter(compare2) )
+
+    #@unittest.skip("reason for skipping")
+    def test_9_construct_nwbelectrodes_intracell_nostimulus(self):
+        file_metadata = {
+                "source": "Where is the data from?, i.e, platform",
+                "session_description": "How was the data generated?, i.e, simulation of __",
+                "identifier": "a unique modelID, uuid",
+                "session_start_time": '01-12-2017 00:00:00', #"when simulation starts"
+                "experimenter": "name of the experimenter/username",
+                "experiment_description": "described experiment/test description",
+                "session_id": "str(hash(str(uuid.uuid1())))",
+                "lab": "name of the lab",
+                "institution": "name of the institution" }
+        # since self.chosenmodel.regions = {'soma': 0.0, 'axon': 0.0}
+        electrode_metadata_nostimulus = \
+              {"soma": {"name": 'electrode_soma', "source": 'from neuron import h',
+                        "location": 'soma', "slice": 'sec=0.5', "seal": 'no seal',
+                        "filtering": 'no filter function', "resistance": '0 Ohm',
+                        "initial_access_resistance": '0 Ohm',
+                        "description": 'virtual patch-clamp electrode in soma without stimulation',
+                        "device": 'NEURON 7.4 version'},
+               "axon": {"name": 'electrode_axon', "source": 'from neuron import h',
+                        "location": 'axon', "slice": 'sec=0.5', "seal": 'no seal',
+                        "filtering": 'no filter function', "resistance": '0 Ohm',
+                        "initial_access_resistance": '0 Ohm', 
+                        "description": 'virtual patch-clamp electrode in axon without stimulation',
+                        "device": 'NEURON 7.4 version'}}
+        mynwbfile = self.fab.build_nwbfile(file_metadata)
+        updated_mynwbfile, electrodes = self.fab.construct_nwbelectrodes(
+                                                   electype="intracell",
+                                                   chosenmodel=self.chosenmodel,
+                                                   elecmd=electrode_metadata_nostimulus,
+                                                   nwbfile=mynwbfile)
+        compare1 = [ updated_mynwbfile.ic_electrodes[0].name,
+                     updated_mynwbfile.ic_electrodes[0].location,
+                     updated_mynwbfile.ic_electrodes[0].description,
+                     updated_mynwbfile.ic_electrodes[1].name,
+                     updated_mynwbfile.ic_electrodes[1].location,
+                     updated_mynwbfile.ic_electrodes[1].description ]
+        compare2 = [ electrodes['soma'].name, electrodes['axon'].name,
+                     electrodes['soma'].location, electrodes['axon'].location,
+                     electrodes['soma'].description, electrodes['axon'].description ]
+        self.assertEqual( collections.Counter(compare1),
+                          collections.Counter(compare2) )
+
 if __name__ == '__main__':
     unittest.main()

@@ -49,6 +49,7 @@ class ElectrodeGeneratorTest(unittest.TestCase):
         # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
         elecmd = self.eg.forelectrode( chosenmodel = self.chosenmodel,
                                        parameters = stimparameters )
+        #print elecmd # what does the elecmd look like?
         self.assertEqual( elecmd["soma"]["name"]+" and "+elecmd["axon"]["name"],
                           "electrode_IClamp_soma and electrode_IClamp_axon" )
 
@@ -58,6 +59,7 @@ class ElectrodeGeneratorTest(unittest.TestCase):
         # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
         elecmd = self.eg.forelectrode( chosenmodel = self.chosenmodel,
                                        parameters = runtimeparam )
+        #print elecmd # what does the elecmd look like?
         self.assertEqual( elecmd["soma"]["name"]+" and "+elecmd["axon"]["name"],
                           "electrode_soma and electrode_axon" )
 

@@ -129,3 +129,167 @@ class Fabricator(object):
         for epoch_i_region in md_no_tags.keys():
             updated_nwbfile = self.insert_a_nwbepoch( epoch_i_region, epochmd, nwbfile )
         return updated_nwbfile
+
+    @staticmethod
+    def insert_an_intracell_electrode( elecmd_of_a_region, nwbfile ):
+        """static method called by insert_intracell_electrodes
+
+        Arguments:
+        elecmd_of_a_region -- dictionary;
+                  for cellregion 'soma' and  with stimulation it is of the form
+                  {"name": 'electrode_IClamp_soma',
+                   "source": 'from neuron import h >> h.IClamp',
+                   "location": 'soma', "slice": 'sec=0.5',
+                   "seal": 'no seal', "filtering": 'no filter function',
+                   "resistance": '0 Ohm', "initial_access_resistance": '0 Ohm',
+                   "description": 'virtual patch-clamp electrode in soma with stimulation',
+                   "device": 'NEURON 7.4 version'}
+                 for the case without stimulation
+                  {"name": 'electrode_soma',
+                   "source": 'from neuron import h',
+                   "location": 'soma', "slice": 'sec=0.5',
+                   "seal": 'no seal', "filtering": 'no filter function',
+                   "resistance": '0 Ohm', "initial_access_resistance": '0 Ohm',
+                   "description": 'virtual patch-clamp electrode in soma without stimulation',
+                   "device": 'NEURON 7.4 version'}
+        nwbfile -- pynwb.file.NWBFile, obtained using build_nwbfile method
+
+        Use case:
+        elecmd = {"name": 'electrode_soma',
+                  "source": 'from neuron import h',
+                  "location": 'soma', "slice": 'sec=0.5',
+                  "seal": 'no seal', "filtering": 'no filter function',
+                  "resistance": '0 Ohm', "initial_access_resistance": '0 Ohm',
+                  "description": 'virtual patch-clamp electrode in soma without stimulation',
+                  "device": 'NEURON 7.4 version'}
+        updated_nwbfile = insert_an_intracell_electrode( elecmd, nwbfile )
+
+        NOTE:
+            - for nwb intracellular electrode attributes see
+              https://pynwb.readthedocs.io/en/latest/pynwb.icephys.html
+        """
+        anelectrode = nwbfile.create_intracellular_electrode(
+                          name = elecmd_of_a_region["name"],
+                          source = elecmd_of_a_region["source"],
+                          location = elecmd_of_a_region["location"],
+                          slice = elecmd_of_a_region["slice"],
+                          seal = elecmd_of_a_region["seal"],
+                          description = elecmd_of_a_region["description"],
+                          resistance = elecmd_of_a_region["resistance"],
+                          filtering = elecmd_of_a_region["filtering"],
+                          initial_access_resistance = elecmd_of_a_region["initial_access_resistance"],
+                          device = elecmd_of_a_region["device"] )
+        return nwbfile, anelectrode
+
+    @classmethod
+    def insert_intracell_electrodes( cls, chosenmodel, elecmd, nwbfile ):
+        """static method called by construct_nwbelectrodes
+
+        Arguments:
+        chosenmodel -- instantiated model
+        elecmd -- dictionary;
+                  meta-data for case chosenmodel.regions = {'soma': 0.0, 'axon': 0.0} and no of epochs/region=2 with stimulation is of the form
+                  {"soma": {"name": 'electrode_IClamp_soma',
+                            "source": 'from neuron import h >> h.IClamp',
+                            "location": 'soma', "slice": 'sec=0.5',
+                            "seal": 'no seal', "filtering": 'no filter function',
+                            "resistance": '0 Ohm', "initial_access_resistance": '0 Ohm',
+                            "description": 'virtual patch-clamp electrode in soma with stimulation',
+                            "device": 'NEURON 7.4 version'},
+                   "axon": {"name": 'electrode_IClamp_axon',
+                            "source": 'from neuron import h >> h.IClamp',
+                            "location": 'axon', "slice": 'sec=0.5',
+                            "seal": 'no seal', "filtering": 'no filter function',
+                            "resistance": '0 Ohm', "initial_access_resistance": '0 Ohm',
+                            "description": 'virtual patch-clamp electrode in axon with stimulation',
+                            "device": 'NEURON 7.4 version'}}
+                 for the case without stimulation
+                  {"soma": {"name": 'electrode_soma',
+                            "source": 'from neuron import h',
+                            "location": 'soma', "slice": 'sec=0.5',
+                            "seal": 'no seal', "filtering": 'no filter function',
+                            "resistance": '0 Ohm', "initial_access_resistance": '0 Ohm',
+                            "description": 'virtual patch-clamp electrode in soma without stimulation',
+                            "device": 'NEURON 7.4 version'},
+                   "axon": {"name": 'electrode_axon',
+                            "source": 'from neuron import h',
+                            "location": 'axon', "slice": 'sec=0.5',
+                            "seal": 'no seal', "filtering": 'no filter function',
+                            "resistance": '0 Ohm', "initial_access_resistance": '0 Ohm',
+                            "description": 'virtual patch-clamp electrode in axon without stimulation',
+                            "device": 'NEURON 7.4 version'}}
+        nwbfile -- pynwb.file.NWBFile, obtained using build_nwbfile method
+
+        Use case:
+        elecmd = {"soma":
+                    {"name": 'electrode_soma',
+                     "source": 'from neuron import h',
+                     "location": 'soma', "slice": 'sec=0.5',
+                     "seal": 'no seal', "filtering": 'no filter function',
+                     "resistance": '0 Ohm', "initial_access_resistance": '0 Ohm',
+                     "description": 'virtual patch-clamp electrode in soma without stimulation',
+                     "device": 'NEURON 7.4 version'}}
+        updated_nwbfile = insert_intracell_electrodes( chosenmodel, elecmd, nwbfile )
+        """
+        electrodes = {}
+        for cellregion in chosenmodel.regions.keys():
+            updated_nwbfile, anelectrode = cls.insert_an_intracell_electrode(
+                                                          elecmd[cellregion], nwbfile)
+            electrodes.update( {cellregion: anelectrode} )
+        return updated_nwbfile, electrodes
+
+    def construct_nwbelectrodes( self, chosenmodel=None, electype=None, elecmd=None, nwbfile=None ):
+        """method for contructing electrodes into the built nwbfile
+
+        Keyword arguments:
+        chosenmodel -- instantiated model
+        electype -- string; 'intracell', 'extracell'
+        elecmd -- dictionary;
+                  meta-data for case chosenmodel.regions = {'soma': 0.0, 'axon': 0.0} and no of epochs/region=2 with stimulation is of the form
+                  {"soma": {"name": 'electrode_IClamp_soma',
+                            "source": 'from neuron import h >> h.IClamp',
+                            "location": 'soma', "slice": 'sec=0.5',
+                            "seal": 'no seal', "filtering": 'no filter function',
+                            "resistance": '0 Ohm', "initial_access_resistance": '0 Ohm',
+                            "description": 'virtual patch-clamp electrode in soma with stimulation',
+                            "device": 'NEURON 7.4 version'},
+                   "axon": {"name": 'electrode_IClamp_axon',
+                            "source": 'from neuron import h >> h.IClamp',
+                            "location": 'axon', "slice": 'sec=0.5',
+                            "seal": 'no seal', "filtering": 'no filter function',
+                            "resistance": '0 Ohm', "initial_access_resistance": '0 Ohm',
+                            "description": 'virtual patch-clamp electrode in axon with stimulation',
+                            "device": 'NEURON 7.4 version'}}
+                 for the case without stimulation
+                  {"soma": {"name": 'electrode_soma',
+                            "source": 'from neuron import h',
+                            "location": 'soma', "slice": 'sec=0.5',
+                            "seal": 'no seal', "filtering": 'no filter function',
+                            "resistance": '0 Ohm', "initial_access_resistance": '0 Ohm',
+                            "description": 'virtual patch-clamp electrode in soma without stimulation',
+                            "device": 'NEURON 7.4 version'},
+                   "axon": {"name": 'electrode_axon',
+                            "source": 'from neuron import h',
+                            "location": 'axon', "slice": 'sec=0.5',
+                            "seal": 'no seal', "filtering": 'no filter function',
+                            "resistance": '0 Ohm', "initial_access_resistance": '0 Ohm',
+                            "description": 'virtual patch-clamp electrode in axon without stimulation',
+                            "device": 'NEURON 7.4 version'}}
+        nwbfile -- pynwb.file.NWBFile, obtained using build_nwbfile method
+
+        Use case:
+        elecmd = {"soma":
+                    {"name": 'electrode_soma',
+                     "source": 'from neuron import h',
+                     "location": 'soma', "slice": 'sec=0.5',
+                     "seal": 'no seal', "filtering": 'no filter function',
+                     "resistance": '0 Ohm', "initial_access_resistance": '0 Ohm',
+                     "description": 'virtual patch-clamp electrode in soma without stimulation',
+                     "device": 'NEURON 7.4 version'}}
+        updated_nwbfile = construct_nwbelectrodes( chosenmodel=chosenmodel, electype='intracell',
+                                                   elecmd=elecmd, nwbfile=nwbfile )
+        """
+        if electype=='intracell':
+            updated_nwbfile, electrodes_list = self.insert_intracell_electrodes(
+                                                                chosenmodel, elecmd, nwbfile )
+        return updated_nwbfile, electrodes_list

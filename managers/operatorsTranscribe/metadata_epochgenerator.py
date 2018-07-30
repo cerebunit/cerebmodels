@@ -114,20 +114,20 @@ class EpochGenerator(object):
                                 {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ]
         Returned Value:
         assuming chosenmodel.regions = {'soma': 0.0, 'axon': 0.0} the epoch metadata for a region, say "soma" is a dictionary
-        dictionary -- {"source": "soma", "start": float, "stop": float,
+        dictionary -- {"source": "soma", "start_time": float, "stop_time": float,
                        "description": string}
         NOTE:
             - the returned value thas these same four-keys regardless of stimulus (or lack of)
         """
         if "stimlist" not in parameters:
-            return {"source": theregion, "start": 0.0, "stop": parameters["tstop"],
+            return {"source": theregion, "start_time": 0.0, "stop_time": parameters["tstop"],
                     "description": "there is no stimulation of the model"}
         elif parameters["type"][0]=="current":
             stimlist = parameters["stimlist"]
             if epoch_no_per_region==0: # initial no stimulation region
                 return {"source": theregion,
-                        "start": 0.0,
-                        "stop": 0.0 + stimlist[0]["delay"],
+                        "start_time": 0.0,
+                        "stop_time": 0.0 + stimlist[0]["delay"],
                         "description": "first, no stimulus"}
             else:
                 i = epoch_no_per_region - 1
@@ -139,8 +139,8 @@ class EpochGenerator(object):
                               str(stimlist[i]["amp_initial"]) + " to " + \
                               str(stimlist[i]["amp_final"]) + " nA"
                 return {"source": theregion,
-                        "start": stimlist[i]["delay"],
-                        "stop": stimlist[i]["delay"] + stimlist[i]["dur"],
+                        "start_time": stimlist[i]["delay"],
+                        "stop_time": stimlist[i]["delay"] + stimlist[i]["dur"],
                         "description": descrip}
 
     def forepoch( self, chosenmodel=None, parameters=None ):
@@ -167,19 +167,19 @@ class EpochGenerator(object):
         Returned Value:
         assuming chosenmodel.regions = {'soma': 0.0, 'axon': 0.0} and no of epochs/region=2 (i.e initial state regardless of stimulus is epoch0)
         returned value is a dictionary of the form
-        dictionary -- {"epoch0soma": {"source": "soma", "start": float, "stop": float,
+        dictionary -- {"epoch0soma": {"source": "soma", "start_time": float, "stop_time": float,
                                       "description": string},
-                       "epoch1soma": {"source": "soma", "start": float, "stop": float,
+                       "epoch1soma": {"source": "soma", "start_time": float, "stop_time": float,
                                       "description": string},
-                       "epoch0axon": {"source": "soma", "start": float, "stop": float,
+                       "epoch0axon": {"source": "soma", "start_time": float, "stop_time": float,
                                       "description": string},
-                       "epoch1axon": {"source": "soma", "start": float, "stop": float,
+                       "epoch1axon": {"source": "soma", "start_time": float, "stop_time": float,
                                       "description": string},
                        "epoch_tags": ('2_epoch_responses',)}
         however without stimulation, no of epochs/region = 1 (i.e, only epoch0)
-        dictionary -- {"epoch0soma": {"source": "soma", "start": float, "stop": float,
+        dictionary -- {"epoch0soma": {"source": "soma", "start_time": float, "stop_time": float,
                                       "description": string},
-                       "epoch0axon": {"source": "soma", "start": float, "stop": float,
+                       "epoch0axon": {"source": "soma", "start_time": float, "stop_time": float,
                                       "description": string},
                        "epoch_tags": ('1_epoch_responses',)}
         Use case:

@@ -61,7 +61,7 @@ class EpochGeneratorTest(unittest.TestCase):
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
                                         {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
         epoch_value = EpochGenerator.an_epoch( 0, "soma", stimparameters)
-        compare2 = epoch_value["start"] + epoch_value["stop"]
+        compare2 = epoch_value["start_time"] + epoch_value["stop_time"]
         compare1 = 0.0 + stimparameters["stimlist"][0]["delay"]
         #print epoch_value # how does an epoch metadata look?
         self.assertEqual( compare2, compare1 )
@@ -85,8 +85,8 @@ class EpochGeneratorTest(unittest.TestCase):
                                     parameters = runtimeparam )
         # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
         no_of_stimulus_epochs_per_region = 0 
-        compare2 = epochmd["epoch"+str(no_of_stimulus_epochs_per_region)+"soma"]["stop"]
-        compare1 = epochmd["epoch"+str(no_of_stimulus_epochs_per_region)+"axon"]["stop"]
+        compare2 = epochmd["epoch"+str(no_of_stimulus_epochs_per_region)+"soma"]["stop_time"]
+        compare1 = epochmd["epoch"+str(no_of_stimulus_epochs_per_region)+"axon"]["stop_time"]
         #print epochmd # hows does the main epoch metadata look?
         self.assertEqual( compare2, compare1 )
 
@@ -101,8 +101,8 @@ class EpochGeneratorTest(unittest.TestCase):
                                     parameters = stimparameters )
         # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
         no_of_stimulus_epochs_per_region = len(stimparameters["stimlist"])
-        compare2 = epochmd["epoch"+str(no_of_stimulus_epochs_per_region)+"soma"]["stop"]
-        compare1 = epochmd["epoch"+str(no_of_stimulus_epochs_per_region)+"axon"]["stop"]
+        compare2 = epochmd["epoch"+str(no_of_stimulus_epochs_per_region)+"soma"]["stop_time"]
+        compare1 = epochmd["epoch"+str(no_of_stimulus_epochs_per_region)+"axon"]["stop_time"]
         #print epochmd # how does the main epoch metadata look?
         self.assertEqual( compare2, compare1 )
 

@@ -1,4 +1,4 @@
- #/managers/operatorsTranscribe/fabricatorTest.py
+#/managers/operatorsTranscribe/fabricatorTest.py
 import unittest
 
 import collections # for comparing unordered lists
@@ -49,9 +49,9 @@ class FabricatorTest(unittest.TestCase):
                 "institution": "name of the institution" }
         # since self.chosenmodel.regions = {'soma': 0.0, 'axon': 0.0}
         epoch_metadata_nostimulus = \
-              {"epoch0soma": {"source": "soma", "start": 0.0, "stop": 10.0,
+              {"epoch0soma": {"source": "soma", "start_time": 0.0, "stop_time": 10.0,
                               "description": "first epoch"},
-               "epoch0axon": {"source": "axon", "start": 0.0, "stop": 10.0,
+               "epoch0axon": {"source": "axon", "start_time": 0.0, "stop_time": 10.0,
                               "description": "first epoch"},
                "epoch_tags": ('1_epoch_responses',)}
         mynwbfile = self.fab.build_nwbfile(file_metadata)
@@ -76,13 +76,13 @@ class FabricatorTest(unittest.TestCase):
                 "institution": "name of the institution" }
         # since self.chosenmodel.regions = {'soma': 0.0, 'axon': 0.0}
         epoch_metadata_stimulus = \
-              {"epoch0soma": {"source": "soma", "start": 0.0, "stop": 10.0,
+              {"epoch0soma": {"source": "soma", "start_time": 0.0, "stop_time": 10.0,
                               "description": "first epoch"},
-               "epoch1soma": {"source": "soma", "start": 10.0, "stop": 20.0,
+               "epoch1soma": {"source": "soma", "start_time": 10.0, "stop_time": 20.0,
                               "description": "second epoch"},
-               "epoch0axon": {"source": "axon", "start": 0.0, "stop": 10.0,
+               "epoch0axon": {"source": "axon", "start_time": 0.0, "stop_time": 10.0,
                               "description": "first epoch"},
-               "epoch1axon": {"source": "axon", "start": 10.0, "stop": 20.0,
+               "epoch1axon": {"source": "axon", "start_time": 10.0, "stop_time": 20.0,
                               "description": "second epoch"},
                "epoch_tags": ('2_epoch_responses',)}
         mynwbfile = self.fab.build_nwbfile(file_metadata)
@@ -107,9 +107,9 @@ class FabricatorTest(unittest.TestCase):
                 "institution": "name of the institution" }
         # since self.chosenmodel.regions = {'soma': 0.0, 'axon': 0.0}
         epoch_metadata_nostimulus = \
-              {"epoch0soma": {"source": "soma", "start": 0.0, "stop": 10.0,
+              {"epoch0soma": {"source": "soma_time", "start_time": 0.0, "stop_time": 10.0,
                               "description": "first epoch"},
-               "epoch0axon": {"source": "axon", "start": 0.0, "stop": 10.0,
+               "epoch0axon": {"source": "axon", "start_time": 0.0, "stop_time": 10.0,
                               "description": "first epoch"},
                "epoch_tags": ('1_epoch_responses',)}
         mynwbfile = self.fab.build_nwbfile(file_metadata)
@@ -133,13 +133,13 @@ class FabricatorTest(unittest.TestCase):
                 "institution": "name of the institution" }
         # since self.chosenmodel.regions = {'soma': 0.0, 'axon': 0.0}
         epoch_metadata_stimulus = \
-              {"epoch0soma": {"source": "soma", "start": 0.0, "stop": 10.0,
+              {"epoch0soma": {"source": "soma", "start_time": 0.0, "stop_time": 10.0,
                               "description": "first epoch"},
-               "epoch1soma": {"source": "soma", "start": 10.0, "stop": 20.0,
+               "epoch1soma": {"source": "soma", "start_time": 10.0, "stop_time": 20.0,
                               "description": "second epoch"},
-               "epoch0axon": {"source": "axon", "start": 0.0, "stop": 10.0,
+               "epoch0axon": {"source": "axon", "start_time": 0.0, "stop_time": 10.0,
                               "description": "first epoch"},
-               "epoch1axon": {"source": "axon", "start": 10.0, "stop": 20.0,
+               "epoch1axon": {"source": "axon", "start_time": 10.0, "stop_time": 20.0,
                               "description": "second epoch"},
                "epoch_tags": ('2_epoch_responses',)}
         mynwbfile = self.fab.build_nwbfile(file_metadata)

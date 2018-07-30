@@ -54,26 +54,26 @@ class Fabricator(object):
         epoch_i_cellregion -- string; eg, epoch1soma
         epochmd -- dictionary;
                    meta-data for case chosenmodel.regions = {'soma': 0.0, 'axon': 0.0} and no of epochs/region=2 with stimulation is of the form
-                   {"epoch0soma": {"source": "soma", "start": float, "stop": float,
+                   {"epoch0soma": {"source": "soma", "start_time": float, "stop_time": float,
                                    "description": string}
-                    "epoch1soma": {"source": "soma", "start": float, "stop": float,
+                    "epoch1soma": {"source": "soma", "start_time": float, "stop_time": float,
                                    "description": string}
-                    "epoch0axon": {"source": "axon", "start": float, "stop": float,
+                    "epoch0axon": {"source": "axon", "start_time": float, "stop_time": float,
                                    "description": string}
-                    "epoch1axon": {"source": "axon", "start": float, "stop": float,
+                    "epoch1axon": {"source": "axon", "start_time": float, "stop_time": float,
                                    "description": string}
                     "epoch_tags": ('2_epoch_responses',)}
                   for the case without stimulation
-                   {"epoch0soma": {"source": "soma", "start": float, "stop": float,
+                   {"epoch0soma": {"source": "soma", "start_time": float, "stop_time": float,
                                    "description": string}
-                    "epoch0axon": {"source": "axon", "start": float, "stop": float,
+                    "epoch0axon": {"source": "axon", "start_time": float, "stop_time": float,
                                    "description": string}
         nwbfile -- pynwb.file.NWBFile, obtained using build_nwbfile method
 
         Use case:
-        epochmd = {"epoch0soma": {"source": "soma", "start": float, "stop": float,
+        epochmd = {"epoch0soma": {"source": "soma", "start_time": float, "stop_time": float,
                                   "description": string}
-                   "epoch0axon": {"source": "axon", "start": float, "stop": float,
+                   "epoch0axon": {"source": "axon", "start_time": float, "stop_time": float,
                                   "description": string}
                    "epoch_tags": ('1_epoch_responses',)}
         updated_nwbfile = insert_a_nwbepoch( "epoch0soma", epochmd, nwbfile )
@@ -85,8 +85,8 @@ class Fabricator(object):
         """
         nwbfile.create_epoch( name = epoch_i_cellregion,
                               source = epochmd[epoch_i_cellregion]["source"],
-                              start = epochmd[epoch_i_cellregion]["start"], # start_time
-                              stop = epochmd[epoch_i_cellregion]["stop"],   # stop_time
+                              start = epochmd[epoch_i_cellregion]["start_time"], # start_time
+                              stop = epochmd[epoch_i_cellregion]["stop_time"],   # stop_time
                               tags = epochmd["epoch_tags"],
                               description = epochmd[epoch_i_cellregion]["description"] )
         return nwbfile
@@ -97,28 +97,28 @@ class Fabricator(object):
         Keyword arguments:
         epochmd -- dictionary;
                    meta-data for case chosenmodel.regions = {'soma': 0.0, 'axon': 0.0} and no of epochs/region=2 with stimulation is of the form
-                   {"epoch0soma": {"source": "soma", "start": float, "stop": float,
+                   {"epoch0soma": {"source": "soma", "start_time": float, "stop_time": float,
                                    "description": string}
-                    "epoch1soma": {"source": "soma", "start": float, "stop": float,
+                    "epoch1soma": {"source": "soma", "start_time": float, "stop_time": float,
                                    "description": string}
-                    "epoch0axon": {"source": "axon", "start": float, "stop": float,
+                    "epoch0axon": {"source": "axon", "start_time": float, "stop_time": float,
                                    "description": string}
-                    "epoch1axon": {"source": "axon", "start": float, "stop": float,
+                    "epoch1axon": {"source": "axon", "start_time": float, "stop_time": float,
                                    "description": string}
                     "epoch_tags": ('2_epoch_responses',)}
                   for the case without stimulation
-                   {"epoch0soma": {"source": "soma", "start": float, "stop": float,
+                   {"epoch0soma": {"source": "soma", "start_time": float, "stop_time": float,
                                    "description": string}
-                    "epoch0axon": {"source": "axon", "start": float, "stop": float,
+                    "epoch0axon": {"source": "axon", "start_time": float, "stop_time": float,
                                    "description": string}
         nwbfile -- pynwb.file.NWBFile, obtained using build_nwbfile method
 
         Use case:
         epoch_meta_data = { "epoch0soma": {"source": "soma",
-                                           "start": 0.0, "stop": 10.0,
+                                           "start_time": 0.0, "stop_time": 10.0,
                                            "description": "first epoch"},
                             "epoch0axon": {"source": "axon",
-                                           "start": 0.0, "stop": 10.0,
+                                           "start_time": 0.0, "stop_time": 10.0,
                                            "description": "first epoch"}
                             "epoch_tags": ("1_epoch_responses",) }
         nwbfile, epoch_list = construct_nwbepochs( nwbfile=nwbfile, epochmd=epoch_meta_data )

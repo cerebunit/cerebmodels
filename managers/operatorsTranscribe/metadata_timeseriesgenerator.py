@@ -24,7 +24,7 @@ class TimeseriesGenerator(object):
         NOTE:
             - 'generic' implies the models response is spontaneous, i.e., not stimulus.
         """
-        return {"type": "GenericTimeSeries",
+        return {"type": "generictime_series", #"GenericTimeSeries"
                 "name": model.modelname+"_nostim_Vm_"+cellregion,
                 "source": cellregion,
                 "data": rec_v,
@@ -33,7 +33,7 @@ class TimeseriesGenerator(object):
                 "conversion": 1000.0, # 1000 => 1ms
                 "timestamps": rec_t,
                 "starting_time": 0.0,
-                "rate": 1/parameters["dt"],
+                "rate": 1/parameters["dt"], # NWB suggests using Hz but frequency != rate
                 "comment": "voltage response without stimulation",
                 "description": "whole single array of voltage response from "+cellregion+" of "+ model.modelname}
 
@@ -49,7 +49,7 @@ class TimeseriesGenerator(object):
         parameters -- dictionary with keys "dt", "celsius", "tstop", "v_init"
                       Eg: {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
         """
-        return {"type": "CurrentClampSeries",
+        return {"type": "currentclamp_series", #"CurrentClampSeries"
                 "name": model.modelname+"_stim_Vm_"+cellregion,
                 "source": cellregion,
                 "data": rec_v,
@@ -91,7 +91,7 @@ class TimeseriesGenerator(object):
                                 {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
                                 {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ]
         """
-        return {"type": "CurrentClampStimulusSeries",
+        return {"type": "currentclampstimulus_series", #"CurrentClampStimulusSeries"
                 "name": model.modelname+"_stimulus",
                 "source": stimparameters["type"],
                 "data": rec_i,

@@ -183,7 +183,7 @@ class Fabricator(object):
 
     @classmethod
     def insert_intracell_electrodes( cls, chosenmodel, elecmd, nwbfile ):
-        """static method called by construct_nwbelectrodes
+        """class method called by construct_nwbelectrodes
 
         Arguments:
         chosenmodel -- instantiated model

@@ -158,6 +158,7 @@ class TimeseriesGeneratorTest(unittest.TestCase):
         respmd = self.tg.forrecording(chosenmodel=self.chosenmodel,
                                       recordings=recordings,
                                       runtimeparameters=runtimeparam)
+        #print respmd # what does it looke like?
         self.assertEqual( [respmd["soma"]["name"], respmd["axon"]["name"]],
                           ["DummyTest_nostim_Vm_soma", "DummyTest_nostim_Vm_axon"] )
 

@@ -12,6 +12,7 @@ class TimeseriesGenerator(object):
     @staticmethod
     def cellrecordings_response(model, cellregion, rec_t, specific_rec_i, rec_v, parameters):
         """static method that creates a generic time-series (response) metadata for cells.
+        This method is called by forcellrecordings_nostimulus & forcellrecordings_stimulus.
 
         Arguments:
         model -- instantiated model
@@ -43,6 +44,7 @@ class TimeseriesGenerator(object):
     @staticmethod
     def recordings_cell_currentstimulus(model, rec_t, rec_i, parameters, stimparameters):
         """static method that creates a time-series (response) metadata for stimulated cells.
+        This method is called by recordings_cellstimulus.
 
         Arguments:
         model -- instantiated model
@@ -81,6 +83,7 @@ class TimeseriesGenerator(object):
     @classmethod
     def recordings_cellstimulus(cls, model, rec_t, rec_i, parameters, stimparameters):
         """static method that creates a time-series (response) metadata for stimulated cells.
+        This method is called by forcellrecordings_stimulus.
 
         Arguments:
         model -- instantiated model
@@ -113,6 +116,8 @@ class TimeseriesGenerator(object):
     @classmethod
     def forcellrecordings_nostimulus(cls, chosenmodel, recordings, runtimeparameters):
         """class method that creates time-series metadata for unstimulated cells.
+        This method calls cellrecordings_response.
+        This method is called by forcellrecording.
 
         Arguments (mandatory):
         chosenmodel -- instantiated model
@@ -136,6 +141,8 @@ class TimeseriesGenerator(object):
     def forcellrecordings_stimulus(self, chosenmodel, recordings,
                               runtimeparameters, stimparameters):
         """method that creates time-series metadata for stimulated cells.
+        This method called cellrecordings_response & recordings_cellstimulus
+        This method is called by forcellrecording.
 
         Arguments (mandatory):
         chosenmodel -- instantiated model

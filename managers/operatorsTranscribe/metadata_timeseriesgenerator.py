@@ -10,7 +10,7 @@ class TimeseriesGenerator(object):
     """
 
     @staticmethod
-    def cellrecordings_response_nostimulus(model, cellregion, rec_t, rec_i, rec_v, parameters):
+    def cellrecordings_response(model, cellregion, rec_t, rec_i, rec_v, parameters):
         """static method that creates a generic time-series (response) metadata for cells.
 
         Arguments:

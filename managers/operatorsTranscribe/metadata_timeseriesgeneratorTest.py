@@ -27,7 +27,7 @@ class TimeseriesGeneratorTest(unittest.TestCase):
         rec_v_soma = numpy.random.rand(1,len(rec_t))[0]
         rec_i = "Model is not stimulated"
         # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
-        response = TimeseriesGenerator.cellrecordings_response_nostimulus(self.chosenmodel,
+        response = TimeseriesGenerator.cellrecordings_response(self.chosenmodel,
                                              "soma", rec_t, rec_i, rec_v_soma, runtimeparam)
         self.assertEqual( [response["name"], response["data"]],
                           ["DummyTest_nostim_Vm_soma", rec_v_soma] )

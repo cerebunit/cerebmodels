@@ -34,10 +34,11 @@ class FabricatorTest(unittest.TestCase):
                 "lab": "name of the lab",
                 "institution": "name of the institution" }
         nwbfile = self.fab.build_nwbfile(file_metadata)
-        print [nwbfile.source, nwbfile.session_description, nwbfile.identifier,
-               nwbfile.session_start_time, nwbfile.experimenter,
-               nwbfile.experiment_description, nwbfile.session_id, nwbfile.lab,
-               nwbfile.institution]
+        #print [nwbfile.source, nwbfile.session_description, nwbfile.identifier,
+        #       nwbfile.session_start_time, nwbfile.experimenter,
+        #       nwbfile.experiment_description, nwbfile.session_id, nwbfile.lab,
+        #       nwbfile.institution] # what does this nwbfile have?
+
         # "<class '__main__.ClassA'>" 1st"_"is 8 & last"'"is -2
         typestr = str(type(nwbfile))[8:-2] 
         self.assertEqual( typestr, "pynwb.file.NWBFile" )

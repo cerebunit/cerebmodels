@@ -42,7 +42,7 @@ class Fabricator(object):
                nwbfile.institution
 
         Availablle attributes:
-        NWBFile(source, session_description, identifier, session_start_time,
+        pynwb.file.NWBFile(source, session_description, identifier, session_start_time,
                 file_create_date=None, experimenter=None, experiment_description=None,
                 session_id=None, institution=None, notes=None, pharmacology=None,
                 protocol=None, related_publications=None, slices=None,
@@ -100,15 +100,25 @@ class Fabricator(object):
                    "epoch_tags": ('1_epoch_responses',)}
         updated_nwbfile = insert_a_nwbepoch( "epoch0soma", epochmd, nwbfile )
 
+        Returned Value:
+        nwbfile with the attributes
+               nwbfile.source, nwbfile.session_description, nwbfile.identifier,
+               nwbfile.session_start_time, nwbfile.experimenter,
+               nwbfile.experiment_description, nwbfile.session_id, nwbfile.lab,
+               nwbfile.institution
+
+        Availablle attributes:
+        description, start_time, stop_time, tags, timeseries, metadata=None
+
         NOTE:
             - for nwb epoch attributes see
+              http://pynwb.readthedocs.io/en/latest/pynwb.epoch.html#pynwb.epoch.Epochs
               https://github.com/AllenInstitute/nwb-api/blob/master/ainwb/nwb/nwbep.py
               https://pynwb.readthedocs.io/en/latest/pynwb.file.html#pynwb.file.NWBFile.create_epoch
         """
-        nwbfile.create_epoch( name = epoch_i_cellregion,
-                              source = epochmd[epoch_i_cellregion]["source"],
-                              start = epochmd[epoch_i_cellregion]["start_time"], # start_time
-                              stop = epochmd[epoch_i_cellregion]["stop_time"],   # stop_time
+        nwbfile.create_epoch( epochmd[epoch_i_cellregion]["source"],
+                              start_time = epochmd[epoch_i_cellregion]["start_time"],
+                              stop_time = epochmd[epoch_i_cellregion]["stop_time"],
                               tags = epochmd["epoch_tags"],
                               description = epochmd[epoch_i_cellregion]["description"] )
         return nwbfile

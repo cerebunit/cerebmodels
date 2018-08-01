@@ -10,7 +10,7 @@ class TimeseriesGenerator(object):
     """
 
     @staticmethod
-    def cellrecordings_response(model, cellregion, rec_t, rec_i, rec_v, parameters):
+    def cellrecordings_response(model, cellregion, rec_t, specific_rec_i, rec_v, parameters):
         """static method that creates a generic time-series (response) metadata for cells.
 
         Arguments:
@@ -18,56 +18,65 @@ class TimeseriesGenerator(object):
         cellregion -- string; "soma", "axon", etc ...
         rec_t -- array; recordings["time"]
         rec_v -- array; recordings["response"][cellregion]
-        rec_i -- string/array; recordings["stimulus"]
+        specific_rec_i -- string/array; 'not simulated'/'stimulated'
+                                        or recordings["stimulus"]
         parameters -- dictionary with keys "dt", "celsius", "tstop", "v_init"
                       Eg: {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
+        NOTE:
+            - recordings["stimulus"]='Model is not stimulated' != specific_rec_i
+            - but recordings["stimulus"] = array = specific_rec_i
         """
-        if rec_i=="Model is not stimulated":
+        if (type(specific_rec_i) is str) and (specific_rec_i=="not stimulated"):
+            name = model.modelname+"_nostim_Vm_"+cellregion
             comment = "voltage response without stimulation"
         else:
+            name = model.modelname+"_stim_Vm_"+cellregion
             comment = "voltage response with stimulation"
 
-        return {"name": model.modelname+"_nostim_Vm_"+cellregion,
-                "source": cellregion,
-                "data": rec_v,
-                "unit": "mV",
-                "resolution": parameters["dt"],
-                "conversion": 1000.0, # 1000 => 1ms
-                "timestamps": rec_t,
-                "starting_time": 0.0,
+        return {"name": name, "source": cellregion, "data": rec_v, "unit": "mV",
+                "resolution": parameters["dt"], "conversion": 1000.0, #1000=>1ms
+                "timestamps": rec_t, "starting_time": 0.0,
                 "rate": 1/parameters["dt"], # NWB suggests using Hz but frequency != rate
                 "comment": comment,
                 "description": "whole single array of voltage response from "+cellregion+" of "+ model.modelname}
 
     @staticmethod
-    def cellrecordings_currentstimulus(model, cellregion, rec_t, rec_i, parameters):
+    def recordings_cell_currentstimulus(model, rec_t, rec_i, parameters, stimparameters):
         """static method that creates a time-series (response) metadata for stimulated cells.
 
         Arguments:
         model -- instantiated model
-        cellregion -- string; "soma", "axon", etc ...
         rec_t -- array; recordings["time"]
         rec_i -- array; recordings["stimulus"]
         parameters -- dictionary with keys "dt", "celsius", "tstop", "v_init"
                       Eg: {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
+        stimparameters -- dictionary with keys "type" and "stimlist" where
+                          "type": 2 element list of strings
+                                  <stimulus category> <specific type of that category>
+                                  NOTE: First element is ALWAYS <stimulus category>
+                          Eg: for current inject on cellular model
+                              ["current", "IClamp"]
+                          "stimlist": is a list with elements as dictionary; like [ {}, {}, ... ]
+                          Eg: [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
+                                {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]
+                          Eg: [ {"amp_initial": 0.0, "amp_final": 0.5, "dur": 5.0, "delay": 5.0},
+                                {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0, "delay": 10.0},
+                                {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
+                                {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ]
+        NOTE:
+            - prior to calling this method weed out
+              recordings["stimulus"]="Model is not stimulated"
+            - this method only accepts arrays
         """
         
-        return {"type": "currentclamp_series", #"CurrentClampSeries"
-                "name": model.modelname+"_stim_Vm_"+cellregion,
-                "source": cellregion,
-                "data": rec_v,
-                "unit": "mV",
-                "gain": 0.0,
-                "bias_current": 0.0,
-                "bridge_balance": 0.0,
-                "capacitance_compensation": 0.0,
-                "resolution": parameters["dt"],
-                "conversion": 1000.0, # 1000 => 1ms
-                "timestamps": rec_t,
-                "starting_time": 0.0,
-                "rate": 1/parameters["dt"],
-                "comment": "voltage response with stimulation",
-                "description": "whole single array of voltage response from "+cellregion+" of "+model.modelname}
+        return {"name": model.modelname+"_stimulus",
+                "source": stimparameters["type"],
+                "data": rec_i, "unit": "nA",
+                "resolution": parameters["dt"], "conversion": 1000.0, #1000=>1ms
+                "timestamps": rec_t, "starting_time": 0.0,
+                "rate": 1/parameters["dt"], # NWB suggests using Hz but frequency != rate
+                "comment": "current injection, "+stimparameters["type"][1],
+                "description": "whole single array of stimulus"}
 
     @staticmethod
     def cellrecordings_stimulus(model, rec_t, rec_i, parameters, stimparameters):

@@ -1,6 +1,5 @@
 # ~/managers/operatorsTranscribe/fabricator.py
 from datetime import datetime
-import pkg_resources
 
 import pynwb
 from pynwb import NWBFile
@@ -36,6 +35,11 @@ class Fabricator(object):
         file_to_write = build_nwbfile( file_metadata )
 
         Returned Value:
+        nwbfile with the attributes
+               nwbfile.source, nwbfile.session_description, nwbfile.identifier,
+               nwbfile.session_start_time, nwbfile.experimenter,
+               nwbfile.experiment_description, nwbfile.session_id, nwbfile.lab,
+               nwbfile.institution
 
         Availablle attributes:
         NWBFile(source, session_description, identifier, session_start_time,

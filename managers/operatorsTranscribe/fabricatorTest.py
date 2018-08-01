@@ -44,6 +44,59 @@ class FabricatorTest(unittest.TestCase):
         self.assertEqual( typestr, "pynwb.file.NWBFile" )
 
     #@unittest.skip("reason for skipping")
+    def test_2_generictime_series(self):
+        file_metadata = {
+                "source": "Where is the data from?, i.e, platform",
+                "session_description": "How was the data generated?, i.e, simulation of __",
+                "identifier": "a unique modelID, uuid",
+                "session_start_time": '01-12-2017 00:00:00', #"when simulation starts"
+                "experimenter": "name of the experimenter/username",
+                "experiment_description": "described experiment/test description",
+                "session_id": str(hash(str(uuid.uuid1()))).replace('-',''),
+                "lab": "name of the lab",
+                "institution": "name of the institution" }
+        # since self.chosenmodel.regions = {'soma': 0.0, 'axon': 0.0}
+        #electrode_metadata_of_soma_stimulus = \
+        #      {"name": 'electrode_soma', "source": 'from neuron import h',
+        #       "location": 'soma', "slice": 'sec=0.5', "seal": 'no seal',
+        #       "filtering": 'no filter function', "resistance": '0 Ohm',
+        #       "initial_access_resistance": '0 Ohm', "device": 'NEURON 7.4 version',
+        #       "description": 'virtual patch-clamp electrode in soma without stimulation'}
+        #mynwbfile = self.fab.build_nwbfile(file_metadata)
+        #updated_mynwbfile, anelectrode = Fabricator.insert_an_intracell_electrode(
+        #                                           electrode_metadata_of_soma_stimulus,
+        #                                           mynwbfile)
+        runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
+        rec_t = [ t*runtimeparam["dt"]
+                  for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
+        rec_v_soma = numpy.random.rand(1,len(rec_t))[0]
+        ts_metadata = \
+              {"type": "generictime_series", #"GenericTimeSeries"
+               "name": "DummyTest_nostim_Vm_soma",
+               "source": "soma",
+               "data": rec_v_soma,
+               "unit": "mV",
+               "resolution": runtimeparam["dt"],
+               "conversion": 1000.0,
+               "timestamps": rec_t,
+               "starting_time": 0.0,
+               "rate": 1/runtimeparam["dt"],
+               "comment": "voltage response without stimulation",
+               "description": "whole single array of voltage response from soma of DummyTest"}
+        nwbts = Fabricator.generictime_series(ts_metadata)
+        print nwbts.source
+        print nwbts.name
+        # Bug with pynwb (reported by me on 1/7/2018) 
+        #print nwbts.resolution # float
+        #print type(nwbts.conversion) # float
+        #print nwbts.starting_time # None but should be float
+        #print type(nwbts.rate) # None but should be float
+          
+        #print [nwbts.name, nwbts.source, nwbts.data, nwbts.unit, nwbts.resolution, nwbts.conversion, nwbts.timestamps, nwbts.starting_time, nwbts.rate, nwbts.comments, nwbts.description, nwbts.control, nwbts.control_description, nwbts.parent] # what does this return
+        #self.assertEqual( updated_mynwbfile.ic_electrodes[0].description,
+        #                  anelectrode.description )
+
+    @unittest.skip("reason for skipping")
     def test_2_insert_a_nwbepoch_nostimulus(self):
         file_metadata = {
                 "source": "Where is the data from?, i.e, platform",
@@ -56,12 +109,15 @@ class FabricatorTest(unittest.TestCase):
                 "lab": "name of the lab",
                 "institution": "name of the institution" }
         # since self.chosenmodel.regions = {'soma': 0.0, 'axon': 0.0}
+        runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
+        rec_t = [ t*runtimeparam["dt"]
+                  for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
         epoch_metadata_nostimulus = \
               {"epoch0soma": {"source": "soma", "start_time": 0.0, "stop_time": 10.0,
-                              "description": "first epoch"},
+                              "timeseries": rec_t, "description": "first epoch"},
                "epoch0axon": {"source": "axon", "start_time": 0.0, "stop_time": 10.0,
-                              "description": "first epoch"},
-               "epoch_tags": ('1_epoch_responses',)}
+                              "timeseries": rec_t, "description": "first epoch"},
+               "epoch_tags": ('1_epoch_responses','DummyTest','epoch0soma', 'epoch0axon')}
         mynwbfile = self.fab.build_nwbfile(file_metadata)
         updated_mynwbfile = Fabricator.insert_a_nwbepoch("epoch0axon",
                                                 epoch_metadata_nostimulus,
@@ -267,55 +323,6 @@ class FabricatorTest(unittest.TestCase):
                      electrodes['soma'].description, electrodes['axon'].description ]
         self.assertEqual( collections.Counter(compare1),
                           collections.Counter(compare2) )
-
-    @unittest.skip("reason for skipping")
-    def test_10_generictime_series(self):
-        file_metadata = {
-                "source": "Where is the data from?, i.e, platform",
-                "session_description": "How was the data generated?, i.e, simulation of __",
-                "identifier": "a unique modelID, uuid",
-                "session_start_time": '01-12-2017 00:00:00', #"when simulation starts"
-                "experimenter": "name of the experimenter/username",
-                "experiment_description": "described experiment/test description",
-                "session_id": "str(hash(str(uuid.uuid1())))",
-                "lab": "name of the lab",
-                "institution": "name of the institution" }
-        # since self.chosenmodel.regions = {'soma': 0.0, 'axon': 0.0}
-        electrode_metadata_of_soma_stimulus = \
-              {"name": 'electrode_soma', "source": 'from neuron import h',
-               "location": 'soma', "slice": 'sec=0.5', "seal": 'no seal',
-               "filtering": 'no filter function', "resistance": '0 Ohm',
-               "initial_access_resistance": '0 Ohm', "device": 'NEURON 7.4 version',
-               "description": 'virtual patch-clamp electrode in soma without stimulation'}
-        mynwbfile = self.fab.build_nwbfile(file_metadata)
-        updated_mynwbfile, anelectrode = Fabricator.insert_an_intracell_electrode(
-                                                   electrode_metadata_of_soma_stimulus,
-                                                   mynwbfile)
-        runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
-        rec_t = [ t*runtimeparam["dt"]
-                  for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
-        rec_v_soma = numpy.random.rand(1,len(rec_t))[0]
-        ts_metadata = \
-              {"type": "generictime_series", #"GenericTimeSeries"
-               "name": "DummyTest_nostim_Vm_soma",
-               "source": "soma",
-               "data": rec_v_soma,
-               "unit": "mV",
-               "resolution": runtimeparam["dt"],
-               "conversion": 1000.0,
-               "timestamps": rec_t,
-               "starting_time": 0.0,
-               "rate": 1/runtimeparam["dt"],
-               "comment": "voltage response without stimulation",
-               "description": "whole single array of voltage response from soma of DummyTest"}
-        nwbts = Fabricator.generictime_series(ts_metadata, anelectrode)
-        #print nwbts.starting_time==nwbts.starting_time
-        print type(nwbts.conversion)
-        print type(nwbts.rate)
-        #print [nwbts.name, nwbts.source, nwbts.data, nwbts.unit, nwbts.resolution, nwbts.conversion, nwbts.timestamps, nwbts.starting_time, nwbts.rate, nwbts.comments, nwbts.description, nwbts.control, nwbts.control_description, nwbts.parent]
-        print [nwbts.name, nwbts.source, nwbts.data, nwbts.unit, nwbts.resolution, nwbts.conversion]
-        #self.assertEqual( updated_mynwbfile.ic_electrodes[0].description,
-        #                  anelectrode.description )
 
 if __name__ == '__main__':
     unittest.main()

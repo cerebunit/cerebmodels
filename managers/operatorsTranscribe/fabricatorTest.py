@@ -44,7 +44,7 @@ class FabricatorTest(unittest.TestCase):
         self.assertEqual( typestr, "pynwb.file.NWBFile" )
 
     #@unittest.skip("reason for skipping")
-    def test_2_generictime_series(self):
+    def test_2_generic_timeseries(self):
         file_metadata = {
                 "source": "Where is the data from?, i.e, platform",
                 "session_description": "How was the data generated?, i.e, simulation of __",
@@ -71,20 +71,17 @@ class FabricatorTest(unittest.TestCase):
                   for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
         rec_v_soma = numpy.random.rand(1,len(rec_t))[0]
         ts_metadata = \
-              {"type": "generictime_series", #"GenericTimeSeries"
-               "name": "DummyTest_nostim_Vm_soma",
-               "source": "soma",
-               "data": rec_v_soma,
-               "unit": "mV",
+              {"name": "DummyTest_nostim_Vm_soma", "source": "soma",
+               "data": rec_v_soma, "unit": "mV",
                "resolution": runtimeparam["dt"],
                "conversion": 1000.0,
-               "timestamps": rec_t,
-               "starting_time": 0.0,
+               "timestamps": rec_t, "starting_time": 0.0,
                "rate": 1/runtimeparam["dt"],
                "comment": "voltage response without stimulation",
                "description": "whole single array of voltage response from soma of DummyTest"}
-        nwbts = Fabricator.generictime_series(ts_metadata)
-        # Bug with pynwb (reported by me on 1/7/2018) 
+        nwbts = Fabricator.generic_timeseries(ts_metadata)
+        # Bug with pynwb (reported by me on 1/7/2018)
+        # https://github.com/NeurodataWithoutBorders/pynwb/issues/579 
         #print nwbts.resolution # float
         #print type(nwbts.conversion) # float
         #print nwbts.starting_time # None but should be float
@@ -95,7 +92,7 @@ class FabricatorTest(unittest.TestCase):
                           [rec_v_soma, rec_t] )
 
     #@unittest.skip("reason for skipping")
-    def test_3_make_one_nwbseries(self):
+    def test_3_construct_nwbseries_nostimulus(self):
         file_metadata = {
                 "source": "Where is the data from?, i.e, platform",
                 "session_description": "How was the data generated?, i.e, simulation of __",
@@ -109,27 +106,37 @@ class FabricatorTest(unittest.TestCase):
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         rec_t = [ t*runtimeparam["dt"]
                   for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
-        rec_v_soma = numpy.random.rand(1,len(rec_t))[0]
+        rec_v = numpy.random.rand(2,len(rec_t))
+        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
+        recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1]},
+                      "stimulus": "Model is not stimulated"}
         ts_metadata = \
-              {"type": "generictime_series", #"GenericTimeSeries"
-               "name": "DummyTest_nostim_Vm_soma",
-               "source": "soma",
-               "data": rec_v_soma,
-               "unit": "mV",
-               "resolution": runtimeparam["dt"],
-               "conversion": 1000.0,
-               "timestamps": rec_t,
-               "starting_time": 0.0,
-               "rate": 1/runtimeparam["dt"],
-               "comment": "voltage response without stimulation",
-               "description": "whole single array of voltage response from soma of DummyTest"}
-        nwbts = self.fab.make_one_nwbseries(ts_metadata)
-        #print [nwbts.name, nwbts.source, nwbts.data, nwbts.unit, nwbts.resolution, nwbts.conversion, nwbts.timestamps, nwbts.starting_time, nwbts.rate, nwbts.comments, nwbts.description, nwbts.control, nwbts.control_description, nwbts.parent] # what does this return
-        self.assertEqual( [nwbts.data, nwbts.timestamps],
-                          [rec_v_soma, rec_t] )
+              {"soma": {"name": "DummyTest_nostim_Vm_soma", "source": "soma",
+                        "data": recordings["response"]["soma"], "unit": "mV",
+                        "resolution": runtimeparam["dt"],
+                        "conversion": 1000.0,
+                        "timestamps": recordings["time"],
+                        "comment": "voltage response without stimulation",
+                        "description": "whole single array of voltage response from soma of DummyTest"},
+               "axon": {"name": "DummyTest_nostim_Vm_axon", "source": "axon",
+                        "data": recordings["response"]["axon"], "unit": "mV",
+                        "resolution": runtimeparam["dt"],
+                        "conversion": 1000.0,
+                        "timestamps": recordings["time"],
+                        "comment": "voltage response without stimulation",
+                        "description": "whole single array of voltage response from soma of DummyTest"} }
+        nwbts = self.fab.construct_nwbseries_nostimulus(self.chosenmodel,
+                                                        ts_metadata)
+        #print nwbts['soma'].name # what does this return
+        #print [nwbts.name, nwbts.source, nwbts.data, nwbts.unit, nwbts.resolution, nwbts.conversion, nwbts.timestamps, nwbts.starting_time, nwbts.rate, nwbts.comments, nwbts.description, nwbts.control, nwbts.control_description, nwbts.parent] # available attributes
+        compare1 = [nwbts['soma'].data, nwbts['axon'].data, nwbts['soma'].timestamps]
+        compare2 = [recordings['response']['soma'], recordings['response']['axon'],
+                    recordings['time']]
+        self.assertEqual( compare1, compare2 )
 
     #@unittest.skip("reason for skipping")
-    def test_3_construct_nwbseries(self):
+    def test_4_build_nwbseries_nostimulus(self):
+        # basically the same as test_3_construct_nwbseries_nostimulus
         file_metadata = {
                 "source": "Where is the data from?, i.e, platform",
                 "session_description": "How was the data generated?, i.e, simulation of __",
@@ -143,24 +150,89 @@ class FabricatorTest(unittest.TestCase):
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         rec_t = [ t*runtimeparam["dt"]
                   for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
-        rec_v_soma = numpy.random.rand(1,len(rec_t))[0]
+        rec_v = numpy.random.rand(2,len(rec_t))
+        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
+        recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1]},
+                      "stimulus": "Model is not stimulated"}
         ts_metadata = \
-              {"type": "generictime_series", #"GenericTimeSeries"
-               "name": "DummyTest_nostim_Vm_soma",
-               "source": "soma",
-               "data": rec_v_soma,
-               "unit": "mV",
-               "resolution": runtimeparam["dt"],
-               "conversion": 1000.0,
-               "timestamps": rec_t,
-               "starting_time": 0.0,
-               "rate": 1/runtimeparam["dt"],
-               "comment": "voltage response without stimulation",
-               "description": "whole single array of voltage response from soma of DummyTest"}
-        nwbts = self.fab.construct_nwbseries(chosenmodel=self.chosenmodel, ts_metadata)
-        #print [nwbts.name, nwbts.source, nwbts.data, nwbts.unit, nwbts.resolution, nwbts.conversion, nwbts.timestamps, nwbts.starting_time, nwbts.rate, nwbts.comments, nwbts.description, nwbts.control, nwbts.control_description, nwbts.parent] # what does this return
-        self.assertEqual( [nwbts.data, nwbts.timestamps],
-                          [rec_v_soma, rec_t] )
+              {"soma": {"name": "DummyTest_nostim_Vm_soma", "source": "soma",
+                        "data": recordings["response"]["soma"], "unit": "mV",
+                        "resolution": runtimeparam["dt"],
+                        "conversion": 1000.0,
+                        "timestamps": recordings["time"],
+                        "comment": "voltage response without stimulation",
+                        "description": "whole single array of voltage response from soma of DummyTest"},
+               "axon": {"name": "DummyTest_nostim_Vm_axon", "source": "axon",
+                        "data": recordings["response"]["axon"], "unit": "mV",
+                        "resolution": runtimeparam["dt"],
+                        "conversion": 1000.0,
+                        "timestamps": recordings["time"],
+                        "comment": "voltage response without stimulation",
+                        "description": "whole single array of voltage response from soma of DummyTest"} }
+        nwbts = self.fab.build_nwbseries(chosenmodel = self.chosenmodel,
+                                             tsmd = ts_metadata)
+        #print nwbts['soma'].name # what does this return
+        #print [nwbts.name, nwbts.source, nwbts.data, nwbts.unit, nwbts.resolution, nwbts.conversion, nwbts.timestamps, nwbts.starting_time, nwbts.rate, nwbts.comments, nwbts.description, nwbts.control, nwbts.control_description, nwbts.parent] # available attributes
+        compare1 = [nwbts['soma'].data, nwbts['axon'].data,
+                    nwbts['soma'].timestamps]
+        compare2 = [recordings['response']['soma'], recordings['response']['axon'],
+                    recordings['time']]
+        self.assertEqual( compare1, compare2 )
+
+    #@unittest.skip("reason for skipping")
+    def test_5_build_nwbseries_stimulus(self):
+        file_metadata = {
+                "source": "Where is the data from?, i.e, platform",
+                "session_description": "How was the data generated?, i.e, simulation of __",
+                "identifier": "a unique modelID, uuid",
+                "session_start_time": '01-12-2017 00:00:00', #"when simulation starts"
+                "experimenter": "name of the experimenter/username",
+                "experiment_description": "described experiment/test description",
+                "session_id": str(hash(str(uuid.uuid1()))).replace('-',''),
+                "lab": "name of the lab",
+                "institution": "name of the institution" }
+        runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
+        stimparameters = {"type": ["current", "IClamp"],
+                          "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
+                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
+        rec_t = [ t*runtimeparam["dt"]
+                  for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
+        rec_i = numpy.random.rand(1,len(rec_t))[0]
+        rec_v = numpy.random.rand(2,len(rec_t))
+        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
+        recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1]},
+                      "stimulus": rec_i}
+        ts_metadata = \
+              {"soma": {"name": "DummyTest_stim_Vm_soma", "source": "soma",
+                        "data": recordings["response"]["soma"], "unit": "mV",
+                        "resolution": runtimeparam["dt"],
+                        "conversion": 1000.0,
+                        "timestamps": recordings["time"],
+                        "comment": "voltage response with stimulation",
+                        "description": "whole single array of voltage response from soma of DummyTest"},
+               "axon": {"name": "DummyTest_stim_Vm_axon", "source": "axon",
+                        "data": recordings["response"]["axon"], "unit": "mV",
+                        "resolution": runtimeparam["dt"],
+                        "conversion": 1000.0,
+                        "timestamps": recordings["time"],
+                        "comment": "voltage response with stimulation",
+                        "description": "whole single array of voltage response from soma of DummyTest"},
+               "stimulus": {"name": "DummyTest_stimulus", "source": stimparameters["type"][1],
+                        "data": recordings["stimulus"], "unit": "nA",
+                        "resolution": runtimeparam["dt"],
+                        "conversion": 1000.0,
+                        "timestamps": recordings["time"],
+                        "comment": "current injection, "+stimparameters["type"][1],
+                        "description": "whole single array of stimulus"} }
+        nwbts = self.fab.build_nwbseries(chosenmodel = self.chosenmodel,
+                                             tsmd = ts_metadata)
+        #print nwbts['soma'].name # what does this return
+        #print [nwbts.name, nwbts.source, nwbts.data, nwbts.unit, nwbts.resolution, nwbts.conversion, nwbts.timestamps, nwbts.starting_time, nwbts.rate, nwbts.comments, nwbts.description, nwbts.control, nwbts.control_description, nwbts.parent] # available attributes
+        compare1 = [nwbts['stimulus'].data, nwbts['soma'].data, nwbts['axon'].data,
+                    nwbts['soma'].timestamps]
+        compare2 = [recordings['stimulus'], recordings['response']['soma'],
+                    recordings['response']['axon'], recordings['time']]
+        self.assertEqual( compare1, compare2 )
 
     @unittest.skip("reason for skipping")
     def test_2_insert_a_nwbepoch_nostimulus(self):

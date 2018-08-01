@@ -36,8 +36,8 @@ class TimeseriesGenerator(object):
 
         return {"name": name, "source": cellregion, "data": rec_v, "unit": "mV",
                 "resolution": parameters["dt"], "conversion": 1000.0, #1000=>1ms
-                "timestamps": rec_t, "starting_time": 0.0,
-                "rate": 1/parameters["dt"], # NWB suggests using Hz but frequency != rate
+                "timestamps": rec_t, #"starting_time": 0.0,
+                #"rate": 1/parameters["dt"], # NWB suggests using Hz but frequency != rate
                 "comment": comment,
                 "description": "whole single array of voltage response from "+cellregion+" of "+ model.modelname}
 
@@ -72,11 +72,11 @@ class TimeseriesGenerator(object):
         """
         
         return {"name": model.modelname+"_stimulus",
-                "source": stimparameters["type"],
+                "source": stimparameters["type"][1],
                 "data": rec_i, "unit": "nA",
                 "resolution": parameters["dt"], "conversion": 1000.0, #1000=>1ms
-                "timestamps": rec_t, "starting_time": 0.0,
-                "rate": 1/parameters["dt"], # NWB suggests using Hz but frequency != rate
+                "timestamps": rec_t, #"starting_time": 0.0,
+                #"rate": 1/parameters["dt"], # NWB suggests using Hz but frequency != rate
                 "comment": "current injection, "+stimparameters["type"][1],
                 "description": "whole single array of stimulus"}
 

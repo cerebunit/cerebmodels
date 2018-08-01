@@ -68,25 +68,33 @@ class EpochGenerator(object):
         Returned Value:
         assuming chosenmodel.regions = {'soma': 0.0, 'axon': 0.0} and no of epochs/region=3 (i.e initial state regardless of stimulus is epoch0)
         returned value is a dictionary of the form
-        dictionary -- {"epoch0soma": None, "epoch1soma": None, "epoch2soma": None,
-                       "epoch0axon": None, "epoch1axon": None, "epoch2axon": None,
-                       "epoch_tags": ('3_epoch_responses',)}
+        dictionary -- {"epoch0soma": {'tags': ('3_epoch_responses', 0, soma, modelname)},
+                       "epoch1soma": {'tags': ('3_epoch_responses', 1, soma, modelname)},
+                       "epoch2soma": {'tags': ('3_epoch_responses', 2, soma, modelname)},
+                       "epoch0axon": {'tags': ('3_epoch_responses', 0, axon, modelname)},
+                       "epoch1axon": {'tags': ('3_epoch_responses', 1, soma, modelname)},
+                       "epoch2axon": {'tags': ('3_epoch_responses', 2, soma, modelname)}}
         however without stimulation, no of epochs/region = 1 (i.e, only epoch0)
-        dictionary -- {"epoch0soma": None, "epoch0axon": None,
-                       "epoch_tags": ('1_epoch_responses',)}
+        dictionary -- {"epoch0soma": {'tags': ('1_epoch_responses', 0, soma, modelname)},
+                       "epoch0axon": {'tags': ('1_epoch_responses', 0, soma, modelname)}}
         NOTE:
             - no_of_regions = len(list(chosenmodel.regions.keys()))
             - no_of_stimulus = 2
             - no_of_epochs_per_region = 1 + no_of_stimulus; thus it includes
               period/epoch pre-first stimulus
             - total number of epochs = no_of_regions * no_of_epochs_per_regions
+            - 'tags': ( No_epoch_responses, index, cellregion, modelname )
         """
         x = {}
+        lst = []
         no_of_epochs_per_region = cls.compute_totalepochs_per_cellregion(parameters)
         for key in chosenmodel.regions.keys():
-            [ x.update({"epoch"+str(i)+key: None})
+            [ x.update({"epoch"+str(i)+key: {}})
                                    for i in range(no_of_epochs_per_region) ]
-        x.update({"epoch_tags": (str(no_of_epochs_per_region)+"_epoch_responses",)})
+            [ x["epoch"+str(i)+key].update({"tags":
+                                             (str(no_of_epochs_per_region)+"_epoch_responses",
+                                              i, key, chosenmodel.modelname)})
+                                   for i in range(no_of_epochs_per_region) ]
         return x
 
     @staticmethod

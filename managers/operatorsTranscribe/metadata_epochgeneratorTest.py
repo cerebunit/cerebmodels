@@ -36,7 +36,7 @@ class EpochGeneratorTest(unittest.TestCase):
         no_of_regions = len(list(self.chosenmodel.regions.keys()))
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
         filler = self.eg.epochcontainer(self.chosenmodel, runtimeparam)
-        compare2 = len(filler) - 1 # exclude the key 'epoch_tags'
+        compare2 = len(filler)
         no_of_epochs_per_region = 1
         compare1 = no_of_regions * no_of_epochs_per_region 
         #print filler # how does the epochcontainer metadata look?
@@ -49,7 +49,7 @@ class EpochGeneratorTest(unittest.TestCase):
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
                                         {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
         filler = self.eg.epochcontainer(self.chosenmodel, stimparameters)
-        compare2 = len(filler) - 1 # exclude the key 'epoch_tags'
+        compare2 = len(filler)
         no_of_epochs_per_region = 1 + len(stimparameters["stimlist"])
         compare1 = no_of_regions * no_of_epochs_per_region
         #print filler # how does the epochcontainer metadata look?

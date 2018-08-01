@@ -69,7 +69,7 @@ class Fabricator(object):
                         institution = filemd["institution"] )
 
     @staticmethod
-    def generictime_series(metadata):
+    def generic_timeseries(metadata):
         """static method called by construct_nwbseries
 
         Arguments:
@@ -78,10 +78,10 @@ class Fabricator(object):
         Returned Value:
         nwbts with the attributes
                nwbts.name, nwbts.source, nwbts.data, nwbts.timestamps, nwbts.unit,
-               nwbts.resolution, nwbts.converstion, nwbts.starting_time, nwbts.rate,
+               nwbts.resolution, nwbts.converstion, #nwbts.starting_time, #nwbts.rate,
                nwbts.comment, nwbts.description
 
-        Availablle attributes:
+        Available attributes:
         pynwb.base.TimeSeries(name, source, data=None, unit=None, resolution=0.0,
                               conversion=1.0, timestamps=None, starting_time=None,
                               rate=None, comments='no comments',
@@ -90,6 +90,11 @@ class Fabricator(object):
 
         NOTE:
             - https://pynwb.readthedocs.io/en/latest/pynwb.base.html#pynwb.base.TimeSeries
+            - due to the bug I reported https://github.com/NeurodataWithoutBorders/pynwb/issues/579
+              starting_time and rate attributes are not included thus defaults to None
+            - pynwb developer says
+              's is because you either enter timestamps or rate+starting_time, not all three. We should catch this and raise an error.'
+            - so to avoid error in future pynwb version the two attributes are taken out.
         """
         return TimeSeries( metadata["name"],
                            metadata["source"],
@@ -98,75 +103,65 @@ class Fabricator(object):
                            resolution = metadata["resolution"],
                            conversion = metadata["conversion"],
                            timestamps = metadata["timestamps"],
-                           starting_time = metadata["starting_time"],
-                           rate = metadata["rate"],
+                           #starting_time = metadata["starting_time"],
+                           #rate = metadata["rate"],
                            comments = metadata["comment"],
                            description = metadata["description"] )
 
-    @staticmethod
-    def currentclamp_series(metadata, nwbelectrode):
-        """static method called by construct_nwbseries
-        
-        Arguments:
-        metadata --
-        nwbelectrode --
-
-        NOTE:
-            - https://pynwb.readthedocs.io/en/latest/pynwb.icephys.html#pynwb.icephys.CurrentClampSeries
-        """
-        return CurrentClampSeries( name = metadata["name"],
-                                   source = metadata["source"],
-                                   data = metadata["data"],
-                                   unit = metadata["unit"],
-                                   gain = metadata["gain"],
-                                   bias_current = metadata["bias_current"],
-                                   bridge_balance = metadata["bridge_balance"],
-                                   capacitance_compensation = metadata["capacitance_compensation"],
-                                   resolution = metadata["resolution"],
-                                   conversion = metadata["conversion"],
-                                   timestamps = metadata["timestamps"],
-                                   starting_time = metadata["starting_time"],
-                                   rate = metadata["rate"],
-                                   comment = metadata["comment"],
-                                   description = metadata["description"],
-                                   electrode = nwbelectrode )
-
-    @staticmethod
-    def currentclampstimulus_series(metadata, nwbelectrode):
-        """static method called by construct_nwbseries
-        
-        Arguments:
-        metadata --
-        nwbelectrode --
-
-        NOTE:
-            - https://pynwb.readthedocs.io/en/latest/pynwb.icephys.html#pynwb.icephys.CurrentClampStimulusSeries
-        """
-        return CurrentClampStimulusSeries( name = metadata["name"],
-                                           source = metadata["source"],
-                                           data = metadata["data"],
-                                           unit = metadata["unit"],
-                                           gain = metadata["gain"],
-                                           resolution = metadata["resolution"],
-                                           conversion = metadata["conversion"],
-                                           timestamps = metadata["timestamps"],
-                                           starting_time = metadata["starting_time"],
-                                           rate = metadata["rate"],
-                                           comment = metadata["comment"],
-                                           description = metadata["description"],
-                                           electrode = nwbelectrode )
     @classmethod
-    def make_one_nwbseries(cls, a_metadata=None, a_nwbelectrode=None):
-        funct = getattr(cls, a_metadata["type"])
-        return funct( a_metadata )
+    def construct_nwbseries_nostimulus(cls, chosenmodel, tsmd):
+        """class method called by build_nwbseries
 
-    def construct_nwbseries(self, chosenmodel=None, tsmd=None, nwbelec=None):
+        Returned Value:
+        nwbts with the attributes
+               nwbts[key].name, nwbts[key].source, nwbts[key].data,
+               nwbts[key].timestamps, nwbts[key].unit,
+               nwbts[key].resolution, nwbts[key].converstion,
+               nwbts[key].starting_time, nwbts[key].rate,
+               nwbts[key].comment, nwbts[key].description
+        keys are the keys in chosemodel.regions = {'soma':0.0, 'axon':0.0}
+
+        Available attributes:
+        pynwb.base.TimeSeries(name, source, data=None, unit=None, resolution=0.0,
+                              conversion=1.0, timestamps=None, starting_time=None,
+                              rate=None, comments='no comments',
+                              description='no description', control=None,
+                              control_description=None, parent=None)
+        NOTE:
+            - https://pynwb.readthedocs.io/en/latest/pynwb.base.html#pynwb.base.TimeSeries
+        """
         nwbseries = {}
         for cellregion in chosenmodel.regions.keys():
             nwbseries.update( {cellregion:
-                              self.make_one_nwbseries(
-                                           a_metadata=tsmd[cellregion],
-                                           a_nwbelectrode=nwbelec[cellregion])} )
+                              cls.generic_timeseries(tsmd[cellregion])} )
+        return nwbseries
+
+    def build_nwbseries(self, chosenmodel=None, tsmd=None):
+        """
+        Returned Value:
+        nwbts with the attributes
+               nwbts[key].name, nwbts[key].source, nwbts[key].data,
+               nwbts[key].timestamps, nwbts[key].unit,
+               nwbts[key].resolution, nwbts[key].converstion,
+               nwbts[key].starting_time, nwbts[key].rate,
+               nwbts[key].comment, nwbts[key].description
+        keys are the keys in chosemodel.regions and with or without 'stimulus' as a key.
+
+        Available attributes:
+        pynwb.base.TimeSeries(name, source, data=None, unit=None, resolution=0.0,
+                              conversion=1.0, timestamps=None, starting_time=None,
+                              rate=None, comments='no comments',
+                              description='no description', control=None,
+                              control_description=None, parent=None)
+        NOTE:
+            - https://pynwb.readthedocs.io/en/latest/pynwb.base.html#pynwb.base.TimeSeries
+        """
+        nwbseries = {}
+        if "stimulus" in tsmd:
+            nwbseries.update( {"stimulus": self.generic_timeseries(tsmd["stimulus"])} )
+            nwbseries.update( self.construct_nwbseries_nostimulus(chosenmodel, tsmd) )
+        else:
+            nwbseries.update( self.construct_nwbseries_nostimulus(chosenmodel, tsmd) )
         return nwbseries
 
     def attach_nwbseries(self, chosenmodel=None, nwbseries=None, nwbfile=None):

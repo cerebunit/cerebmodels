@@ -84,8 +84,6 @@ class FabricatorTest(unittest.TestCase):
                "comment": "voltage response without stimulation",
                "description": "whole single array of voltage response from soma of DummyTest"}
         nwbts = Fabricator.generictime_series(ts_metadata)
-        print nwbts.source
-        print nwbts.name
         # Bug with pynwb (reported by me on 1/7/2018) 
         #print nwbts.resolution # float
         #print type(nwbts.conversion) # float
@@ -93,8 +91,76 @@ class FabricatorTest(unittest.TestCase):
         #print type(nwbts.rate) # None but should be float
           
         #print [nwbts.name, nwbts.source, nwbts.data, nwbts.unit, nwbts.resolution, nwbts.conversion, nwbts.timestamps, nwbts.starting_time, nwbts.rate, nwbts.comments, nwbts.description, nwbts.control, nwbts.control_description, nwbts.parent] # what does this return
-        #self.assertEqual( updated_mynwbfile.ic_electrodes[0].description,
-        #                  anelectrode.description )
+        self.assertEqual( [nwbts.data, nwbts.timestamps],
+                          [rec_v_soma, rec_t] )
+
+    #@unittest.skip("reason for skipping")
+    def test_3_make_one_nwbseries(self):
+        file_metadata = {
+                "source": "Where is the data from?, i.e, platform",
+                "session_description": "How was the data generated?, i.e, simulation of __",
+                "identifier": "a unique modelID, uuid",
+                "session_start_time": '01-12-2017 00:00:00', #"when simulation starts"
+                "experimenter": "name of the experimenter/username",
+                "experiment_description": "described experiment/test description",
+                "session_id": str(hash(str(uuid.uuid1()))).replace('-',''),
+                "lab": "name of the lab",
+                "institution": "name of the institution" }
+        runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
+        rec_t = [ t*runtimeparam["dt"]
+                  for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
+        rec_v_soma = numpy.random.rand(1,len(rec_t))[0]
+        ts_metadata = \
+              {"type": "generictime_series", #"GenericTimeSeries"
+               "name": "DummyTest_nostim_Vm_soma",
+               "source": "soma",
+               "data": rec_v_soma,
+               "unit": "mV",
+               "resolution": runtimeparam["dt"],
+               "conversion": 1000.0,
+               "timestamps": rec_t,
+               "starting_time": 0.0,
+               "rate": 1/runtimeparam["dt"],
+               "comment": "voltage response without stimulation",
+               "description": "whole single array of voltage response from soma of DummyTest"}
+        nwbts = self.fab.make_one_nwbseries(ts_metadata)
+        #print [nwbts.name, nwbts.source, nwbts.data, nwbts.unit, nwbts.resolution, nwbts.conversion, nwbts.timestamps, nwbts.starting_time, nwbts.rate, nwbts.comments, nwbts.description, nwbts.control, nwbts.control_description, nwbts.parent] # what does this return
+        self.assertEqual( [nwbts.data, nwbts.timestamps],
+                          [rec_v_soma, rec_t] )
+
+    #@unittest.skip("reason for skipping")
+    def test_3_construct_nwbseries(self):
+        file_metadata = {
+                "source": "Where is the data from?, i.e, platform",
+                "session_description": "How was the data generated?, i.e, simulation of __",
+                "identifier": "a unique modelID, uuid",
+                "session_start_time": '01-12-2017 00:00:00', #"when simulation starts"
+                "experimenter": "name of the experimenter/username",
+                "experiment_description": "described experiment/test description",
+                "session_id": str(hash(str(uuid.uuid1()))).replace('-',''),
+                "lab": "name of the lab",
+                "institution": "name of the institution" }
+        runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
+        rec_t = [ t*runtimeparam["dt"]
+                  for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
+        rec_v_soma = numpy.random.rand(1,len(rec_t))[0]
+        ts_metadata = \
+              {"type": "generictime_series", #"GenericTimeSeries"
+               "name": "DummyTest_nostim_Vm_soma",
+               "source": "soma",
+               "data": rec_v_soma,
+               "unit": "mV",
+               "resolution": runtimeparam["dt"],
+               "conversion": 1000.0,
+               "timestamps": rec_t,
+               "starting_time": 0.0,
+               "rate": 1/runtimeparam["dt"],
+               "comment": "voltage response without stimulation",
+               "description": "whole single array of voltage response from soma of DummyTest"}
+        nwbts = self.fab.construct_nwbseries(chosenmodel=self.chosenmodel, ts_metadata)
+        #print [nwbts.name, nwbts.source, nwbts.data, nwbts.unit, nwbts.resolution, nwbts.conversion, nwbts.timestamps, nwbts.starting_time, nwbts.rate, nwbts.comments, nwbts.description, nwbts.control, nwbts.control_description, nwbts.parent] # what does this return
+        self.assertEqual( [nwbts.data, nwbts.timestamps],
+                          [rec_v_soma, rec_t] )
 
     @unittest.skip("reason for skipping")
     def test_2_insert_a_nwbepoch_nostimulus(self):

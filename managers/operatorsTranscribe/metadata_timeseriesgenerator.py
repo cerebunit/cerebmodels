@@ -20,12 +20,8 @@ class TimeseriesGenerator(object):
         rec_v -- array; recordings["response"][cellregion]
         parameters -- dictionary with keys "dt", "celsius", "tstop", "v_init"
                       Eg: {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
-
-        NOTE:
-            - 'generic' implies the models response is spontaneous, i.e., not stimulus.
         """
-        return {"type": "generictime_series", #"GenericTimeSeries"
-                "name": model.modelname+"_nostim_Vm_"+cellregion,
+        return {"name": model.modelname+"_nostim_Vm_"+cellregion,
                 "source": cellregion,
                 "data": rec_v,
                 "unit": "mV",

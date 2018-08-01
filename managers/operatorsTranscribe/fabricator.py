@@ -158,7 +158,7 @@ class Fabricator(object):
     @classmethod
     def make_one_nwbseries(cls, a_metadata=None, a_nwbelectrode=None):
         funct = getattr(cls, a_metadata["type"])
-        return funct( metadata, a_nwbelectrode )
+        return funct( a_metadata )
 
     def construct_nwbseries(self, chosenmodel=None, tsmd=None, nwbelec=None):
         nwbseries = {}

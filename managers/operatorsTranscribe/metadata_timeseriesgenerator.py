@@ -10,7 +10,7 @@ class TimeseriesGenerator(object):
     """
 
     @staticmethod
-    def cellrecordings_response_nostimulus(model, cellregion, rec_t, rec_v, parameters):
+    def cellrecordings_response_nostimulus(model, cellregion, rec_t, rec_i, rec_v, parameters):
         """static method that creates a generic time-series (response) metadata for cells.
 
         Arguments:
@@ -18,9 +18,15 @@ class TimeseriesGenerator(object):
         cellregion -- string; "soma", "axon", etc ...
         rec_t -- array; recordings["time"]
         rec_v -- array; recordings["response"][cellregion]
+        rec_i -- string/array; recordings["stimulus"]
         parameters -- dictionary with keys "dt", "celsius", "tstop", "v_init"
                       Eg: {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
         """
+        if rec_i=="Model is not stimulated":
+            comment = "voltage response without stimulation"
+        else:
+            comment = "voltage response with stimulation"
+
         return {"name": model.modelname+"_nostim_Vm_"+cellregion,
                 "source": cellregion,
                 "data": rec_v,
@@ -30,21 +36,22 @@ class TimeseriesGenerator(object):
                 "timestamps": rec_t,
                 "starting_time": 0.0,
                 "rate": 1/parameters["dt"], # NWB suggests using Hz but frequency != rate
-                "comment": "voltage response without stimulation",
+                "comment": comment,
                 "description": "whole single array of voltage response from "+cellregion+" of "+ model.modelname}
 
     @staticmethod
-    def cellrecordings_response_stimulus(model, cellregion, rec_t, rec_v, parameters):
+    def cellrecordings_currentstimulus(model, cellregion, rec_t, rec_i, parameters):
         """static method that creates a time-series (response) metadata for stimulated cells.
 
         Arguments:
         model -- instantiated model
         cellregion -- string; "soma", "axon", etc ...
         rec_t -- array; recordings["time"]
-        rec_v -- array; recordings["response"][cellregion]
+        rec_i -- array; recordings["stimulus"]
         parameters -- dictionary with keys "dt", "celsius", "tstop", "v_init"
                       Eg: {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
         """
+        
         return {"type": "currentclamp_series", #"CurrentClampSeries"
                 "name": model.modelname+"_stim_Vm_"+cellregion,
                 "source": cellregion,

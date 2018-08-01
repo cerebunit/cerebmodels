@@ -25,9 +25,10 @@ class TimeseriesGeneratorTest(unittest.TestCase):
         rec_t = [ t*runtimeparam["dt"]
                   for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
         rec_v_soma = numpy.random.rand(1,len(rec_t))[0]
+        rec_i = "Model is not stimulated"
         # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
         response = TimeseriesGenerator.cellrecordings_response_nostimulus(self.chosenmodel,
-                                             "soma", rec_t, rec_v_soma, runtimeparam)
+                                             "soma", rec_t, rec_i, rec_v_soma, runtimeparam)
         self.assertEqual( [response["name"], response["data"]],
                           ["DummyTest_nostim_Vm_soma", rec_v_soma] )
 
@@ -146,7 +147,7 @@ class TimeseriesGeneratorTest(unittest.TestCase):
     def test_9_forrecording_None(self):
         self.assertRaises(ValueError, self.tg.forrecording,)
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_10_forrecording_cellular_nostimulus(self):
         runtimeparam = {"dt": 0.1, "celsius": 30, "tstop": 1, "v_init": 65}
         rec_t = [ t*runtimeparam["dt"]

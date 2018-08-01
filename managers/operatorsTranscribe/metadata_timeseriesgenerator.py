@@ -78,15 +78,14 @@ class TimeseriesGenerator(object):
                 "comment": "current injection, "+stimparameters["type"][1],
                 "description": "whole single array of stimulus"}
 
-    @staticmethod
-    def cellrecordings_stimulus(model, rec_t, rec_i, parameters, stimparameters):
-        """static method that creates a time-series (stimulus) metadata for stimulated cells.
+    @classmethod
+    def recordings_cellstimulus(cls, model, rec_t, rec_i, parameters, stimparameters):
+        """static method that creates a time-series (response) metadata for stimulated cells.
 
         Arguments:
         model -- instantiated model
-        cellregion -- string; "soma", "axon", etc ...
         rec_t -- array; recordings["time"]
-        rec_v -- array; recordings["response"][cellregion]
+        rec_i -- array; recordings["stimulus"]
         parameters -- dictionary with keys "dt", "celsius", "tstop", "v_init"
                       Eg: {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
         stimparameters -- dictionary with keys "type" and "stimlist" where
@@ -102,20 +101,14 @@ class TimeseriesGenerator(object):
                                 {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0, "delay": 10.0},
                                 {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
                                 {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ]
+        NOTE:
+            - prior to calling this method weed out
+              recordings["stimulus"]="Model is not stimulated"
+            - this method only accepts arrays
         """
-        return {"type": "currentclampstimulus_series", #"CurrentClampStimulusSeries"
-                "name": model.modelname+"_stimulus",
-                "source": stimparameters["type"],
-                "data": rec_i,
-                "unit": "nA",
-                "gain": 0.0,
-                "resolution": parameters["dt"],
-                "conversion": 1000.0, # 1000 => 1ms
-                "timestamps": rec_t,
-                "starting_time": 0.0,
-                "rate": 1/parameters["dt"],
-                "comment": "current injection, "+stimparameters["type"][1],
-                "description": "whole single array of stimulus" }
+        if stimparameters["type"][0]=="current":
+            return cls.recordings_cell_currentstimulus(model, rec_t, rec_i,
+                                                  parameters, stimparameters)
 
     @classmethod
     def forcellrecordings_nostimulus(cls, chosenmodel, recordings, runtimeparameters):
@@ -129,20 +122,20 @@ class TimeseriesGenerator(object):
         runtimeparameters -- dictionary with keys "dt", "celsius", "tstop", "v_init"
                              Eg: {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
         """
+        specific_rec_i = "not stimulated"
         y = {}
         for cellregion in chosenmodel.regions.keys():
             y.update( {cellregion:
-                       cls.cellrecordings_response_nostimulus(
+                       cls.cellrecordings_response(
                                             chosenmodel, cellregion,
-                                            recordings["time"],
+                                            recordings["time"], specific_rec_i,
                                             recordings["response"][cellregion],
                                             runtimeparameters )} )
         return y
 
-    @classmethod
-    def forcellrecordings_stimulus(cls, chosenmodel, recordings,
+    def forcellrecordings_stimulus(self, chosenmodel, recordings,
                               runtimeparameters, stimparameters):
-        """class method that creates time-series metadata for stimulated cells.
+        """method that creates time-series metadata for stimulated cells.
 
         Arguments (mandatory):
         chosenmodel -- instantiated model
@@ -167,16 +160,16 @@ class TimeseriesGenerator(object):
         """
         y = {}
         y.update( {"stimulus":
-                   cls.cellrecordings_stimulus(
+                   self.recordings_cellstimulus(
                                             chosenmodel,
                                             recordings["time"],
                                             recordings["stimulus"],
                                             runtimeparameters, stimparameters )} )
         for cellregion in chosenmodel.regions.keys():
             y.update( {cellregion:
-                       cls.cellrecordings_response_stimulus(
+                       self.cellrecordings_response(
                                             chosenmodel, cellregion,
-                                            recordings["time"],
+                                            recordings["time"], recordings["stimulus"],
                                             recordings["response"][cellregion],
                                             runtimeparameters )} )
         return y

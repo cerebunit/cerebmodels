@@ -71,6 +71,7 @@ class FileGenerator(object):
                        'institution': string}
         NOTE:
             - vtest is not given for raw stimulation of the chosenmodel
+            - http://pynwb.readthedocs.io/en/latest/pynwb.file.html#pynwb.file.NWBFile
 
         Use case:
         fg = FileGenerator()
@@ -93,6 +94,6 @@ class FileGenerator(object):
               'session_start_time': time.asctime(time.gmtime(time.time()))+' '+time.tzname[0],
               'experimenter': self.get_username(username), #string
               'experiment_description': self.get_testdescription(vtest), #string
-              'session_id': str(hash(str(uuid.uuid1()))),
+              'session_id': str(hash(str(uuid.uuid1()))).replace('-',''), # remove any minus
               'lab': self.get_labname(labname), #string
               'institution': self.get_institution(institutename) }

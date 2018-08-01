@@ -11,6 +11,7 @@ from pynwb.icephys import VoltageClampSeries, VoltageClampStimulusSeries
 #from pynwb import get_manager
 #from pynwb.form.backends.hdf5 import HDF5IO
 
+
 class Fabricator(object):
     """Operators working under TranscribeManager
 
@@ -33,13 +34,30 @@ class Fabricator(object):
                     "institution": "name of the institution",
                     "lab": "name of the lab" }
         file_to_write = build_nwbfile( file_metadata )
+
+        Returned Value:
+
+        Availablle attributes:
+        NWBFile(source, session_description, identifier, session_start_time,
+                file_create_date=None, experimenter=None, experiment_description=None,
+                session_id=None, institution=None, notes=None, pharmacology=None,
+                protocol=None, related_publications=None, slices=None,
+                source_script=None, source_script_file_name=None, data_collection=None,
+                surgery=None, virus=None, stimulus_notes=None, lab=None,
+                acquisition=None, stimulus=None, stimulus_template=None, epochs=None,
+                epoch_tags=set(), trials=None, modules=None, ec_electrodes=None,
+                ec_electrode_groups=None, ic_electrodes=None, imaging_planes=None,
+                ogen_sites=None, devices=None, subject=None)
+
+        Note:
+            - call an nwbfile.attribute
+            - http://pynwb.readthedocs.io/en/latest/pynwb.file.html#pynwb.file.NWBFile
         """
         return NWBFile( source = filemd["source"],
                         session_description = filemd["session_description"],
                         identifier = filemd["identifier"],
                         session_start_time = filemd["session_start_time"],
                         file_create_date = str(datetime.now()),                   # additions
-                        version = pkg_resources.get_distribution("pynwb").version,# additions
                         experimenter = filemd["experimenter"],
                         experiment_description = filemd["experiment_description"],
                         session_id = filemd["session_id"],
@@ -293,3 +311,99 @@ class Fabricator(object):
             updated_nwbfile, electrodes_list = self.insert_intracell_electrodes(
                                                                 chosenmodel, elecmd, nwbfile )
         return updated_nwbfile, electrodes_list
+
+    @staticmethod
+    def generictime_series(metadata, nwbelectrode):
+        """static method called by construct_nwbseries
+
+        Arguments:
+        metadata -- 
+        nwbelectrode --
+
+        NOTE:
+            - https://pynwb.readthedocs.io/en/latest/pynwb.base.html#pynwb.base.TimeSeries
+        """
+        return TimeSeries( name = metadata["name"],
+                           source = metadata["source"],
+                           data = metadata["data"],
+                           unit = metadata["unit"],
+                           resolution = metadata["resolution"],
+                           conversion = metadata["conversion"],
+                           timestamps = metadata["timestamps"],
+                           starting_time = 0.0,
+                           rate = 1.0, #metadata["rate"],
+                           comments = metadata["comment"],
+                           description = metadata["description"],
+                           electrode = nwbelectrode )
+
+    @staticmethod
+    def currentclamp_series(metadata, nwbelectrode):
+        """static method called by construct_nwbseries
+        
+        Arguments:
+        metadata --
+        nwbelectrode --
+
+        NOTE:
+            - https://pynwb.readthedocs.io/en/latest/pynwb.icephys.html#pynwb.icephys.CurrentClampSeries
+        """
+        return CurrentClampSeries( name = metadata["name"],
+                                   source = metadata["source"],
+                                   data = metadata["data"],
+                                   unit = metadata["unit"],
+                                   gain = metadata["gain"],
+                                   bias_current = metadata["bias_current"],
+                                   bridge_balance = metadata["bridge_balance"],
+                                   capacitance_compensation = metadata["capacitance_compensation"],
+                                   resolution = metadata["resolution"],
+                                   conversion = metadata["conversion"],
+                                   timestamps = metadata["timestamps"],
+                                   starting_time = metadata["starting_time"],
+                                   rate = metadata["rate"],
+                                   comment = metadata["comment"],
+                                   description = metadata["description"],
+                                   electrode = nwbelectrode )
+
+    @staticmethod
+    def currentclampstimulus_series(metadata, nwbelectrode):
+        """static method called by construct_nwbseries
+        
+        Arguments:
+        metadata --
+        nwbelectrode --
+
+        NOTE:
+            - https://pynwb.readthedocs.io/en/latest/pynwb.icephys.html#pynwb.icephys.CurrentClampStimulusSeries
+        """
+        return CurrentClampStimulusSeries( name = metadata["name"],
+                                           source = metadata["source"],
+                                           data = metadata["data"],
+                                           unit = metadata["unit"],
+                                           gain = metadata["gain"],
+                                           resolution = metadata["resolution"],
+                                           conversion = metadata["conversion"],
+                                           timestamps = metadata["timestamps"],
+                                           starting_time = metadata["starting_time"],
+                                           rate = metadata["rate"],
+                                           comment = metadata["comment"],
+                                           description = metadata["description"],
+                                           electrode = nwbelectrode )
+    @classmethod
+    def make_one_nwbseries(cls, a_metadata=None, a_nwbelectrode=None):
+        funct = getattr(cls, a_metadata["type"])
+        return funct( metadata, a_nwbelectrode )
+
+    def construct_nwbseries(self, chosenmodel=None, tsmd=None, nwbelec=None):
+        nwbseries = {}
+        for cellregion in chosenmodel.regions.keys():
+            nwbseries.update( {cellregion:
+                              self.make_one_nwbseries(
+                                           a_metadata=tsmd[cellregion],
+                                           a_nwbelectrode=nwbelec[cellregion])} )
+        return nwbseries
+
+    def attach_nwbseries(self, chosenmodel=None, nwbseries=None, nwbfile=None):
+        for cellregion in chosenmodel.regions.keys():
+            nwbfile.add_acquisition(nwbseries[cellregion])
+        return nwbfile
+

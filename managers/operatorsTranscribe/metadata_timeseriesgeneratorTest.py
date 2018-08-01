@@ -148,7 +148,7 @@ class TimeseriesGeneratorTest(unittest.TestCase):
 
     #@unittest.skip("reason for skipping")
     def test_10_forrecording_cellular_nostimulus(self):
-        runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
+        runtimeparam = {"dt": 0.1, "celsius": 30, "tstop": 1, "v_init": 65}
         rec_t = [ t*runtimeparam["dt"]
                   for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
         rec_v = numpy.random.rand(2,len(rec_t))

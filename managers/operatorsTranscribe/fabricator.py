@@ -142,7 +142,7 @@ class Fabricator(object):
         nwbts with the attributes
                nwbts[key].name, nwbts[key].source, nwbts[key].data,
                nwbts[key].timestamps, nwbts[key].unit,
-               nwbts[key].resolution, nwbts[key].converstion,
+               nwbts[key].resolution, nwbts[key].conversion,
                nwbts[key].starting_time, nwbts[key].rate,
                nwbts[key].comment, nwbts[key].description
         keys are the keys in chosemodel.regions and with or without 'stimulus' as a key.
@@ -228,7 +228,11 @@ class Fabricator(object):
                 But
                 if "stimulus" is one of the key
                 ts_stim = updated_nwbfile.get_stimulus(nwbseries["stimulus"].name)
-                and get its attributes as usual.
+                then get its attributes as usual
+              NOTE:
+                 - unlike the returned value for build_nwbseries
+                   the timeseries here are for a particular key
+                   therefore it is no longer a dictionary.
         """
         if "stimulus" in nwbseries.keys():
             nwbfile.add_stimulus(nwbseries["stimulus"])
@@ -270,30 +274,67 @@ class Fabricator(object):
 
         Use case:
         epochmd = {"epoch0soma": {"source": "soma", "start_time": float, "stop_time": float,
-                                  "description": string, "tags": tuple}
+                                  "description": string, "tags": tuple},
+                   "epoch1axon": {"source": "soma", "start_time": float, "stop_time": float,
+                                  "description": string, "tags": tuple},
                    "epoch0axon": {"source": "axon", "start_time": float, "stop_time": float,
+                                  "description": string, "tags": tuple},
+                   "epoch1axon": {"source": "axon", "start_time": float, "stop_time": float,
                                   "description": string, "tags": tuple}}
         updated_nwbfile = insert_a_nwbepoch( "epoch0soma", epochmd, nwbfile )
 
         Returned Value:
         nwbfile.epochs.epochs.data returns a list with tuple such that
-                     [( 0.0, # => epochmd["epoch0soma"]["start_time"]
+                     [( 0.0, # => epochmd["epoch0soma"]["start_time"] 
                        10.0, # => epochmd["epoch0soma"]["stop_time"]
-                       '1_epoch_responses,0,axon,DummyTest,epoch0axon', # => epochmd["epoch0soma"]["tags"]
+                      '1_epoch_responses,0,soma,DummyTest,epoch0soma',#=>epochmd["epoch0soma"]["tags"]
                        <pynwb.form.data_utils.ListSlicer object at 0x7ff5883a8450>, # EPOCH DATA
                        'first epoch')] # => epochmd["epoch0soma"]["description"]
+              NOTE:
+                  - above are the 5-elements for A particular epoch
+                  - a particular epoch => a row
+                  - the 5-elements => 5-columns such that
+                  - nwbfile.epochs.epochs.columns returns
+                      ('start_time', 'stop_time', 'tags', 'timeseries', 'description')
+
         Since we are interested in the Epoch Date created, to access it
         nwbfile.epochs.epochs.data[0][3] returns
                      <pynwb.form.data_utils.ListSlicer object at 0x7ff5883a8450>
               NOTE:
-                  - first index (here, 0) will vary with number of epochs inserted
-                  - second index (3) will always be 3.
+                  - the first index is the row index thus representing a particular epoch
+                  - here the index=0 because there is only one epoch
+                  - the data, i.e, timeseries is always index= 3
+                  - **TAKE AWAY**
+                    nwbfile.epochs.epochs.data[i][3] for i'th epoch
+
         Next nwbfile.epochs.epochs.data[0][3].data is a TimeSeries class.
+
         To get the TimeSeries object do
         nwbfile.epochs.epochs.data[0][3].data.data which returns a list with tuple
                      [( 0, # => 
                         1000, # => timeseries_metadata["soma"]["conversion"]
                         <pynwb.base.TimeSeries object at 0x7fabf68b8690>)] # => nwb TimeSeries object
+              NOTE:
+                  - one would think that this list/data is unique to this epoch
+                  - but if you created other epochs, say "epoch0soma" & "epoch0axon" then
+                    length of this list = 2
+                    thus, len(nwbfile.epochs.epochs.data[0][3].data.data) = len(epoch_metadata)
+                  - in other words, for any i (for all epochs)
+                    nwbfile.epochs.epochs.data[i][3].data.data is the same
+                  - this is because 
+                    nwbfile.epochs.epochs.data[i][3].data.data
+                    is a TABLE
+                    recall that nwbfile.epochs.epochs.data is also a TABLE
+                  - however, it should be noted that they are not the same table types
+                  - the table nwbfile.epochs.epochs.data[i][3].data.data has 3-columns
+                    and the rows correspond to respective epoch
+                  - for i'th epoch, nwbfile.epochs.epochs.data[i][3] its corresponding
+                    data is nwbfile.epochs.epochs.data[i][3].data.data[i]
+                  - finally, its corresponding TimeSeries nwb object is the 3rd column
+                    that is nwbfile.epochs.epochs.data[i][3].data.data[i][2]
+                  - **TAKE AWAY**
+                    nwbfile.epochs.epochs.data[i][3].data.data[i][2] for i'th epoch
+
         Finally to retrieve the TimeSeries data and timestamps associated with this epoch
         follow the same format as done for the returned values of build_nwbseries
         with some modifications as shown
@@ -305,6 +346,7 @@ class Fabricator(object):
               http://pynwb.readthedocs.io/en/latest/pynwb.epoch.html#pynwb.epoch.Epochs
               https://github.com/AllenInstitute/nwb-api/blob/master/ainwb/nwb/nwbep.py
               https://pynwb.readthedocs.io/en/latest/pynwb.file.html#pynwb.file.NWBFile.create_epoch
+              https://pynwb.readthedocs.io/en/latest/pynwb.epoch.html#pynwb.epoch.EpochTable
         """
         nwbfile.create_epoch( epochmd[epoch_i_cellregion]["source"],
                               start_time = epochmd[epoch_i_cellregion]["start_time"],
@@ -347,6 +389,77 @@ class Fabricator(object):
                                            "tags": ('1_epoch_responses', '0', 'axon', 'DummyTest', "epoch0axon")} }
         updated_nwbfile = build_nwbepochs( nwbfile=nwbfile, epochmd=epoch_meta_data,
                                            nwbts=nwbts )
+
+        Returned Value:
+        nwbfile.epochs.epochs.data returns a list with tuple such that
+                     [(10.0, # => epochmd["epoch1soma"]["start_time"] 
+                       20.0, # => epochmd["epoch1soma"]["stop_time"]
+        epoch1soma -> '2_epoch_responses,1,soma,DummyTest,epoch1soma',#=>epochmd["epoch1soma"]["tags"]
+                       <pynwb.form.data_utils.ListSlicer object at 0x7f65f23fb410>, # EPOCH DATA
+                       'second epoch'), # => epochmd["epoch1soma"]["description"]
+        epoch0axon -> (0.0, 10.0, '2_epoch_responses,0,axon,DummyTest,epoch0axon',
+                       <pynwb.form.data_utils.ListSlicer object at 0x7f65f23fb490>, 'first epoch'),
+        epoch1axon -> (10.0, 20.0, '2_epoch_responses,1,axon,DummyTest,epoch1axon',
+                       <pynwb.form.data_utils.ListSlicer object at 0x7f65f23fb510>, 'second epoch'),
+        epoch0soma -> (0.0, 10.0, '2_epoch_responses,0,soma,DummyTest,epoch0soma',
+                       <pynwb.form.data_utils.ListSlicer object at 0x7f65f23fb590>, 'first epoch')]
+              NOTE:
+                  - above are the 5-elements for A particular epoch
+                  - a particular epoch => a row
+                  - the 5-elements => 5-columns such that
+                  - nwbfile.epochs.epochs.columns returns
+                      ('start_time', 'stop_time', 'tags', 'timeseries', 'description')
+
+        Since we are interested in the Epoch Date created, to access it
+        nwbfile.epochs.epochs.data[0][3] returns
+                     <pynwb.form.data_utils.ListSlicer object at 0x7f65f23fb410
+              NOTE:
+                  - the first index is the row index thus representing a particular epoch
+                  - here the index=0 because there is only one epoch
+                  - the data, i.e, timeseries is always index= 3
+                  - **TAKE AWAY**
+                    nwbfile.epochs.epochs.data[i][3] for i'th epoch
+
+        Next nwbfile.epochs.epochs.data[0][3].data is a TimeSeries class.
+
+        To get the TimeSeries object of any i'th epoch do
+        nwbfile.epochs.epochs.data[i][3].data.data which returns a list with tuple
+                     [( 0, # => 
+                        1000, # => timeseries_metadata["soma"]["conversion"]
+                        <pynwb.base.TimeSeries object at 0x7fabf68b8690>)] # => nwb TimeSeries object
+              NOTE:
+                  - one would think that this list/data is unique to this epoch
+                  - but if you created other epochs, say "epoch0soma" & "epoch0axon" then
+                    length of this list = 2
+                    thus, len(nwbfile.epochs.epochs.data[0][3].data.data) = len(epoch_metadata)
+                  - in other words, for any i (for all epochs)
+                    nwbfile.epochs.epochs.data[i][3].data.data is the same
+                  - this is because 
+                    nwbfile.epochs.epochs.data[i][3].data.data
+                    is a TABLE
+                    recall that nwbfile.epochs.epochs.data is also a TABLE
+                  - however, it should be noted that they are not the same table types
+                  - the table nwbfile.epochs.epochs.data[i][3].data.data has 3-columns
+                    and the rows correspond to respective epoch
+                  - for i'th epoch, nwbfile.epochs.epochs.data[i][3] its corresponding
+                    data is nwbfile.epochs.epochs.data[i][3].data.data[i]
+                  - finally, its corresponding TimeSeries nwb object is the 3rd column
+                    that is nwbfile.epochs.epochs.data[i][3].data.data[i][2]
+                  - **TAKE AWAY**
+                    nwbfile.epochs.epochs.data[i][3].data.data[i][2] for i'th epoch
+
+        Finally to retrieve the TimeSeries data and timestamps associated with this epoch
+        follow the same format as done for the returned values of build_nwbseries
+        with some modifications as shown
+        nwbfile.epochs.epochs.data[0][3].data.data[0][2].timestamps
+        nwbfile.epochs.epochs.data[0][3].data.data[0][2].data
+
+        NOTE:
+            - for nwb epoch attributes see
+              http://pynwb.readthedocs.io/en/latest/pynwb.epoch.html#pynwb.epoch.Epochs
+              https://github.com/AllenInstitute/nwb-api/blob/master/ainwb/nwb/nwbep.py
+              https://pynwb.readthedocs.io/en/latest/pynwb.file.html#pynwb.file.NWBFile.create_epoch
+              https://pynwb.readthedocs.io/en/latest/pynwb.epoch.html#pynwb.epoch.EpochTable
         """
         for epoch_i_region in epochmd.keys():
             region = epochmd[epoch_i_region]["source"]

@@ -166,9 +166,10 @@ class Fabricator(object):
 
     @staticmethod
     def link_nwbseriesresponses_to_nwbfile(nwbseries, nwbfile):
-        """static method called by affix_nwbseries_to_nwbfile
+        """static method only for adding response related timeseries NOT stimulus.
+        This is called by affix_nwbseries_to_nwbfile
 
-        Arguments
+        Arguments:
         nwbseries -- dictorary; keys = keys in chosenmodel.regions = {"soma": 0.0, "axon", 0.0}
                                 values for each key is
                                 pynwb.base.TimeSeries, obtained using build_nwbseries method
@@ -203,17 +204,41 @@ class Fabricator(object):
                                   if x not in {"stimulus"} }
 
     def affix_nwbseries_to_nwbfile(self, nwbseries=None, nwbfile=None):
+        """method that adds nwbseries with or without stimulus
+
+        Keyword Arguments:
+        nwbseries -- dictorary; keys = keys in chosenmodel.regions = {"soma": 0.0, "axon", 0.0}
+                                             with or without "stimulus" as key
+                                values for each key is
+                                pynwb.base.TimeSeries, obtained using build_nwbseries method
+        nwbfile -- pynwb.file.NWBFile, obtained using build_nwbfile method
+
+        Returned value:
+        updated_nwbfile with all the TimeSeries which can be extracted as
+             ts_of_key = updated_nwbfile.get_acquisition(nwbseries[key].name)
+             where key is the region
+             Eg: 
+                ts_soma = updated_nwbfile.get_acquisition(nwbseries["soma"].name)
+                then you can get all the available attributes as usual
+                    ts_soma.name, ts_soma.source, ts_soma.data,
+                    ts_soma.timestamps, ts_soma.unit,
+                    ts_soma.resolution, ts_soma.converstion,
+                    ts_soma.starting_time, ts_soma.rate,
+                    ts_soma.comment, ts_soma.description
+                But
+                if "stimulus" is one of the key
+                ts_stim = updated_nwbfile.get_stimulus(nwbseries["stimulus"].name)
+                and get its attributes as usual.
+        """
         if "stimulus" in nwbseries.keys():
-            pass
             nwbfile.add_stimulus(nwbseries["stimulus"])
             stripped_nwbseries = self.strip_out_stimulus_from_nwbseries(nwbseries)
             nwbfile = self.link_nwbseriesresponses_to_nwbfile(stripped_nwbseries,
                                                               nwbfile)
         else:
-            nwbfile = self.link_nwbseriesresponses_to_nwbfile(stripped_nwbseries,
+            nwbfile = self.link_nwbseriesresponses_to_nwbfile(nwbseries,
                                                               nwbfile)
-        #return nwbfile
-    #    pass
+        return nwbfile
 
     @staticmethod
     def insert_a_nwbepoch( epoch_i_cellregion, epochmd, nwbfile, nwbts ):

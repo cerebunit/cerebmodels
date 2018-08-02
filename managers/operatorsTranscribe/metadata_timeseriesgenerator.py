@@ -28,14 +28,13 @@ class TimeseriesGenerator(object):
             - but recordings["stimulus"] = array = specific_rec_i
         """
         if (type(specific_rec_i) is str) and (specific_rec_i=="not stimulated"):
-            name = model.modelname+"_nostim_Vm_"+cellregion
             comment = "voltage response without stimulation"
         else:
-            name = model.modelname+"_stim_Vm_"+cellregion
             comment = "voltage response with stimulation"
 
-        return {"name": name, "source": cellregion, "data": rec_v, "unit": "mV",
-                "resolution": parameters["dt"], "conversion": 1000.0, #1000=>1ms
+        return {"name": model.modelname+"_"+cellregion, "source": cellregion,
+                "data": rec_v, "unit": "mV", "resolution": parameters["dt"],
+                "conversion": 1000.0, #1000=>1ms
                 "timestamps": rec_t, #"starting_time": 0.0,
                 #"rate": 1/parameters["dt"], # NWB suggests using Hz but frequency != rate
                 "comment": comment,

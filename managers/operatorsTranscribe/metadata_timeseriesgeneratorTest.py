@@ -29,8 +29,8 @@ class TimeseriesGeneratorTest(unittest.TestCase):
         # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
         ts_response = TimeseriesGenerator.cellrecordings_response(self.chosenmodel,
                               "axon", rec_t, specific_rec_i, rec_v_axon, runtimeparam)
-        self.assertEqual( [ts_response["name"], ts_response["data"]],
-                          ["DummyTest_nostim_Vm_axon", rec_v_axon] )
+        self.assertEqual( [ts_response["name"], ts_response["data"], ts_response["comment"]],
+                          ["DummyTest_axon", rec_v_axon, "voltage response without stimulation"] )
 
     #@unittest.skip("reason for skipping")
     def test_2_cellrecordings_response_stimulus(self):
@@ -42,8 +42,8 @@ class TimeseriesGeneratorTest(unittest.TestCase):
         # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
         ts_response = TimeseriesGenerator.cellrecordings_response(self.chosenmodel,
                               "soma", rec_t, rec_i, rec_v_soma, runtimeparam)
-        self.assertNotEqual( [ts_response["name"], ts_response["data"]],
-                             ["DummyTest_nostim_Vm_soma", rec_v_soma] )
+        self.assertNotEqual( [ts_response["name"], ts_response["data"], ts_response["comment"]],
+                             ["DummyTest_soma", rec_v_soma, "voltage response without stimulation"] )
 
     #@unittest.skip("reason for skipping")
     def test_3_recordings_cell_current_stimulus(self):
@@ -87,8 +87,10 @@ class TimeseriesGeneratorTest(unittest.TestCase):
                      #"stimulus": "Model is not stimulated"} not needed for this test
         response = self.tg.forcellrecordings_nostimulus(self.chosenmodel,
                                                          recordings, runtimeparam)
-        self.assertEqual( [response["soma"]["name"], response["axon"]["name"]],
-                          ["DummyTest_nostim_Vm_soma", "DummyTest_nostim_Vm_axon"] )
+        self.assertEqual( [response["soma"]["name"], response["axon"]["name"],
+                           response["soma"]["comment"]],
+                          ["DummyTest_soma", "DummyTest_axon",
+                           "voltage response without stimulation"] )
 
     #@unittest.skip("reason for skipping")
     def test_6_forcellrecordings_stimulus(self):
@@ -105,8 +107,10 @@ class TimeseriesGeneratorTest(unittest.TestCase):
                       "stimulus": rec_i}
         response = self.tg.forcellrecordings_stimulus(self.chosenmodel, recordings,
                                                        runtimeparam, stimparameters)
-        self.assertEqual( [response["soma"]["name"], response["axon"]["data"]],
-                          ["DummyTest_stim_Vm_soma", recordings["response"]["axon"]] )
+        self.assertEqual( [response["soma"]["name"], response["axon"]["data"],
+                           response["soma"]["comment"]],
+                          ["DummyTest_soma", recordings["response"]["axon"],
+                           "voltage response with stimulation"] )
 
     #@unittest.skip("reason for skipping")
     def test_7_forcellrecording_None(self):
@@ -137,8 +141,10 @@ class TimeseriesGeneratorTest(unittest.TestCase):
         respmd = self.tg.forcellrecording(chosenmodel=self.chosenmodel,
                                            recordings=recordings,
                                            runtimeparameters=runtimeparam)
-        self.assertEqual( [respmd["soma"]["name"], respmd["axon"]["name"]],
-                          ["DummyTest_nostim_Vm_soma", "DummyTest_nostim_Vm_axon"] )
+        self.assertEqual( [respmd["soma"]["name"], respmd["axon"]["name"],
+                           respmd["soma"]["comment"]],
+                          ["DummyTest_soma", "DummyTest_axon",
+                           "voltage response without stimulation"] )
 
     #@unittest.skip("reason for skipping")
     def test_9_forcellrecording_stimulus(self):
@@ -157,8 +163,10 @@ class TimeseriesGeneratorTest(unittest.TestCase):
                                            recordings=recordings,
                                            runtimeparameters=runtimeparam,
                                            stimparameters=stimparameters)
-        self.assertEqual( [respmd["soma"]["name"], respmd["axon"]["data"]],
-                          ["DummyTest_stim_Vm_soma", recordings["response"]["axon"]] )
+        self.assertEqual( [respmd["soma"]["name"], respmd["axon"]["data"],
+                           respmd["axon"]["comment"]],
+                          ["DummyTest_soma", recordings["response"]["axon"],
+                           "voltage response with stimulation"] )
 
     #@unittest.skip("reason for skipping")
     def test_10_forrecording_None(self):
@@ -178,7 +186,7 @@ class TimeseriesGeneratorTest(unittest.TestCase):
                                       runtimeparameters=runtimeparam)
         #print respmd # what does it looke like?
         self.assertEqual( [respmd["soma"]["name"], respmd["axon"]["name"]],
-                          ["DummyTest_nostim_Vm_soma", "DummyTest_nostim_Vm_axon"] )
+                          ["DummyTest_soma", "DummyTest_axon"] )
 
     #@unittest.skip("reason for skipping")
     def test_12_forrecording_cellular_stimulus(self):
@@ -198,7 +206,7 @@ class TimeseriesGeneratorTest(unittest.TestCase):
                                        runtimeparameters=runtimeparam,
                                        stimparameters=stimparameters)
         self.assertEqual( [respmd["soma"]["name"], respmd["axon"]["data"]],
-                          ["DummyTest_stim_Vm_soma", recordings["response"]["axon"]] )
+                          ["DummyTest_soma", recordings["response"]["axon"]] )
 
 if __name__ == '__main__':
     unittest.main()

@@ -170,7 +170,7 @@ class Fabricator(object):
         return nwbfile
 
     @staticmethod
-    def insert_a_nwbepoch( epoch_i_cellregion, epochmd, nwbfile ):
+    def insert_a_nwbepoch( epoch_i_cellregion, epochmd, nwbfile, nwbts ):
         """static method called by construct_nwbepochs
 
         Arguments:
@@ -178,38 +178,56 @@ class Fabricator(object):
         epochmd -- dictionary;
                    meta-data for case chosenmodel.regions = {'soma': 0.0, 'axon': 0.0} and no of epochs/region=2 with stimulation is of the form
                    {"epoch0soma": {"source": "soma", "start_time": float, "stop_time": float,
-                                   "description": string}
+                                   "description": string, "tags": tuple}
                     "epoch1soma": {"source": "soma", "start_time": float, "stop_time": float,
-                                   "description": string}
+                                   "description": string, "tags": tuple}
                     "epoch0axon": {"source": "axon", "start_time": float, "stop_time": float,
-                                   "description": string}
+                                   "description": string, "tags": tuple}
                     "epoch1axon": {"source": "axon", "start_time": float, "stop_time": float,
-                                   "description": string}
-                    "epoch_tags": ('2_epoch_responses',)}
+                                   "description": string, "tags": tuple}}
                   for the case without stimulation
                    {"epoch0soma": {"source": "soma", "start_time": float, "stop_time": float,
-                                   "description": string}
+                                   "description": string, "tags": tuple}
                     "epoch0axon": {"source": "axon", "start_time": float, "stop_time": float,
-                                   "description": string}
+                                   "description": string, "tags": tuple}}
         nwbfile -- pynwb.file.NWBFile, obtained using build_nwbfile method
+        nwbts -- pynwb.base.TimeSeries, obtained using build_nwbseries method
+
+        NOTE:
+            - the whole nwbts is not passed here
+            - pass only time series that corresponds to this region
 
         Use case:
         epochmd = {"epoch0soma": {"source": "soma", "start_time": float, "stop_time": float,
-                                  "description": string}
+                                  "description": string, "tags": tuple}
                    "epoch0axon": {"source": "axon", "start_time": float, "stop_time": float,
-                                  "description": string}
-                   "epoch_tags": ('1_epoch_responses',)}
+                                  "description": string, "tags": tuple}}
         updated_nwbfile = insert_a_nwbepoch( "epoch0soma", epochmd, nwbfile )
 
         Returned Value:
-        nwbfile with the attributes
-               nwbfile.source, nwbfile.session_description, nwbfile.identifier,
-               nwbfile.session_start_time, nwbfile.experimenter,
-               nwbfile.experiment_description, nwbfile.session_id, nwbfile.lab,
-               nwbfile.institution
-
-        Availablle attributes:
-        description, start_time, stop_time, tags, timeseries, metadata=None
+        nwbfile.epochs.epochs.data returns a list with tuple such that
+                     [( 0.0, # => epochmd["epoch0soma"]["start_time"]
+                       10.0, # => epochmd["epoch0soma"]["stop_time"]
+                       '1_epoch_responses,0,axon,DummyTest,epoch0axon', # => epochmd["epoch0soma"]["tags"]
+                       <pynwb.form.data_utils.ListSlicer object at 0x7ff5883a8450>, # EPOCH DATA
+                       'first epoch')] # => epochmd["epoch0soma"]["description"]
+        Since we are interested in the Epoch Date created, to access it
+        nwbfile.epochs.epochs.data[0][3] returns
+                     <pynwb.form.data_utils.ListSlicer object at 0x7ff5883a8450>
+              NOTE:
+                  - first index (here, 0) will vary with number of epochs inserted
+                  - second index (3) will always be 3.
+        Next nwbfile.epochs.epochs.data[0][3].data is a TimeSeries class.
+        To get the TimeSeries object do
+        nwbfile.epochs.epochs.data[0][3].data.data which returns a list with tuple
+                     [( 0, # => 
+                        1000, # => timeseries_metadata["soma"]["conversion"]
+                        <pynwb.base.TimeSeries object at 0x7fabf68b8690>)] # => nwb TimeSeries object
+        Finally to retrieve the TimeSeries data and timestamps associated with this epoch
+        follow the same format as done for the returned values of build_nwbseries
+        with some modifications as shown
+        nwbfile.epochs.epochs.data[0][3].data.data[0][2].timestamps
+        nwbfile.epochs.epochs.data[0][3].data.data[0][2].data
 
         NOTE:
             - for nwb epoch attributes see
@@ -220,48 +238,49 @@ class Fabricator(object):
         nwbfile.create_epoch( epochmd[epoch_i_cellregion]["source"],
                               start_time = epochmd[epoch_i_cellregion]["start_time"],
                               stop_time = epochmd[epoch_i_cellregion]["stop_time"],
-                              timeseries = epochmd[epoch_i_cellregion]["timeseries"],
-                              tags = epochmd["epoch_tags"],
+                              timeseries = nwbts,
+                              tags = epochmd[epoch_i_cellregion]["tags"],
                               description = epochmd[epoch_i_cellregion]["description"] )
         return nwbfile
 
-    def construct_nwbepochs( self, epochmd=None, nwbfile=None ):
+    def build_nwbepochs( self, epochmd=None, nwbfile=None, nwbts=None ):
         """method for contructing epochs into the built nwbfile
 
         Keyword arguments:
         epochmd -- dictionary;
                    meta-data for case chosenmodel.regions = {'soma': 0.0, 'axon': 0.0} and no of epochs/region=2 with stimulation is of the form
                    {"epoch0soma": {"source": "soma", "start_time": float, "stop_time": float,
-                                   "description": string}
+                                   "description": string, "tags": tuple}
                     "epoch1soma": {"source": "soma", "start_time": float, "stop_time": float,
-                                   "description": string}
+                                   "description": string, "tags": tuple}
                     "epoch0axon": {"source": "axon", "start_time": float, "stop_time": float,
-                                   "description": string}
+                                   "description": string, "tags": tuple}
                     "epoch1axon": {"source": "axon", "start_time": float, "stop_time": float,
-                                   "description": string}
-                    "epoch_tags": ('2_epoch_responses',)}
+                                   "description": string, "tags": tuple}}
                   for the case without stimulation
                    {"epoch0soma": {"source": "soma", "start_time": float, "stop_time": float,
-                                   "description": string}
+                                   "description": string, "tags": tuple}
                     "epoch0axon": {"source": "axon", "start_time": float, "stop_time": float,
-                                   "description": string}
+                                   "description": string, "tags": tuple}}
         nwbfile -- pynwb.file.NWBFile, obtained using build_nwbfile method
+        nwbts -- pynwb.base.TimeSeries, obtained using build_nwbseries method
 
         Use case:
         epoch_meta_data = { "epoch0soma": {"source": "soma",
                                            "start_time": 0.0, "stop_time": 10.0,
-                                           "description": "first epoch"},
+                                           "description": "first epoch",
+                                           "tags": ('1_epoch_responses', '0', 'soma', 'DummyTest', "epoch0soma")},
                             "epoch0axon": {"source": "axon",
                                            "start_time": 0.0, "stop_time": 10.0,
-                                           "description": "first epoch"}
-                            "epoch_tags": ("1_epoch_responses",) }
-        nwbfile, epoch_list = construct_nwbepochs( nwbfile=nwbfile, epochmd=epoch_meta_data )
+                                           "description": "first epoch",
+                                           "tags": ('1_epoch_responses', '0', 'axon', 'DummyTest', "epoch0axon")} }
+        updated_nwbfile = build_nwbepochs( nwbfile=nwbfile, epochmd=epoch_meta_data,
+                                           nwbts=nwbts )
         """
-        md_no_tags = { x: epochmd[x] for x in epochmd
-                                      if x not in {"epoch_tags"} }
-        #nwb_epochs_list = []
-        for epoch_i_region in md_no_tags.keys():
-            updated_nwbfile = self.insert_a_nwbepoch( epoch_i_region, epochmd, nwbfile )
+        for epoch_i_region in epochmd.keys():
+            region = epochmd[epoch_i_region]["source"]
+            updated_nwbfile = self.insert_a_nwbepoch( epoch_i_region, epochmd, nwbfile,
+                                                      nwbts[region]  )
         return updated_nwbfile
 
     @staticmethod

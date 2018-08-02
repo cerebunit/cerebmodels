@@ -229,6 +229,7 @@ class FabricatorTest(unittest.TestCase):
 
     #@unittest.skip("reason for skipping")
     def test_7_strip_out_stimulus_from_nwbseries(self):
+        # very similar to test_5_build_nwbseries_stimulus but stripping off created stimulus series
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         stimparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
@@ -264,12 +265,14 @@ class FabricatorTest(unittest.TestCase):
                             "description": "whole single array of stimulus"} }
         nwbts = self.fab.build_nwbseries(chosenmodel = self.chosenmodel,
                                              tsmd = ts_metadata)
+        stripped_nwbts = Fabricator.strip_out_stimulus_from_nwbseries(nwbts)
+        #print type(stripped_nwbts["soma"])
+        #print type(stripped_nwbts["axon"])
         #print nwbts['soma'].name # what does this return
         #print [nwbts.name, nwbts.source, nwbts.data, nwbts.unit, nwbts.resolution, nwbts.conversion, nwbts.timestamps, nwbts.starting_time, nwbts.rate, nwbts.comments, nwbts.description, nwbts.control, nwbts.control_description, nwbts.parent] # available attributes
-        compare1 = [nwbts['soma'].data, nwbts['axon'].data, nwbts['stimulus'].data,
-                    nwbts['stimulus'].timestamps]
-        compare2 = [recordings['response']['soma'], recordings['response']['axon'],
-                    recordings['stimulus'], recordings['time']]
+        compare1 = [len(nwbts), len(stripped_nwbts), stripped_nwbts["soma"].data,
+                                                     stripped_nwbts["axon"].data]
+        compare2 = [3, 2, nwbts['soma'].data, nwbts['axon'].data]
         self.assertEqual( compare1, compare2 )
 
     @unittest.skip("reason for skipping")

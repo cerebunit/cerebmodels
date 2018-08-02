@@ -195,18 +195,23 @@ class Fabricator(object):
             nwbfile.add_acquisition(nwbseries[key])
         return nwbfile
 
-    #@staticmethod
-    #def strip_out_stimulus_from_nwbseries(nwbseries):
-        #return { x: nwbseries[x] for x in nwbseries
-        #                          if x not in {"stimulus"} }
-    #    pass
+    @staticmethod
+    def strip_out_stimulus_from_nwbseries(nwbseries):
+        """static method called by affix_nwbseries_to_nwbfile
+        """
+        return { x: nwbseries[x] for x in nwbseries
+                                  if x not in {"stimulus"} }
 
-    #def affix_nwbseries_to_nwbfile(self, nwbseries=None, nwbfile=None):
-    #    if "stimulus" in nwbseries.keys():
-    #        nwbfile.add_stimulus(nwbseries["stimulus"]
-            #stripped_nwbseries = self.strip_out_stimulus_from_nwbseries(nwbseries)
-            #nwbfile = self.link_nwbseriesresponses_to_nwbfile(stripped_nwbseries,
-            #                                                  nwbfile)
+    def affix_nwbseries_to_nwbfile(self, nwbseries=None, nwbfile=None):
+        if "stimulus" in nwbseries.keys():
+            pass
+            nwbfile.add_stimulus(nwbseries["stimulus"])
+            stripped_nwbseries = self.strip_out_stimulus_from_nwbseries(nwbseries)
+            nwbfile = self.link_nwbseriesresponses_to_nwbfile(stripped_nwbseries,
+                                                              nwbfile)
+        else:
+            nwbfile = self.link_nwbseriesresponses_to_nwbfile(stripped_nwbseries,
+                                                              nwbfile)
         #return nwbfile
     #    pass
 

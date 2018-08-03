@@ -149,8 +149,8 @@ class EpochGenerator(object):
                               str(stimlist[i]["amp_initial"]) + " to " + \
                               str(stimlist[i]["amp_final"]) + " nA"
                 return {"source": theregion,
-                        "start_time": stimlist[i]["delay"],
-                        "stop_time": stimlist[i]["delay"] + stimlist[i]["dur"],
+                        "start_time": float(stimlist[i]["delay"]),
+                        "stop_time": float(stimlist[i]["delay"] + stimlist[i]["dur"]),
                         "description": descrip}
 
     def forepoch( self, chosenmodel=None, parameters=None ):

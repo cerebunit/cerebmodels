@@ -465,14 +465,14 @@ class FabricatorTest(unittest.TestCase):
                         "resolution": runtimeparam["dt"],
                         "conversion": 1000.0,
                         "timestamps": recordings["time"],
-                        "comment": "voltage response without stimulation",
+                        "comment": "voltage response with stimulation",
                         "description": "whole single array of voltage response from soma of DummyTest"},
                "axon": {"name": "DummyTest_axon", "source": "axon",
                         "data": recordings["response"]["axon"], "unit": "mV",
                         "resolution": runtimeparam["dt"],
                         "conversion": 1000.0,
                         "timestamps": recordings["time"],
-                        "comment": "voltage response without stimulation",
+                        "comment": "voltage response with stimulation",
                         "description": "whole single array of voltage response from axon of DummyTest"},
                "stimulus": {"name": "DummyTest_stimulus", "source": stimparameters["type"][1],
                             "data": recordings["stimulus"], "unit": "nA",
@@ -506,6 +506,7 @@ class FabricatorTest(unittest.TestCase):
                                                 nwbts=nwbts)
         # what does the output look like?
         #print updated_mynwbfile.epochs.epochs.data # all the epochs
+        print updated_mynwbfile.epochs.epochs.data # all the epochs
         #print updated_mynwbfile.epochs.epochs.data[0][3] # 1st epoch
         #print updated_mynwbfile.epochs.epochs.data[0][3].data.data[0][2].description # its data
         #print updated_mynwbfile.epochs.epochs.data[1][3] # 2nd epoch

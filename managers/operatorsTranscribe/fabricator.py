@@ -5,8 +5,8 @@ import pynwb
 from pynwb import NWBFile
 from pynwb import TimeSeries
 #from pynwb.icephys import IntracellularElectrode
-from pynwb.icephys import CurrentClampSeries, CurrentClampStimulusSeries
-from pynwb.icephys import VoltageClampSeries, VoltageClampStimulusSeries
+#from pynwb.icephys import CurrentClampSeries, CurrentClampStimulusSeries
+#from pynwb.icephys import VoltageClampSeries, VoltageClampStimulusSeries
 #from pynwb import get_manager
 #from pynwb.form.backends.hdf5 import HDF5IO
 
@@ -15,7 +15,10 @@ class Fabricator(object):
     """Operators working under TranscribeManager
 
     Available methods:
-    forfile
+    build_nwbfile
+    build_nwbseries
+    affix_nwbseries_to_nwbfile
+    build_nwbepochs
     """
 
     def build_nwbfile( self, filemd ):

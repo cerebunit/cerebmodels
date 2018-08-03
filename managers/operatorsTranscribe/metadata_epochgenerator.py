@@ -89,13 +89,13 @@ class EpochGenerator(object):
         x = {}
         lst = []
         no_of_epochs_per_region = cls.compute_totalepochs_per_cellregion(parameters)
-        for key in chosenmodel.regions.keys():
-            [ x.update({"epoch"+str(i)+key: {}})
+        for cellregion in chosenmodel.regions.keys():
+            [ x.update({"epoch"+str(i)+cellregion: {}})
                                    for i in range(no_of_epochs_per_region) ]
-            [ x["epoch"+str(i)+key].update({"tags":
+            [ x["epoch"+str(i)+cellregion].update({"tags":
                                              (str(no_of_epochs_per_region)+"_epoch_responses",
-                                              str(i), key, chosenmodel.modelname,
-                                              "epoch"+str(i)+key)})
+                                              str(i), cellregion, chosenmodel.modelname,
+                                              "epoch"+str(i)+cellregion)})
                                    for i in range(no_of_epochs_per_region) ]
         return x
 

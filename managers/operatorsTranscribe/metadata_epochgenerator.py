@@ -68,22 +68,25 @@ class EpochGenerator(object):
         Returned Value:
         assuming chosenmodel.regions = {'soma': 0.0, 'axon': 0.0} and no of epochs/region=3 (i.e initial state regardless of stimulus is epoch0)
         returned value is a dictionary of the form
-        dictionary--{"epoch0soma": {'tags': ('3_epoch_responses', 0, soma, modelname, "epoch0soma")},
-                     "epoch1soma": {'tags': ('3_epoch_responses', 1, soma, modelname, "epoch1soma")},
-                     "epoch2soma": {'tags': ('3_epoch_responses', 2, soma, modelname, "epoch2soma")},
-                     "epoch0axon": {'tags': ('3_epoch_responses', 0, axon, modelname, "epoch0axon")},
-                     "epoch1axon": {'tags': ('3_epoch_responses', 1, soma, modelname, "epoch1axon")},
-                     "epoch2axon": {'tags': ('3_epoch_responses', 2, soma, modelname, "epoch2axon")}}
+        dictionary--
+         {"epoch0soma": {'tags': ('3_epoch_responses', 0, soma, modelname, modelscale, "epoch0soma")},
+          "epoch1soma": {'tags': ('3_epoch_responses', 1, soma, modelname, modelscale, "epoch1soma")},
+          "epoch2soma": {'tags': ('3_epoch_responses', 2, soma, modelname, modelscale, "epoch2soma")},
+          "epoch0axon": {'tags': ('3_epoch_responses', 0, axon, modelname, modelscale, "epoch0axon")},
+          "epoch1axon": {'tags': ('3_epoch_responses', 1, soma, modelname, modelscale, "epoch1axon")},
+          "epoch2axon": {'tags': ('3_epoch_responses', 2, soma, modelname, modelscale, "epoch2axon")}}
         however without stimulation, no of epochs/region = 1 (i.e, only epoch0)
-        dictionary--{"epoch0soma": {'tags': ('1_epoch_responses', 0, soma, modelname, "epoch0soma")},
-                     "epoch0axon": {'tags': ('1_epoch_responses', 0, soma, modelname, "epoch0axon")}}
+        dictionary--
+         {"epoch0soma": {'tags': ('1_epoch_responses', 0, soma, modelname, modelscale, "epoch0soma")},
+          "epoch0axon": {'tags': ('1_epoch_responses', 0, soma, modelname, modelscale, "epoch0axon")}}
         NOTE:
             - no_of_regions = len(list(chosenmodel.regions.keys()))
             - no_of_stimulus = 2
             - no_of_epochs_per_region = 1 + no_of_stimulus; thus it includes
               period/epoch pre-first stimulus
             - total number of epochs = no_of_regions * no_of_epochs_per_regions
-            - 'tags': ( No_epoch_responses, index, cellregion, modelname, epoch<index>cellregion )
+            - 'tags':
+              ( No_epoch_responses, index, cellregion, modelname, modelscale, epoch<index>cellregion )
             - elements of the tuple are "all strings"
         """
         x = {}
@@ -94,7 +97,8 @@ class EpochGenerator(object):
                                    for i in range(no_of_epochs_per_region) ]
             [ x["epoch"+str(i)+cellregion].update({"tags":
                                              (str(no_of_epochs_per_region)+"_epoch_responses",
-                                              str(i), cellregion, chosenmodel.modelname,
+                                              str(i), cellregion,
+                                              chosenmodel.modelname, chosenmodel.modelscale,
                                               "epoch"+str(i)+cellregion)})
                                    for i in range(no_of_epochs_per_region) ]
         return x

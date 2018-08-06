@@ -8,8 +8,7 @@ from pynwb import TimeSeries
 #from pynwb.icephys import CurrentClampSeries, CurrentClampStimulusSeries
 #from pynwb.icephys import VoltageClampSeries, VoltageClampStimulusSeries
 #from pynwb import get_manager
-#from pynwb.form.backends.hdf5 import HDF5IO
-
+from pynwb import NWBHDF5IO
 
 class Fabricator(object):
     """Operators working under TranscribeManager
@@ -288,11 +287,11 @@ class Fabricator(object):
 
         Returned Value:
         nwbfile.epochs.epochs.data returns a list with tuple such that
-                     [( 0.0, # => epochmd["epoch0soma"]["start_time"] 
-                       10.0, # => epochmd["epoch0soma"]["stop_time"]
-                      '1_epoch_responses,0,soma,DummyTest,epoch0soma',#=>epochmd["epoch0soma"]["tags"]
-                       <pynwb.form.data_utils.ListSlicer object at 0x7ff5883a8450>, # EPOCH DATA
-                       'first epoch')] # => epochmd["epoch0soma"]["description"]
+            [( 0.0, # => epochmd["epoch0soma"]["start_time"] 
+            10.0, # => epochmd["epoch0soma"]["stop_time"]
+            '1_epoch_responses,0,soma,DummyTest,cells,epoch0soma',#=>epochmd["epoch0soma"]["tags"]
+            <pynwb.form.data_utils.ListSlicer object at 0x7ff5883a8450>, # EPOCH DATA
+            'first epoch')] # => epochmd["epoch0soma"]["description"]
               NOTE:
                   - above are the 5-elements for A particular epoch
                   - a particular epoch => a row
@@ -385,11 +384,11 @@ class Fabricator(object):
         epoch_meta_data = { "epoch0soma": {"source": "soma",
                                            "start_time": 0.0, "stop_time": 10.0,
                                            "description": "first epoch",
-                                           "tags": ('1_epoch_responses', '0', 'soma', 'DummyTest', "epoch0soma")},
+                                           "tags": ('1_epoch_responses', '0', 'soma', 'DummyTest', 'cells', "epoch0soma")},
                             "epoch0axon": {"source": "axon",
                                            "start_time": 0.0, "stop_time": 10.0,
                                            "description": "first epoch",
-                                           "tags": ('1_epoch_responses', '0', 'axon', 'DummyTest', "epoch0axon")} }
+                                           "tags": ('1_epoch_responses', '0', 'axon', 'DummyTest', 'cells', "epoch0axon")} }
         updated_nwbfile = build_nwbepochs( nwbfile=nwbfile, epochmd=epoch_meta_data,
                                            nwbts=nwbts )
 
@@ -397,14 +396,14 @@ class Fabricator(object):
         nwbfile.epochs.epochs.data returns a list with tuple such that
                      [(10.0, # => epochmd["epoch1soma"]["start_time"] 
                        20.0, # => epochmd["epoch1soma"]["stop_time"]
-        epoch1soma -> '2_epoch_responses,1,soma,DummyTest,epoch1soma',#=>epochmd["epoch1soma"]["tags"]
+        epoch1soma -> '2_epoch_responses,1,soma,DummyTest,cells,epoch1soma',#=>epochmd["epoch1soma"]["tags"]
                        <pynwb.form.data_utils.ListSlicer object at 0x7f65f23fb410>, # EPOCH DATA
                        'second epoch'), # => epochmd["epoch1soma"]["description"]
-        epoch0axon -> (0.0, 10.0, '2_epoch_responses,0,axon,DummyTest,epoch0axon',
+        epoch0axon -> (0.0, 10.0, '2_epoch_responses,0,axon,DummyTest,cells,epoch0axon',
                        <pynwb.form.data_utils.ListSlicer object at 0x7f65f23fb490>, 'first epoch'),
-        epoch1axon -> (10.0, 20.0, '2_epoch_responses,1,axon,DummyTest,epoch1axon',
+        epoch1axon -> (10.0, 20.0, '2_epoch_responses,1,axon,DummyTest,cells,epoch1axon',
                        <pynwb.form.data_utils.ListSlicer object at 0x7f65f23fb510>, 'second epoch'),
-        epoch0soma -> (0.0, 10.0, '2_epoch_responses,0,soma,DummyTest,epoch0soma',
+        epoch0soma -> (0.0, 10.0, '2_epoch_responses,0,soma,DummyTest,cells,epoch0soma',
                        <pynwb.form.data_utils.ListSlicer object at 0x7f65f23fb590>, 'first epoch')]
               NOTE:
                   - above are the 5-elements for A particular epoch

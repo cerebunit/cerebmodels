@@ -14,6 +14,8 @@ from fabricator import Fabricator
 
 import numpy
 
+from pynwb import NWBHDF5IO
+
 class FabricatorTest(unittest.TestCase):
 
     def setUp(self):
@@ -69,6 +71,16 @@ class FabricatorTest(unittest.TestCase):
         #print type(nwbts.rate) # None but should be float
           
         #print [nwbts.name, nwbts.source, nwbts.data, nwbts.unit, nwbts.resolution, nwbts.conversion, nwbts.timestamps, nwbts.starting_time, nwbts.rate, nwbts.comments, nwbts.description, nwbts.control, nwbts.control_description, nwbts.parent] # what does this return
+        #
+        # write test
+        #updated_mynwbfile = self.fab.build_nwbfile(self.file_metadata)
+        #updated_mynwbfile.add_acquisition(nwbts)
+        #io = NWBHDF5IO('updated_mynwbfile.nwb', mode='w')
+        #io.write(updated_mynwbfile)
+        #io.close()
+        #io = NWBHDF5IO('updated_mynwbfile.nwb')
+        #nwbfile = io.read()
+        #
         self.assertEqual( [nwbts.data, nwbts.timestamps],
                           [rec_v_soma, rec_t] )
 
@@ -364,6 +376,13 @@ class FabricatorTest(unittest.TestCase):
         # Insert
         updated_mynwbfile = self.fab.affix_nwbseries_to_nwbfile(nwbseries=nwbts,
                                                                 nwbfile=mynwbfile)
+        # write test
+        #io = NWBHDF5IO('updated_mynwbfile.nwb', mode='w')
+        #io.write(updated_mynwbfile)
+        #io.close()
+        #io = NWBHDF5IO('updated_mynwbfile.nwb')
+        #nwbfile = io.read()
+        #
         # what does the insertion lead to?
         extracted_nwbts_soma =  updated_mynwbfile.get_acquisition(nwbts["soma"].name)
         extracted_nwbts_axon =  updated_mynwbfile.get_acquisition(nwbts["axon"].name)
@@ -406,11 +425,11 @@ class FabricatorTest(unittest.TestCase):
                                              tsmd = ts_metadata)
         epoch_metadata_nostimulus = \
               {"epoch0soma": {"source": "soma", "start_time": 0.0, "stop_time": 10.0,
-                              "description": "first epoch",
-                              "tags": ('1_epoch_responses', '0', 'soma', 'DummyTest', "epoch0soma")},
+                      "description": "first epoch",
+                      "tags": ('1_epoch_responses', '0', 'soma', 'DummyTest', 'cells', "epoch0soma")},
                "epoch0axon": {"source": "axon", "start_time": 0.0, "stop_time": 10.0,
-                              "description": "first epoch",
-                              "tags": ('1_epoch_responses', '0', 'axon', 'DummyTest', "epoch0axon")}}
+                      "description": "first epoch",
+                      "tags": ('1_epoch_responses', '0', 'axon', 'DummyTest', 'cells' "epoch0axon")}}
         pickedepoch = "epoch0axon" # choose just one
         updated_mynwbfile = Fabricator.insert_a_nwbepoch(pickedepoch,
                                                 epoch_metadata_nostimulus,
@@ -483,27 +502,33 @@ class FabricatorTest(unittest.TestCase):
                             "description": "whole single array of stimulus"} }
         nwbts = self.fab.build_nwbseries(chosenmodel = self.chosenmodel,
                                              tsmd = ts_metadata)
-        # Insert
-        #updated_mynwbfile = self.fab.affix_nwbseries_to_nwbfile(nwbseries=nwbts,
-        #                                                        nwbfile=mynwbfile)
+        # Insert For Write Test
+        updated_mynwbfile = self.fab.affix_nwbseries_to_nwbfile(nwbseries=nwbts,
+                                                                nwbfile=mynwbfile)
         # Now Epocs
         epoch_metadata_stimulus = \
               {"epoch0soma": {"source": "soma", "start_time": 0.0, "stop_time": 10.0,
-                              "description": "first epoch",
-                              "tags": ('2_epoch_responses', '0', 'soma', 'DummyTest', "epoch0soma")},
+                     "description": "first epoch",
+                     "tags": ('2_epoch_responses', '0', 'soma', 'DummyTest', 'cells', "epoch0soma")},
                "epoch1soma": {"source": "soma", "start_time": 10.0, "stop_time": 20.0,
-                              "description": "second epoch",
-                              "tags": ('2_epoch_responses', '1', 'soma', 'DummyTest', "epoch1soma")},
+                     "description": "second epoch",
+                     "tags": ('2_epoch_responses', '1', 'soma', 'DummyTest', 'cells', "epoch1soma")},
                "epoch0axon": {"source": "axon", "start_time": 0.0, "stop_time": 10.0,
-                              "description": "first epoch",
-                              "tags": ('2_epoch_responses', '0', 'axon', 'DummyTest', "epoch0axon")},
+                     "description": "first epoch",
+                     "tags": ('2_epoch_responses', '0', 'axon', 'DummyTest', 'cells', "epoch0axon")},
                "epoch1axon": {"source": "axon", "start_time": 10.0, "stop_time": 20.0,
-                              "description": "second epoch",
-                              "tags": ('2_epoch_responses', '1', 'axon', 'DummyTest', "epoch1axon")}}
+                     "description": "second epoch",
+                     "tags": ('2_epoch_responses', '1', 'axon', 'DummyTest', 'cells', "epoch1axon")}}
         updated_mynwbfile = self.fab.build_nwbepochs(
                                                 nwbfile=mynwbfile,
                                                 epochmd=epoch_metadata_stimulus,
                                                 nwbts=nwbts)
+        # Write Test
+        io = NWBHDF5IO('updated_mynwbfile.h5', mode='w')
+        io.write(updated_mynwbfile)
+        io.close()
+        io = NWBHDF5IO('updated_mynwbfile.h5')
+        nwbfile = io.read()
         # what does the output look like?
         #print updated_mynwbfile.epochs.epochs.data # all the epochs
         #print updated_mynwbfile.epochs.epochs.data[0][3] # 1st epoch

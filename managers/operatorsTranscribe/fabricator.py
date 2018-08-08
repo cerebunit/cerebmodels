@@ -449,6 +449,14 @@ class Fabricator(object):
                     that is nwbfile.epochs.epochs.data[i][3].data.data[i][2]
                   - **TAKE AWAY**
                     nwbfile.epochs.epochs.data[i][3].data.data[i][2] for i'th epoch
+                  - ##IMPORTANT## as implemented in operationsVisualize/reader.py
+                    nwbfile.epochs.epochs.data[i][3][0][2] give nwbts for i'th epoch
+                  - when the nwbfile is written in a file the extraction from the file
+                    is slightly (but significantly) different as the timeseries data is
+                    stored as HDF5 dataset object
+                  - if ts_i = nwbfile.epochs.epochs.data[i][3][0][2]
+                    then ts_i.data.value to get the data value and similarly for
+                    ts_i.timestamps.value
 
         Finally to retrieve the TimeSeries data and timestamps associated with this epoch
         follow the same format as done for the returned values of build_nwbseries

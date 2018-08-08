@@ -1,4 +1,4 @@
-#/managers/operatorsTranscribe/readerTest.py
+#/managers/operatorsVisualize/readerTest.py
 import unittest
 
 import StringIO #import io for Python3
@@ -11,7 +11,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 # this is required for
 from models.cells.modelDummyTest import DummyCell
 import numpy
-from fabricator import Fabricator # to generate NWBFile
+from managers.operatorsTranscribe.fabricator import Fabricator # to generate NWBFile
 from pynwb import NWBHDF5IO
 
 from reader import Reader
@@ -144,6 +144,7 @@ class ReaderTest(unittest.TestCase):
 
     #@unittest.skip("reason for skipping")
     def test_1_init(self):
+        # loads nwbfile, extracts modelname, modelscale & instantiate model
         reader_io_nostimulus = Reader('mynwbfile_nostimulus.h5')
         reader_io_stimulus = Reader('mynwbfile_stimulus.h5')
         # this tests extract_modelname_modelscale & load_model
@@ -157,46 +158,49 @@ class ReaderTest(unittest.TestCase):
 
     #@unittest.skip("reason for skipping")
     def test_2_visualizetable(self):
+        # gives you session of the nwbfile
         reader_io_nostimulus = Reader('mynwbfile_nostimulus.h5')
         reader_io_nostimulus.session_info() # pretty prints table
         reader_io_nostimulus.closefile()
 
     #@unittest.skip("reason for skipping")
-    def test_3_get_epochindices_chosenregion(self):
+    def test_3_pull_epochindices_chosenregion(self):
         reader_io_stimulus = Reader('mynwbfile_stimulus.h5')
-        epoch_indices_soma = reader_io_stimulus.get_epochindices_chosenregion('soma')
-        epoch_indices_axon = reader_io_stimulus.get_epochindices_chosenregion('axon')
+        epoch_indices_soma = reader_io_stimulus.pull_epochindices_chosenregion('soma')
+        epoch_indices_axon = reader_io_stimulus.pull_epochindices_chosenregion('axon')
         self.assertNotEqual( epoch_indices_soma, epoch_indices_axon )
         reader_io_stimulus.closefile()
 
     #@unittest.skip("reason for skipping")
-    def test_4_get_epochids_chosenregion(self):
+    def test_4_pull_epochid(self):
         reader_io_stimulus = Reader('mynwbfile_stimulus.h5')
-        epoch_ids_soma = reader_io_stimulus.get_epochids_chosenregion('soma')
-        epoch_ids_axon = reader_io_stimulus.get_epochids_chosenregion('axon')
-        self.assertEqual( epoch_ids_soma, epoch_ids_axon )
+        epoch_indices_soma = reader_io_stimulus.pull_epochindices_chosenregion('soma')
+        epoch_indices_axon = reader_io_stimulus.pull_epochindices_chosenregion('soma')
+        epoch_id_soma = reader_io_stimulus.pull_epochid(epoch_indices_soma[0])
+        epoch_id_axon = reader_io_stimulus.pull_epochid(epoch_indices_axon[0])
+        self.assertEqual( epoch_id_soma, epoch_id_axon ) # all first epochs have same ids=0
         reader_io_stimulus.closefile()
 
     #@unittest.skip("reason for skipping")
-    def test_5_extract_orderedepochs(self):
+    def test_5_drawout_orderedepochs(self):
         reader_io_stimulus = Reader('mynwbfile_stimulus.h5')
-        orderedepochs_soma = reader_io_stimulus.extract_orderedepochs('soma')
+        orderedepochs_soma = reader_io_stimulus.drawout_orderedepochs('soma')
         #print orderedepochs_soma
         #print len(orderedepochs_soma)
         #to compare
-        epoch_indices_soma = reader_io_stimulus.get_epochindices_chosenregion('soma')
-        compare1 = [ orderedepochs_soma[0][0], orderedepochs_soma[1][0] ]
-        self.assertEqual( compare1, epoch_indices_soma )
+        compare1 = [ orderedepochs_soma[0][1], orderedepochs_soma[1][1] ]
+        self.assertEqual( compare1, [0, 1] )
         reader_io_stimulus.closefile()
 
     #@unittest.skip("reason for skipping")
-    def test_6_extract_epoch(self):
-        reader_io_stimulus = Reader('mynwbfile_stimulus.h5')
-        orderedepochs_soma = reader_io_stimulus.extract_orderedepochs('soma')
+    def test_6_get_epoch(self):
+        # To get an epoch
+        reader_io_stimulus = Reader('mynwbfile_stimulus.h5') # load the file
+        orderedepochs_soma = reader_io_stimulus.drawout_orderedepochs('soma') # drawout orderedepochs
         epochs = []
-        epoch_ids_soma = reader_io_stimulus.get_epochids_chosenregion('soma')
-        for epoch_id in epoch_ids_soma:
-            epochs.append( reader_io_stimulus.extract_epoch(epoch_id, orderedepochs_soma) )
+        for i in range(len(orderedepochs_soma)):
+            epoch_id = orderedepochs_soma[i][1]
+            epochs.append( Reader.get_epoch(epoch_id, orderedepochs_soma) ) # get epoch
         #print epoch_ids_soma
         #print epochs[0]
         #print epochs[1]
@@ -205,15 +209,15 @@ class ReaderTest(unittest.TestCase):
 
     #@unittest.skip("reason for skipping")
     def test_7_get_epoch_start_stop_times(self):
-        reader_io_nostimulus = Reader('mynwbfile_nostimulus.h5')
-        orderedepochs_soma = reader_io_nostimulus.extract_orderedepochs('soma')
-        orderedepochs_axon = reader_io_nostimulus.extract_orderedepochs('axon')
-        epochtuple_soma = reader_io_nostimulus.extract_epoch(0, orderedepochs_soma)
-        epochtuple_axon = reader_io_nostimulus.extract_epoch(0, orderedepochs_axon)
+        reader_io_nostimulus = Reader('mynwbfile_nostimulus.h5') # load file
+        orderedepochs_soma = reader_io_nostimulus.drawout_orderedepochs('soma') #drawout orderedepoch
+        orderedepochs_axon = reader_io_nostimulus.drawout_orderedepochs('axon')
+        epochtuple_soma = Reader.get_epoch(0, orderedepochs_soma) # get epoch
+        epochtuple_axon = Reader.get_epoch(0, orderedepochs_axon)
         #
         #print epochtuple_soma
-        strt_soma, stop_soma = reader_io_nostimulus.get_epoch_start_stop_times(epochtuple_soma)
-        strt_axon, stop_axon = reader_io_nostimulus.get_epoch_start_stop_times(epochtuple_axon)
+        strt_soma, stop_soma = Reader.get_epoch_start_stop_times(epochtuple_soma) #get epoch t0, tend
+        strt_axon, stop_axon = Reader.get_epoch_start_stop_times(epochtuple_axon)
         #print strt_soma, stop_soma
         #print strt_axon, stop_axon
         self.assertEqual( [ strt_soma, stop_soma ], [ strt_axon, stop_axon ] )
@@ -221,27 +225,40 @@ class ReaderTest(unittest.TestCase):
 
     #@unittest.skip("reason for skipping")
     def test_8_get_epochdescription(self):
-        reader_io_stimulus = Reader('mynwbfile_stimulus.h5')
-        orderedepochs_soma = reader_io_stimulus.extract_orderedepochs('soma')
-        epochtuple_0soma = reader_io_stimulus.extract_epoch(0, orderedepochs_soma)
-        epochtuple_1soma = reader_io_stimulus.extract_epoch(1, orderedepochs_soma)
+        reader_io_stimulus = Reader('mynwbfile_stimulus.h5') # load file
+        orderedepochs_soma = reader_io_stimulus.drawout_orderedepochs('soma') #drawout ordered epoch
+        epochtuple_0soma = Reader.get_epoch(0, orderedepochs_soma) # get epoch
+        epochtuple_1soma = Reader.get_epoch(1, orderedepochs_soma)
         #
         #print epochtuple_0soma
-        descrip0 = reader_io_stimulus.get_epochdescription(epochtuple_0soma)
-        descrip1 = reader_io_stimulus.get_epochdescription(epochtuple_1soma)
+        descrip0 = Reader.get_epoch_description(epochtuple_0soma) # get epoch description
+        descrip1 = Reader.get_epoch_description(epochtuple_1soma)
         #print descrip0, descrip1
         self.assertNotEqual( descrip0, descrip1 )
         reader_io_stimulus.closefile()
 
-    @unittest.skip("reason for skipping")
-    def test_6_get_timeseries_slicer_from_epoch(self):
-        a_pickedepoch = self.read.pick_an_epoch( epoch_id="epoch0soma",
-                                                 nwbfile=self.mynwbfile_nostimulus)
-        x = Reader.get_timeseries_slicer_from_epoch(a_pickedepoch)
-        #print x
-        # "<class '__main__.ClassA'>" 1st"_"is 8 & last"'"is -2
-        self.assertEqual ( str(type(x))[8:-2],
-                           "pynwb.form.data_utils.ListSlicer" )
+    #@unittest.skip("reason for skipping")
+    def test_9_get_epoch_data_timestamps(self):
+        # also tests get_timeseries_stage1, get_timeseries_object
+        reader_io_nostimulus = Reader('mynwbfile_nostimulus.h5') # load file
+        #
+        orderedepochs_soma = reader_io_nostimulus.drawout_orderedepochs('soma')#drawout ordered epoch
+        epoch_id_soma = 0
+        epochtuple_soma = Reader.get_epoch(epoch_id_soma, orderedepochs_soma) # get epoch
+        #
+        orderedepochs_axon = reader_io_nostimulus.drawout_orderedepochs('axon')#drawout ordered epoch
+        epoch_id_axon = 0
+        epochtuple_axon = Reader.get_epoch(epoch_id_axon, orderedepochs_axon) # get epoch
+        #
+        ts_soma = reader_io_nostimulus.pull_epoch_nwbts(epochtuple_soma)
+        ts_axon = reader_io_nostimulus.pull_epoch_nwbts(epochtuple_axon)
+        #
+        a = all(boolean == True for boolean in 
+                                (ts_soma.timestamps.value == ts_axon.timestamps.value) )
+        b = all(boolean == True for boolean in 
+                                (ts_soma.data.value != ts_axon.data.value) )
+        self.assertTrue( a and b is True )
+        reader_io_nostimulus.closefile()
 
     @unittest.skip("reason for skipping")
     def test_7_pull_whole_datatable(self):

@@ -1,1 +1,1 @@
-# ../managers/operatorsTranscribe/__init__.py
+# ../managers/operatorsVisualize/__init__.py

@@ -38,7 +38,7 @@ class UsefulUtils(object):
 
     @classmethod
     # https://stackoverflow.com/questions/5909873/how-can-i-pretty-print-ascii-tables-with-python
-    def pprinttable(rows):
+    def pprinttable(cls,rows):
         if len(rows) > 1:
             headers = rows[0]._fields
             lens = []

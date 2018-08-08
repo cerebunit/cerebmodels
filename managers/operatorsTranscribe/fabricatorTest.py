@@ -503,8 +503,8 @@ class FabricatorTest(unittest.TestCase):
         nwbts = self.fab.build_nwbseries(chosenmodel = self.chosenmodel,
                                              tsmd = ts_metadata)
         # Insert For Write Test
-        updated_mynwbfile = self.fab.affix_nwbseries_to_nwbfile(nwbseries=nwbts,
-                                                                nwbfile=mynwbfile)
+        #updated_mynwbfile = self.fab.affix_nwbseries_to_nwbfile(nwbseries=nwbts,
+        #                                                        nwbfile=mynwbfile)
         # Now Epocs
         epoch_metadata_stimulus = \
               {"epoch0soma": {"source": "soma", "start_time": 0.0, "stop_time": 10.0,
@@ -524,11 +524,11 @@ class FabricatorTest(unittest.TestCase):
                                                 epochmd=epoch_metadata_stimulus,
                                                 nwbts=nwbts)
         # Write Test
-        io = NWBHDF5IO('updated_mynwbfile.h5', mode='w')
-        io.write(updated_mynwbfile)
-        io.close()
-        io = NWBHDF5IO('updated_mynwbfile.h5')
-        nwbfile = io.read()
+        #io = NWBHDF5IO('updated_mynwbfile.h5', mode='w')
+        #io.write(updated_mynwbfile)
+        #io.close()
+        #io = NWBHDF5IO('updated_mynwbfile.h5')
+        #nwbfile = io.read()
         # what does the output look like?
         #print updated_mynwbfile.epochs.epochs.data # all the epochs
         #print updated_mynwbfile.epochs.epochs.data[0][3] # 1st epoch

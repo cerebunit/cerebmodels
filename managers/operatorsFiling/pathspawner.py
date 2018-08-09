@@ -33,3 +33,23 @@ class PathSpawner(object):
         else:
             raise ValueError("Give a modelscale and modelname.")
 
+    def hatch_path_to_response(self, modelscale=None, modelname=None):
+        """hatches path to directory ~/responses/<modelscale>/<modelname>"
+
+        Keyword Arguments:
+        model_scale -- string; egs. "cells", "microcircuits", "networks"
+        model_name -- string; "XY2000Author"
+
+        Returned values:
+        path/to/the/directory/responses/<modelscale>/<modelname>
+
+        Raised Exceptions:
+        ValueError if modelscale and modelname is empty.
+
+        """
+
+        if modelscale is not None and modelname is not None:
+            return os.getcwd() + os.sep + "responses" + os.sep + modelscale + os.sep + modelname
+        else:
+            raise ValueError("Give a modelscale and modelname.")
+

@@ -44,8 +44,10 @@ class FabricatorTest(unittest.TestCase):
         #       nwbfile.institution] # what does this nwbfile have?
 
         # "<class '__main__.ClassA'>" 1st"_"is 8 & last"'"is -2
-        typestr = str(type(nwbfile))[8:-2] 
+        typestr = str(type(nwbfile))[8:-2]
         self.assertEqual( typestr, "pynwb.file.NWBFile" )
+        #sesstime = str(nwbfile.session_start_time).replace(" ", "_")
+        #print( nwbfile.session_id + "_" + sesstime.replace(":", "-") ) 
 
     #@unittest.skip("reason for skipping")
     def test_2_generic_timeseries(self):

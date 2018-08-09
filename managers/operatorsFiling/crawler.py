@@ -223,7 +223,7 @@ class Crawler(object):
             return self.show_files_with_path(dir_path)
 
     def smoke_out(self, search_type=None, working_dir=None, desired_name=None):
-        """staticmethod that searches for and finds files or directories.
+        """instantiatedmethod that searches for and finds files or directories.
 
         Keyword arguments:
         search_type -- valid strings; "files" or "directories"

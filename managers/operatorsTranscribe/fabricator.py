@@ -476,3 +476,10 @@ class Fabricator(object):
             updated_nwbfile = self.insert_a_nwbepoch( epoch_i_region, epochmd, nwbfile,
                                                       nwbts[region]  )
         return updated_nwbfile
+
+    def write_nwbfile(nwbfile):
+        sesstime = str(nwbfile.session_start_time).replace(" ", "_")
+        filename = nwbfile.session_id + "_" + sesstime.replace(":", "-")
+        io = NWBHDF5IO(filename, mode='w')
+        io.write(nwbfile)
+        io.close()

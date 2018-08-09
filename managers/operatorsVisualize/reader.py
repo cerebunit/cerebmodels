@@ -156,7 +156,15 @@ class Reader(object):
 
     @classmethod
     def pull_epoch_nwbts(cls, epochtuple):
-        # available field: data, timestamps, conversion, description,
+        # available fields: data, timestamps, conversion, description,
         # comments, source, resolution, unit, timestamps_unit, num_samples
         return cls.get_timeseries_object(
                             cls.get_timeseries_stage1(epochtuple) )
+
+    def pull_stimulus_nwbts(self):
+        # available fields: data, timestamps, description,
+        # comments, source, resolution, unit, timestamps_unit, num_samples
+        try:
+            return self.nwbfile.get_stimulus(self.modelname+"_stimulus")
+        except:
+            return "Model is not stimulated"

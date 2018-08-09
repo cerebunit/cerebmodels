@@ -260,43 +260,21 @@ class ReaderTest(unittest.TestCase):
         self.assertTrue( a and b is True )
         reader_io_nostimulus.closefile()
 
-    @unittest.skip("reason for skipping")
-    def test_7_pull_whole_datatable(self):
-        a_pickedepoch = self.read.pick_an_epoch( epoch_id="epoch0axon",
-                                                 nwbfile=self.mynwbfile_stimulus)
-        table_whole_timeseriesdata = self.read.pull_whole_datatable(a_pickedepoch)
-        print table_whole_timeseriesdata
-        self.assertEqual ( len(table_whole_timeseriesdata),
-                           Reader.get_totalno_epochs(self.mynwbfile_stimulus) )
-
-    @unittest.skip("reason for skipping")
-    def test_8_extract_tsobject_of_pickedepoch(self):
-        a_pickedepoch = self.read.pick_an_epoch( epoch_id="epoch0soma",
-                                                 nwbfile=self.mynwbfile_stimulus)
-        b_pickedepoch = self.read.pick_an_epoch( epoch_id="epoch1soma",
-                                                 nwbfile=self.mynwbfile_stimulus)
-        c_pickedepoch = self.read.pick_an_epoch( epoch_id="epoch0axon",
-                                                 nwbfile=self.mynwbfile_stimulus)
-        d_pickedepoch = self.read.pick_an_epoch( epoch_id="epoch1axon",
-                                                 nwbfile=self.mynwbfile_stimulus)
-        ts_a_pickedepoch = self.read.extract_tsobject_of_pickedepoch(
-                                 pickedepoch=a_pickedepoch, nwbfile=self.mynwbfile_stimulus)
-        ts_b_pickedepoch = self.read.extract_tsobject_of_pickedepoch(
-                                 pickedepoch=b_pickedepoch, nwbfile=self.mynwbfile_stimulus)
-        ts_c_pickedepoch = self.read.extract_tsobject_of_pickedepoch(
-                                 pickedepoch=c_pickedepoch, nwbfile=self.mynwbfile_stimulus)
-        ts_d_pickedepoch = self.read.extract_tsobject_of_pickedepoch(
-                                 pickedepoch=d_pickedepoch, nwbfile=self.mynwbfile_stimulus)
-        #print ts_a_pickedepoch
-        compare1 = [ ts_a_pickedepoch.data,
-                     ts_b_pickedepoch.timestamps,
-                     ts_c_pickedepoch.unit,
-                     ts_d_pickedepoch.description ]
-        compare2 = [ self.ts_metadata_stimulus["soma"]["data"],
-                     self.ts_metadata_stimulus["soma"]["timestamps"],
-                     self.ts_metadata_stimulus["axon"]["unit"],
-                     self.ts_metadata_stimulus["axon"]["description"]]
-        self.assertEqual( compare1, compare2 )
+    #@unittest.skip("reason for skipping")
+    def test_10_pull_whole_datatable(self):
+        reader_io_stimulus = Reader('mynwbfile_stimulus.h5') # load file
+        reader_io_nostimulus = Reader('mynwbfile_nostimulus.h5') # load file
+        #
+        stimulus_nwbts = reader_io_stimulus.pull_stimulus_nwbts()
+        nostimulus_nwbts = reader_io_nostimulus.pull_stimulus_nwbts()
+        #print stimulus_nwbts
+        a = all(boolean == False for boolean in
+                                 (stimulus_nwbts.data.value == stimulus_nwbts.timestamps.value) )
+        b = (nostimulus_nwbts == "Model is not stimulated")
+        #
+        self.assertTrue( a and b is True )
+        reader_io_stimulus.closefile()
+        reader_io_nostimulus.closefile()
 
 if __name__ == '__main__':
     unittest.main()

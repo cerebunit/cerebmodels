@@ -1,4 +1,5 @@
 # ~/managers/operatorsTranscribe/fabricator.py
+import os # only for filepath/filename in writing nwbfile
 from datetime import datetime
 
 import pynwb
@@ -477,9 +478,9 @@ class Fabricator(object):
                                                       nwbts[region]  )
         return updated_nwbfile
 
-    def write_nwbfile(self, nwbfile):
+    def write_nwbfile(self, nwbfile=None, filepath=None):
         sesstime = str(nwbfile.session_start_time).replace(" ", "_")
         filename = nwbfile.session_id + "_" + sesstime.replace(":", "-")
-        io = NWBHDF5IO(filename, mode='w')
+        io = NWBHDF5IO( filepath+os.sep+filename, mode='w')
         io.write(nwbfile)
         io.close()

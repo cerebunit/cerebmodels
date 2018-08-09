@@ -322,7 +322,7 @@ class FabricatorTest(unittest.TestCase):
         nwbts = self.fab.build_nwbseries(chosenmodel = self.chosenmodel,
                                              tsmd = ts_metadata)
         # Insert
-        updated_mynwbfile = self.fab.affix_nwbseries_to_nwbfile(nwbseries=nwbts,
+        updated_mynwbfile = self.fab.affix_nwbseries_to_nwbfile(nwbts=nwbts,
                                                                 nwbfile=mynwbfile)
         # what does the insertion lead to?
         extracted_nwbts_soma =  updated_mynwbfile.get_acquisition(nwbts["soma"].name)
@@ -376,7 +376,7 @@ class FabricatorTest(unittest.TestCase):
         nwbts = self.fab.build_nwbseries(chosenmodel = self.chosenmodel,
                                              tsmd = ts_metadata)
         # Insert
-        updated_mynwbfile = self.fab.affix_nwbseries_to_nwbfile(nwbseries=nwbts,
+        updated_mynwbfile = self.fab.affix_nwbseries_to_nwbfile(nwbts=nwbts,
                                                                 nwbfile=mynwbfile)
         # write test
         #io = NWBHDF5IO('updated_mynwbfile.nwb', mode='w')
@@ -505,7 +505,7 @@ class FabricatorTest(unittest.TestCase):
         nwbts = self.fab.build_nwbseries(chosenmodel = self.chosenmodel,
                                              tsmd = ts_metadata)
         # Insert For Write Test
-        #updated_mynwbfile = self.fab.affix_nwbseries_to_nwbfile(nwbseries=nwbts,
+        #updated_mynwbfile = self.fab.affix_nwbseries_to_nwbfile(nwbts=nwbts,
         #                                                        nwbfile=mynwbfile)
         # Now Epocs
         epoch_metadata_stimulus = \

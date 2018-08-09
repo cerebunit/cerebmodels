@@ -254,13 +254,15 @@ class TimeseriesGenerator(object):
                       runtimeparameters=None, stimparameters=None ):
         """method that creates the NWB formatted time-series metadata.
 
-        Arguments (mandatory):
+        Keyword Arguments (mandatory):
         chosenmodel -- instantiated model
         recordings -- dictionary with keys "time", "response" and "stimulus" in the form
                       {"time": array, "response": {cellregion_a: array, cellregion_b: array},
                        "stimulus": str("Model is not stimulated") or array}
         runtimeparameters -- dictionary with keys "dt", "celsius", "tstop", "v_init"
                              Eg: {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
+
+        Keyword Arguments (optional):
         stimparameters -- dictionary with keys "type" and "stimlist" where
                           "type": 2 element list of strings
                                   <stimulus category> <specific type of that category>

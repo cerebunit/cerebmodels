@@ -205,11 +205,11 @@ class Fabricator(object):
         return { x: nwbseries[x] for x in nwbseries
                                   if x not in {"stimulus"} }
 
-    def affix_nwbseries_to_nwbfile(self, nwbseries=None, nwbfile=None):
+    def affix_nwbseries_to_nwbfile(self, nwbts=None, nwbfile=None):
         """method that adds nwbseries with or without stimulus
 
         Keyword Arguments:
-        nwbseries -- dictorary; keys = keys in chosenmodel.regions = {"soma": 0.0, "axon", 0.0}
+        nwbts -- dictionary; keys = keys in chosenmodel.regions = {"soma": 0.0, "axon", 0.0}
                                              with or without "stimulus" as key
                                 values for each key is
                                 pynwb.base.TimeSeries, obtained using build_nwbseries method
@@ -236,13 +236,13 @@ class Fabricator(object):
                    the timeseries here are for a particular key
                    therefore it is no longer a dictionary.
         """
-        if "stimulus" in nwbseries.keys():
-            nwbfile.add_stimulus(nwbseries["stimulus"])
-            stripped_nwbseries = self.strip_out_stimulus_from_nwbseries(nwbseries)
+        if "stimulus" in nwbts.keys():
+            nwbfile.add_stimulus(nwbts["stimulus"])
+            stripped_nwbseries = self.strip_out_stimulus_from_nwbseries(nwbts)
             nwbfile = self.link_nwbseriesresponses_to_nwbfile(stripped_nwbseries,
                                                               nwbfile)
         else:
-            nwbfile = self.link_nwbseriesresponses_to_nwbfile(nwbseries,
+            nwbfile = self.link_nwbseriesresponses_to_nwbfile(nwbts,
                                                               nwbfile)
         return nwbfile
 
@@ -477,7 +477,7 @@ class Fabricator(object):
                                                       nwbts[region]  )
         return updated_nwbfile
 
-    def write_nwbfile(nwbfile):
+    def write_nwbfile(self, nwbfile):
         sesstime = str(nwbfile.session_start_time).replace(" ", "_")
         filename = nwbfile.session_id + "_" + sesstime.replace(":", "-")
         io = NWBHDF5IO(filename, mode='w')

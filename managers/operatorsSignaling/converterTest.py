@@ -62,7 +62,8 @@ class ConverterTest(unittest.TestCase):
         parameters = {"dt": 0.1, "celsius": 20, "tstop": 10, "v_init": 65}
         currparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {'amp': 0.5, 'dur': 10.0, 'delay': 5.0},
-                                        {'amp': 1.0, 'dur': 20.0, 'delay': 5.0+10.0} ] }
+                                        {'amp': 1.0, 'dur': 20.0, 'delay': 5.0+10.0} ],
+                          "tstop": parameters["tstop"] }
         self.sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
         stimuli_list = self.sm.stimulate_model_NEURON(stimparameters = currparameters,
                                                modelsite = self.chosenmodel.cell.soma)

@@ -64,6 +64,7 @@ class TimeseriesGenerator(object):
                                 {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0, "delay": 10.0},
                                 {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
                                 {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ]
+                          "tstop": parameters["tstop"] # used for generating the last epoch
         NOTE:
             - prior to calling this method weed out
               recordings["stimulus"]="Model is not stimulated"
@@ -103,6 +104,7 @@ class TimeseriesGenerator(object):
                                 {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0, "delay": 10.0},
                                 {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
                                 {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ]
+                          "tstop": parameters["tstop"] # used for generating the last epoch
         NOTE:
             - prior to calling this method weed out
               recordings["stimulus"]="Model is not stimulated"
@@ -163,6 +165,7 @@ class TimeseriesGenerator(object):
                                 {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0, "delay": 10.0},
                                 {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
                                 {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ]
+                          "tstop": parameters["tstop"] # used for generating the last epoch
         """
         y = {}
         y.update( {"stimulus":
@@ -204,6 +207,7 @@ class TimeseriesGenerator(object):
                                 {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0, "delay": 10.0},
                                 {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
                                 {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ]
+                          "tstop": parameters["tstop"] # used for generating the last epoch
         Use case:
         tg = TimeseriesGenerator()
         # get dummy model
@@ -224,7 +228,8 @@ class TimeseriesGenerator(object):
         Simulation with stimulation
         stimparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
-                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
+                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
+                          "tstop": parameters["tstop"]}
         recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1]},
                       "stimulus": rec_i}
         respmd = tg.forcellrecording(chosenmodel = model, recordings = recordings,
@@ -276,6 +281,7 @@ class TimeseriesGenerator(object):
                                 {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0, "delay": 10.0},
                                 {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
                                 {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ]
+                          "tstop": parameters["tstop"] # used for generating the last epoch
         Use case: [For modelscale="cells"]
         tg = TimeseriesGenerator()
         # get dummy model
@@ -296,7 +302,8 @@ class TimeseriesGenerator(object):
         Simulation with stimulation
         stimparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
-                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
+                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
+                          "tstop": runtimeparam["tstop"]}
         recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1]},
                       "stimulus": rec_i}
         respmd = tg.forcellrecording(chosenmodel = model, recordings = recordings,

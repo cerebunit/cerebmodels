@@ -30,6 +30,7 @@ class EpochGenerator(object):
                                 {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0, "delay": 10.0},
                                 {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
                                 {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ]
+                           "tstop": runtimeparameters["tstop"] # only for last epoch
         NOTE:
             - no_of_regions = len(list(chosenmodel.regions.keys()))
             - no_of_stimulus = 2
@@ -65,6 +66,7 @@ class EpochGenerator(object):
                                 {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0, "delay": 10.0},
                                 {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
                                 {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ]
+                          "tstop": runtimeparameters["tstop"] # only for last epoch
         Returned Value:
         assuming chosenmodel.regions = {'soma': 0.0, 'axon': 0.0} and no of epochs/region=3 (i.e initial state regardless of stimulus is epoch0)
         returned value is a dictionary of the form
@@ -126,6 +128,7 @@ class EpochGenerator(object):
                                 {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0, "delay": 10.0},
                                 {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
                                 {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ]
+                          "tstop": runtimeparameters["tstop"] # only for last epoch
         Returned Value:
         assuming chosenmodel.regions = {'soma': 0.0, 'axon': 0.0} the epoch metadata for a region, say "soma" is a dictionary
         dictionary -- {"source": "soma", "start_time": float, "stop_time": float,
@@ -178,6 +181,7 @@ class EpochGenerator(object):
                                 {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0, "delay": 10.0},
                                 {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
                                 {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ]
+                          "tstop": runtimeparameters["tstop"] # only for last epoch
         Returned Value:
         assuming chosenmodel.regions = {'soma': 0.0, 'axon': 0.0} and no of epochs/region=2 (i.e initial state regardless of stimulus is epoch0)
         returned value is a dictionary of the form
@@ -205,7 +209,8 @@ class EpochGenerator(object):
         Simulation with stimulation
         stimparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
-                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
+                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
+                          "tstop": runtimeparam["tstop"]}
         epochmd = eg.forepoch(chosenmodel = model, parameters = stimparameters)
         """
 

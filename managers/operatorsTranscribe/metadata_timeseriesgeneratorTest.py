@@ -50,7 +50,8 @@ class TimeseriesGeneratorTest(unittest.TestCase):
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         stimparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
-                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
+                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
+                          "tstop": runtimeparam["tstop"]}
         rec_t = [ t*runtimeparam["dt"]
                   for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
         rec_i = numpy.random.rand(1,len(rec_t))[0]
@@ -66,7 +67,8 @@ class TimeseriesGeneratorTest(unittest.TestCase):
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         stimparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
-                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
+                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
+                          "tstop": runtimeparam["tstop"]}
         rec_t = [ t*runtimeparam["dt"]
                   for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
         rec_i = numpy.random.rand(1,len(rec_t))[0]
@@ -97,7 +99,8 @@ class TimeseriesGeneratorTest(unittest.TestCase):
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         stimparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
-                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
+                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
+                          "tstop": runtimeparam["tstop"]}
         rec_t = [ t*runtimeparam["dt"]
                   for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
         rec_i = numpy.random.rand(1,len(rec_t))[0]
@@ -117,7 +120,8 @@ class TimeseriesGeneratorTest(unittest.TestCase):
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         #stimparameters = {"type": ["current", "IClamp"],
         #                  "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
-        #                                {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
+        #                                {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
+        #                  "tstop": runtimeparam["tstop"]}
         rec_t = [ t*runtimeparam["dt"]
                   for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
         rec_i = numpy.random.rand(1,len(rec_t))[0]
@@ -151,7 +155,8 @@ class TimeseriesGeneratorTest(unittest.TestCase):
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         stimparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
-                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
+                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
+                          "tstop": runtimeparam["tstop"]}
         rec_t = [ t*runtimeparam["dt"]
                   for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
         rec_i = numpy.random.rand(1,len(rec_t))[0]
@@ -193,7 +198,8 @@ class TimeseriesGeneratorTest(unittest.TestCase):
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         stimparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
-                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
+                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
+                          "tstop": runtimeparam["tstop"]}
         rec_t = [ t*runtimeparam["dt"]
                   for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
         rec_i = numpy.random.rand(1,len(rec_t))[0]

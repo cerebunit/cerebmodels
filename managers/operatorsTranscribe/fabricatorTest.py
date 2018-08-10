@@ -156,10 +156,11 @@ class FabricatorTest(unittest.TestCase):
 
     #@unittest.skip("reason for skipping")
     def test_5_build_nwbseries_stimulus(self):
-        runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
+        runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 200, "v_init": 65}
         stimparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
-                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
+                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
+                          "tstop": runtimeparam["tstop"]}
         rec_t = [ t*runtimeparam["dt"]
                   for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
         rec_i = numpy.random.rand(1,len(rec_t))[0]
@@ -244,10 +245,11 @@ class FabricatorTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_7_strip_out_stimulus_from_nwbseries(self):
         # very similar to test_5_build_nwbseries_stimulus but stripping off created stimulus series
-        runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
+        runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 200, "v_init": 65}
         stimparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
-                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
+                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
+                          "tstop": runtimeparam["tstop"]}
         rec_t = [ t*runtimeparam["dt"]
                   for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
         rec_i = numpy.random.rand(1,len(rec_t))[0]
@@ -339,10 +341,11 @@ class FabricatorTest(unittest.TestCase):
         # Build NWBFile
         mynwbfile = self.fab.build_nwbfile(self.file_metadata)
         # generate data
-        runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
+        runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 200, "v_init": 65}
         stimparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
-                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
+                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
+                          "tstop": runtimeparam["tstop"]}
         rec_t = [ t*runtimeparam["dt"]
                   for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
         rec_i = numpy.random.rand(1,len(rec_t))[0]
@@ -468,10 +471,11 @@ class FabricatorTest(unittest.TestCase):
         # Build NWBFile
         mynwbfile = self.fab.build_nwbfile(self.file_metadata)
         # generate data
-        runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
+        runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 200, "v_init": 65}
         stimparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
-                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
+                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
+                          "tstop": runtimeparam["tstop"]}
         rec_t = [ t*runtimeparam["dt"]
                   for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
         rec_i = numpy.random.rand(1,len(rec_t))[0]

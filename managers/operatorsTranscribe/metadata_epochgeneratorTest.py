@@ -27,7 +27,8 @@ class EpochGeneratorTest(unittest.TestCase):
     def test_2_compute_totalepochs_per_cellregion_with_stimulus(self):
         stimparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
-                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
+                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
+                          "tstop": 10.0+100.0+50.0}
         self.assertEqual( EpochGenerator.compute_totalepochs_per_cellregion(stimparameters),
                           1 + len(stimparameters["stimlist"]) )
         
@@ -47,7 +48,8 @@ class EpochGeneratorTest(unittest.TestCase):
         no_of_regions = len(list(self.chosenmodel.regions.keys()))
         stimparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
-                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
+                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
+                          "tstop": 10.0+100.0+50.0}
         filler = self.eg.epochcontainer(self.chosenmodel, stimparameters)
         compare2 = len(filler)
         no_of_epochs_per_region = 1 + len(stimparameters["stimlist"])
@@ -59,7 +61,8 @@ class EpochGeneratorTest(unittest.TestCase):
     def test_5_an_epoch_prestimulus(self):
         stimparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
-                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
+                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
+                          "tstop": 10.0+100.0+50.0}
         epoch_value = EpochGenerator.an_epoch( 0, "soma", stimparameters)
         compare2 = epoch_value["start_time"] + epoch_value["stop_time"]
         compare1 = 0.0 + stimparameters["stimlist"][0]["delay"]
@@ -70,7 +73,8 @@ class EpochGeneratorTest(unittest.TestCase):
     def test_6_an_epoch_stimulus(self):
         stimparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
-                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]}
+                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
+                          "tstop": 10.0+100.0+50.0}
         epoch_value = EpochGenerator.an_epoch( 1, "axon", stimparameters)
         compare2 = epoch_value["description"]
         compare1 = "IClamp stimulation of model with amplitude = " + \
@@ -96,7 +100,8 @@ class EpochGeneratorTest(unittest.TestCase):
            "stimlist": [ {"amp_initial": 0.0, "amp_final": 0.5, "dur": 5.0, "delay": 5.0},
                          {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0, "delay": 10.0},
                          {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
-                         {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ]}
+                         {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ],
+           "tstop": 20.0+5.0}
         epochmd = self.eg.forepoch( chosenmodel = self.chosenmodel,
                                     parameters = stimparameters )
         # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}

@@ -134,7 +134,7 @@ class EpochGenerator(object):
             - the returned value thas these same four-keys regardless of stimulus (or lack of)
         """
         if "stimlist" not in parameters:
-            return {"source": theregion, "start_time": 0.0, "stop_time": parameters["tstop"],
+            return {"source": theregion, "start_time": 0.0, "stop_time": float(parameters["tstop"]),
                     "description": "there is no stimulation of the model"}
         elif parameters["type"][0]=="current":
             stimlist = parameters["stimlist"]

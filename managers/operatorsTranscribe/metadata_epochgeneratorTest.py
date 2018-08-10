@@ -175,5 +175,26 @@ class EpochGeneratorTest(unittest.TestCase):
         #print epochmd # how does the main epoch metadata look?
         self.assertEqual( compare2, compare1 )
 
+    #@unittest.skip("reason for skipping")
+    def test_14_forepoch_with_stimulus_laststimulus_notequals_tstop(self):
+        stimparameters = {"type": ["current", "IRamp"],
+           "stimlist": [ {"amp_initial": 0.0, "amp_final": 0.5, "dur": 5.0, "delay": 5.0},
+                         {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0, "delay": 10.0},
+                         {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
+                         {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ],
+           "tstop": 20.0+10.0}
+        epochmd = self.eg.forepoch( chosenmodel = self.chosenmodel,
+                                    parameters = stimparameters )
+        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
+        no_of_stimulus_epochs_per_region = len(stimparameters["stimlist"])
+        compare2 = [ epochmd["epoch"+str(0)+"soma"]["stop_time"],
+                     epochmd["epoch"+str(no_of_stimulus_epochs_per_region)+"soma"]["stop_time"],
+                     epochmd["epoch"+str(no_of_stimulus_epochs_per_region+1)+"soma"]["stop_time"] ]
+        compare1 = [ epochmd["epoch"+str(0)+"axon"]["stop_time"],
+                     epochmd["epoch"+str(no_of_stimulus_epochs_per_region)+"axon"]["stop_time"],
+                     stimparameters["tstop"] ]
+        #print epochmd # how does the main epoch metadata look?
+        self.assertEqual( compare2, compare1 )
+
 if __name__ == '__main__':
     unittest.main()

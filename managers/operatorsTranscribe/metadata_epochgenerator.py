@@ -40,9 +40,15 @@ class EpochGenerator(object):
         """
         if "stimlist" in parameters:
             no_of_stimulus = len(parameters["stimlist"])
+            last_t = parameters["stimlist"][-1]["delay"]+parameters["stimlist"][-1]["dur"]
+            if last_t == parameters["tstop"]:
+                n = 0
+            else:
+                n = 1
         else:
             no_of_stimulus = 0
-        return 1+no_of_stimulus
+            n = 0
+        return 1+no_of_stimulus+n
 
     @classmethod
     def epochcontainer(cls, chosenmodel, parameters):
@@ -106,8 +112,26 @@ class EpochGenerator(object):
         return x
 
     @staticmethod
-    def an_epoch( epoch_no_per_region, theregion, parameters ):
-        """static method creates the value for one epoch, i.e, value for one of the epoch-key in the container.
+    def an_epoch_stimulus_window(epoch_no_per_region, theregion, parameters):
+        """static method called by an_epoch
+        """
+        i = epoch_no_per_region - 1
+        stimlist = parameters["stimlist"]
+        if parameters["type"][1]=="IClamp":
+            descrip = "IClamp stimulation of model with amplitude = " + \
+                      str(stimlist[i]["amp"]) + " nA"
+        else:
+            descrip = "IRamp stimulation of model with amplitudes from " + \
+                      str(stimlist[i]["amp_initial"]) + " to " + \
+                      str(stimlist[i]["amp_final"]) + " nA"
+        return {"source": theregion,
+                "start_time": float(stimlist[i]["delay"]),
+                "stop_time": float(stimlist[i]["delay"] + stimlist[i]["dur"]),
+                "description": descrip}
+
+    @classmethod
+    def an_epoch( cls, epoch_no_per_region, theregion, parameters ):
+        """class method creates the value for one epoch, i.e, value for one of the epoch-key in the container.
 
         Arguments:
         epoch_no_per_region -- integer
@@ -146,19 +170,15 @@ class EpochGenerator(object):
                         "start_time": 0.0,
                         "stop_time": 0.0 + stimlist[0]["delay"],
                         "description": "first, no stimulus"}
-            else:
-                i = epoch_no_per_region - 1
-                if parameters["type"][1]=="IClamp":
-                    descrip = "IClamp stimulation of model with amplitude = " + \
-                              str(stimlist[i]["amp"]) + " nA"
-                else:
-                    descrip = "IRamp stimulation of model with amplitudes from " + \
-                              str(stimlist[i]["amp_initial"]) + " to " + \
-                              str(stimlist[i]["amp_final"]) + " nA"
+            elif epoch_no_per_region>len(stimlist):
+                last_t = float( stimlist[-1]["delay"]+stimlist[-1]["dur"] )
                 return {"source": theregion,
-                        "start_time": float(stimlist[i]["delay"]),
-                        "stop_time": float(stimlist[i]["delay"] + stimlist[i]["dur"]),
-                        "description": descrip}
+                        "start_time": last_t,
+                        "stop_time": float(parameters["tstop"]),
+                        "description": "last, no stimulus"}
+            else:
+                return cls.an_epoch_stimulus_window(epoch_no_per_region,
+                                                    theregion, parameters)
 
     def forepoch( self, chosenmodel=None, parameters=None ):
         """method that creates the NWB formatted metadata forfile.

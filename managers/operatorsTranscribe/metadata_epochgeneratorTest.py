@@ -58,7 +58,33 @@ class EpochGeneratorTest(unittest.TestCase):
         self.assertEqual( compare2, compare1 )
 
     #@unittest.skip("reason for skipping")
-    def test_5_an_epoch_prestimulus(self):
+    def test_5_an_epoch_stimulus_window_firststimulus(self):
+        stimparameters = {"type": ["current", "IClamp"],
+                          "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},       #1
+                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],#2
+                          "tstop": 10.0+100.0+50.0}
+        epoch_value = EpochGenerator.an_epoch_stimulus_window( 1, "soma", stimparameters)
+        compare2 = epoch_value["start_time"] + epoch_value["stop_time"]
+        compare1 = stimparameters["stimlist"][0]["delay"] + \
+              stimparameters["stimlist"][0]["delay"]+stimparameters["stimlist"][0]["dur"]
+        #print epoch_value # how does an epoch metadata look?
+        self.assertEqual( compare2, compare1 )
+
+    #@unittest.skip("reason for skipping")
+    def test_6_an_epoch_stimulus_window_laststimulus(self):
+        stimparameters = {"type": ["current", "IClamp"],
+                          "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},       #1
+                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],#2
+                          "tstop": 10.0+100.0+50.0}
+        epoch_value = EpochGenerator.an_epoch_stimulus_window( 2, "soma", stimparameters)
+        compare2 = epoch_value["start_time"] + epoch_value["stop_time"]
+        compare1 = stimparameters["stimlist"][1]["delay"] + \
+              stimparameters["stimlist"][1]["delay"]+stimparameters["stimlist"][1]["dur"]
+        #print epoch_value # how does an epoch metadata look?
+        self.assertEqual( compare2, compare1 )
+
+    #@unittest.skip("reason for skipping")
+    def test_7_an_epoch_prestimulus(self):
         stimparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
                                         {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
@@ -70,7 +96,7 @@ class EpochGeneratorTest(unittest.TestCase):
         self.assertEqual( compare2, compare1 )
 
     #@unittest.skip("reason for skipping")
-    def test_6_an_epoch_stimulus(self):
+    def test_8_an_epoch_firststimulus(self):
         stimparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
                                         {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
@@ -83,7 +109,45 @@ class EpochGeneratorTest(unittest.TestCase):
         self.assertEqual( compare2, compare1 )
 
     #@unittest.skip("reason for skipping")
-    def test_7_forepoch_without_stimulus(self):
+    def test_9_an_epoch_laststimulus_equals_tstop(self):
+        stimparameters = {"type": ["current", "IClamp"],
+                          "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
+                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
+                          "tstop": 10.0+100.0+50.0}
+        epoch_value = EpochGenerator.an_epoch( 2, "axon", stimparameters)
+        compare2 = epoch_value["description"]
+        compare1 = "IClamp stimulation of model with amplitude = " + \
+                       str(stimparameters["stimlist"][1]["amp"]) + " nA"
+        #print epoch_value # hows does an epoch metadata look?
+        self.assertEqual( compare2, compare1 )
+
+    #@unittest.skip("reason for skipping")
+    def test_10_an_epoch_laststimulus_notequals_tstop(self):
+        stimparameters = {"type": ["current", "IClamp"],
+                          "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
+                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
+                          "tstop": 200.0}
+        epoch_value = EpochGenerator.an_epoch( 2, "axon", stimparameters)
+        compare2 = epoch_value["description"]
+        compare1 = "IClamp stimulation of model with amplitude = " + \
+                       str(stimparameters["stimlist"][1]["amp"]) + " nA"
+        #print epoch_value # hows does an epoch metadata look?
+        self.assertEqual( compare2, compare1 )
+
+    #@unittest.skip("reason for skipping")
+    def test_11_an_epoch_poststimulus(self):
+        stimparameters = {"type": ["current", "IClamp"],
+                          "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
+                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
+                          "tstop": 200.0}
+        epoch_value = EpochGenerator.an_epoch( 3, "axon", stimparameters)
+        compare2 = epoch_value["description"]
+        compare1 = "last, no stimulus"
+        #print epoch_value # hows does an epoch metadata look?
+        self.assertEqual( compare2, compare1 )
+
+    #@unittest.skip("reason for skipping")
+    def test_12_forepoch_without_stimulus(self):
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
         epochmd = self.eg.forepoch( chosenmodel = self.chosenmodel,
                                     parameters = runtimeparam )
@@ -95,7 +159,7 @@ class EpochGeneratorTest(unittest.TestCase):
         self.assertEqual( compare2, compare1 )
 
     #@unittest.skip("reason for skipping")
-    def test_8_forepoch_with_stimulus(self):
+    def test_13_forepoch_with_stimulus(self):
         stimparameters = {"type": ["current", "IRamp"],
            "stimlist": [ {"amp_initial": 0.0, "amp_final": 0.5, "dur": 5.0, "delay": 5.0},
                          {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0, "delay": 10.0},

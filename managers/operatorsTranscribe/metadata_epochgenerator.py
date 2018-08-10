@@ -217,5 +217,5 @@ class EpochGenerator(object):
             for cellregion in chosenmodel.regions.keys():
                 for i in range(no_of_epochs_per_region):
                     epoch = "epoch"+str(i)+cellregion
-                    x[epoch] = self.an_epoch( i, cellregion, parameters )
+                    x[epoch].update( self.an_epoch( i, cellregion, parameters ) )
             return x

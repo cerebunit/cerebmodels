@@ -1,12 +1,14 @@
-# ../managers/managerAccount.py
+# ../managers/managerFiling.py
 import os
 
 from managers.operatorsFiling.crawler import Crawler
+from managers.operatorsFiling.pathspawner import PathSpawner
 
-class AccountManager(object):
+class FilingManager(object):
 
     def __init__(self):
         self.cr = Crawler()
+        self.ps = PathSpawner()
 
     def available_modelscales(self):
         """method that returns a list of available model_scale.

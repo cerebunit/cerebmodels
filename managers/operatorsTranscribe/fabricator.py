@@ -479,7 +479,7 @@ class Fabricator(object):
         return updated_nwbfile
 
     def write_nwbfile(self, nwbfile=None, filepath=None):
-        sesstime = str(nwbfile.session_start_time).replace(" ", "_")
+        sesstime = str(nwbfile.session_start_time).replace(" ", "_")[0:-6]
         filename = nwbfile.session_id + "_" + sesstime.replace(":", "-") + ".h5"
         io = NWBHDF5IO( filepath+os.sep+filename, mode='w')
         io.write(nwbfile)

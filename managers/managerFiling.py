@@ -87,11 +87,12 @@ class FilingManager(object):
 
         if (list_dir_names is None) or (len(list_dir_names)!=3):
             raise ValueError("The argument must be a three-string list, eg ['responses', chosenmodel.modelscale, chosenmodel.modelname]")
-        try:
-            path = self.cr.path_to_dir(dir_name = list_dir_names)
-            return path
-        except:
-            path = self.ps.hatch_path_to_response(modelscale=list_dir_names[1],
-                                                  modelname=list_dir_names[-1])
-            os.makedirs(path)
-            return path
+        else:
+            try:
+                path = self.cr.path_to_dir(dir_names = list_dir_names)
+                return path
+            except:
+                path = self.ps.hatch_path_to_response(modelscale=list_dir_names[1],
+                                                      modelname=list_dir_names[-1])
+                os.makedirs(path)
+                return path

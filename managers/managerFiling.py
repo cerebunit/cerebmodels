@@ -63,3 +63,35 @@ class FilingManager(object):
                 raise ValueError("There is no inventory for the given model_scale")
             else:
                 return model_dirs
+
+    def responsepath_check_create(self, list_dir_names=None):
+        """method that returns path to the reponse.
+
+        Keyword argument:
+        list_dir_names -- list of three string;
+                          Eg. ['responses', chosenmodel.modelscale, chosenmodel.modelname]
+                          this is equivalent to
+                              ['responses', 'cells', 'DummyTest']
+
+        Returned value:
+        path (string) -- ~/cerebmodel/responses/cells/DummyTest
+
+        Raised exceptions:
+        ValueError if the argument list_dir_names is not of the form ['responses', 'cells', 'DummyTest']
+
+        Use case:
+        sm = SimManager()
+        sm.responsepath_check_create(list_dir_names=['responses', 'cells', 'DummyTest'])
+
+        """
+
+        if (list_dir_names is None) or (len(list_dir_names)!=3):
+            raise ValueError("The argument must be a three-string list, eg ['responses', chosenmodel.modelscale, chosenmodel.modelname]")
+        try:
+            path = self.cr.path_to_dir(dir_name = list_dir_names)
+            return path
+        except:
+            path = self.ps.hatch_path_to_response(modelscale=list_dir_names[1],
+                                                  modelname=list_dir_names[-1])
+            os.makedirs(path)
+            return path

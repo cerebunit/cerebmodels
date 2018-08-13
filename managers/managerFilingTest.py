@@ -59,5 +59,19 @@ class FilingManagerTest(unittest.TestCase):
         shutil.rmtree(dummyscale_path)           
         os.chdir(self.pwd) # come back to where this .py resides
  
+    #@unittest.skip("reason for skipping")
+    def test_6_responsepath_check_create_argumenterror(self):
+        self.assertRaises(ValueError,
+                          self.fm.responsepath_check_create,
+                          list_dir_names=['cells', 'DummyTest'])
+ 
+    #@unittest.skip("reason for skipping")
+    def test_7_responsepath_check_create(self):
+        os.chdir("..") # move up one directory to ~/cerebmodels
+        path = self.fm.responsepath_check_create(
+                            list_dir_names=['responses', 'cells', 'DummyTest'])
+        shutil.rmtree( os.path.dirname(os.path.dirname(path)) )
+        os.chdir(self.pwd) # come back to where this .py resides
+ 
 if __name__ == '__main__':
     unittest.main()

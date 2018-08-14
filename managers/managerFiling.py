@@ -95,6 +95,8 @@ class FilingManager(object):
         Use case:
         fm = FilingManager()
         fm.responsepath_check_create(list_dir_names=['responses', 'cells', 'DummyTest'])
+        OR
+        fm.responsepath_check_create( chosenmodel = DummyTest() )
 
         """
 

@@ -84,6 +84,7 @@ class CrawlerTest(unittest.TestCase):
         with open(path, 'w') as temp_file:
             temp_file.write("blah blah blah")
         x = Crawler.show_files_with_path(os.path.dirname(path))
+        #print x
         self.assertTrue(x["some.file"], path)
         shutil.rmtree("some_dir")
 
@@ -94,6 +95,7 @@ class CrawlerTest(unittest.TestCase):
         with open(path, 'w') as temp_file:
             temp_file.write("blah blah blah")
         x = self.cr.show_files(dir_names=["some_dir", "its_subdir"])
+        #print x
         self.assertTrue(x["some.file"], path)
         shutil.rmtree("some_dir")
         

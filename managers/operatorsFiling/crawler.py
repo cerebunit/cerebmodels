@@ -183,7 +183,7 @@ class Crawler(object):
         x = {}
         for (dirpath, dirnames, filenames) in os.walk(path_to_current_working_directory):
             for afilename in filenames:
-                y = {afilename: dirpath+afilename}
+                y = {afilename: dirpath + os.sep + afilename}
                 x.update(y)
         if not x:
             x = "There are no files in the current path."

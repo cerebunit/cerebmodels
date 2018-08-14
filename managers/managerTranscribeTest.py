@@ -12,12 +12,15 @@ from models.cells.modelDummyTest import DummyCell
 from managerTranscribe import TranscribeManager
 
 import numpy
+from managers.operatorsFiling.crawler import Crawler
+from pynwb import NWBHDF5IO
 
 class TranscribeManagerTest(unittest.TestCase):
 
     def setUp(self):
         self.pwd = os.getcwd()
         self.chosenmodel = DummyCell()
+        self.cr = Crawler()
         # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
         self.runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 200, "v_init": 65}
         self.stimparameters = {"type": ["current", "IClamp"],
@@ -69,7 +72,26 @@ class TranscribeManagerTest(unittest.TestCase):
         self.assertEqual( compare1, compare2 )
 
     #@unittest.skip("reason for skipping")
-    def test_3_save_nwbfile_stimulus(self):
+    def test_3_save_nwbfile_nostimulus(self):
+        os.chdir("..") # move up to ~/cerebmodels
+        tm = TranscribeManager()
+        tm.load_metadata( chosenmodel = self.chosenmodel,
+                          recordings = self.recordings_nostimulus,
+                          runtimeparameters = self.runtimeparam )
+        tm.compile_nwbfile()
+        tm.save_nwbfile()
+        #
+        x = self.cr.show_files(dir_names=['responses', self.chosenmodel.modelscale,
+                                          self.chosenmodel.modelname])
+        print x
+        #
+        path = os.getcwd() + os.sep + "responses" + os.sep + self.chosenmodel.modelscale + os.sep + self.chosenmodel.modelname
+        shutil.rmtree( path )
+        os.chdir(self.pwd) # reset to the location of this managerTranscriberTest.py
+        #self.assertEqual( compare1, compare2 )
+
+    #@unittest.skip("reason for skipping")
+    def test_4_save_nwbfile_stimulus(self):
         os.chdir("..") # move up to ~/cerebmodels
         tm = TranscribeManager()
         tm.load_metadata( chosenmodel = self.chosenmodel,
@@ -77,11 +99,10 @@ class TranscribeManagerTest(unittest.TestCase):
                           runtimeparameters = self.runtimeparam,
                           stimparameters = self.stimparameters )
         tm.compile_nwbfile()
-        print tm.nwbfile.session_id
-        print tm.nwbfile.session_start_time
         tm.save_nwbfile()
-        #print path
-        #shutil.rmtree( os.path.dirname( os.path.dirname(path) ) )
+        #
+        path = os.getcwd() + os.sep + "responses" + os.sep + self.chosenmodel.modelscale + os.sep + self.chosenmodel.modelname
+        shutil.rmtree( path )
         os.chdir(self.pwd) # reset to the location of this managerTranscriberTest.py
         #self.assertEqual( compare1, compare2 )
 

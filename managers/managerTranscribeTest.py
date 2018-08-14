@@ -83,28 +83,50 @@ class TranscribeManagerTest(unittest.TestCase):
         #
         x = self.cr.show_files(dir_names=['responses', self.chosenmodel.modelscale,
                                           self.chosenmodel.modelname])
-        print x
+        #print x
+        for key in x.keys():
+            compare1 = key
+        #print compare1
+        #
+        sesstime = str(tm.nwbfile.session_start_time).replace(" ", "_")[0:-6]
+        compare2 = tm.nwbfile.session_id + "_" + sesstime.replace(":", "-") + ".h5"
+        #print compare2
         #
         path = os.getcwd() + os.sep + "responses" + os.sep + self.chosenmodel.modelscale + os.sep + self.chosenmodel.modelname
         shutil.rmtree( path )
         os.chdir(self.pwd) # reset to the location of this managerTranscriberTest.py
-        #self.assertEqual( compare1, compare2 )
+        self.assertEqual( compare1, compare2 )
 
     #@unittest.skip("reason for skipping")
     def test_4_save_nwbfile_stimulus(self):
         os.chdir("..") # move up to ~/cerebmodels
         tm = TranscribeManager()
         tm.load_metadata( chosenmodel = self.chosenmodel,
-                          recordings = self.recordings_nostimulus,
+                          recordings = self.recordings_stimulus,
                           runtimeparameters = self.runtimeparam,
                           stimparameters = self.stimparameters )
         tm.compile_nwbfile()
         tm.save_nwbfile()
         #
+        x = self.cr.show_files(dir_names=['responses', self.chosenmodel.modelscale,
+                                          self.chosenmodel.modelname])
+        #
+        for key in x.keys():
+            k = key
+        #
+        io = NWBHDF5IO(x[k])
+        nwbfile = io.read()
+        stimulus = nwbfile.get_stimulus(self.chosenmodel.modelname+"_stimulus")
+        a = all(boolean == True for boolean in
+                                (stimulus.data.value == self.recordings_stimulus['stimulus']))
+        b = all(boolean == False for boolean in
+                                (stimulus.timestamps.value == self.recordings_stimulus['stimulus']))
+        self.assertTrue( a and b is True)
+        io.close()
+        #
         path = os.getcwd() + os.sep + "responses" + os.sep + self.chosenmodel.modelscale + os.sep + self.chosenmodel.modelname
         shutil.rmtree( path )
         os.chdir(self.pwd) # reset to the location of this managerTranscriberTest.py
-        #self.assertEqual( compare1, compare2 )
 
 if __name__ == '__main__':
     unittest.main()

@@ -8,7 +8,7 @@ import sys
 # set to ~/cerebmodels
 sys.path.append(os.path.dirname(os.getcwd()))
 # this is required for
-# from managers.operatorsFiling.crawler import Crawler
+from models.cells.modelDummyTest import DummyCell
 # called in managerAccount.py
 
 from managerFiling import FilingManager
@@ -18,6 +18,7 @@ class FilingManagerTest(unittest.TestCase):
     def setUp(self):
         self.fm = FilingManager() #instance for non: static & class methods.
         self.pwd = os.getcwd()
+        self.chosenmodel = DummyCell()
 
     #@unittest.skip("reason for skipping")
     def test_1_available_modelscales_nomodelscales(self):
@@ -66,10 +67,32 @@ class FilingManagerTest(unittest.TestCase):
                           list_dir_names=['cells', 'DummyTest'])
  
     #@unittest.skip("reason for skipping")
-    def test_7_responsepath_check_create(self):
+    def test_7_get_responsepath_check_create(self):
+        os.chdir("..") # move up one directory to ~/cerebmodels
+        path = self.fm.get_responsepath_check_create(
+                                    ['responses', 'cells', 'DummyTest'] )
+        self.assertEqual( path,
+             os.getcwd() + os.sep + 'responses' + os.sep + 'cells' + os.sep + 'DummyTest' )
+        shutil.rmtree( os.path.dirname(os.path.dirname(path)) )
+        os.chdir(self.pwd) # come back to where this .py resides
+
+    #@unittest.skip("reason for skipping")
+    def test_8_responsepath_check_create(self):
+        # test similar to test_7_get_responsepath_check_create
         os.chdir("..") # move up one directory to ~/cerebmodels
         path = self.fm.responsepath_check_create(
                             list_dir_names=['responses', 'cells', 'DummyTest'])
+        self.assertEqual( path,
+             os.getcwd() + os.sep + 'responses' + os.sep + 'cells' + os.sep + 'DummyTest' )
+        shutil.rmtree( os.path.dirname(os.path.dirname(path)) )
+        os.chdir(self.pwd) # come back to where this .py resides
+ 
+    #@unittest.skip("reason for skipping")
+    def test_9_responsepath_check_create_chosenmodel(self):
+        os.chdir("..") # move up one directory to ~/cerebmodels
+        path = self.fm.responsepath_check_create(chosenmodel=self.chosenmodel)
+        self.assertEqual( path,
+             os.getcwd() + os.sep + 'responses' + os.sep + 'cells' + os.sep + 'DummyTest' )
         shutil.rmtree( os.path.dirname(os.path.dirname(path)) )
         os.chdir(self.pwd) # come back to where this .py resides
  

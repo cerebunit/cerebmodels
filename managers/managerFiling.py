@@ -23,8 +23,8 @@ class FilingManager(object):
         ValueError if there are no model_scale
 
         Use case:
-        am = AccountManager()
-        am.available_modelscales()
+        fm = FilingManager()
+        fm.available_modelscales()
 
         """
 
@@ -49,8 +49,8 @@ class FilingManager(object):
         ValueError if the model_scale has no models.
 
         Use case:
-        sm = SimManager()
-        sm.modelscale_inventory(model_scale="cells")
+        fm = FilingManager()
+        fm.modelscale_inventory(model_scale="cells")
 
         """
 
@@ -64,14 +64,27 @@ class FilingManager(object):
             else:
                 return model_dirs
 
-    def responsepath_check_create(self, list_dir_names=None):
+    def get_responsepath_check_create(self, list_dir_names):
+        """this method is called by responsepath_check_create() below.
+        """
+        try:
+            path = self.cr.path_to_dir(dir_names = list_dir_names)
+            return path
+        except:
+            path = self.ps.hatch_path_to_response(modelscale=list_dir_names[1],
+                                                  modelname=list_dir_names[-1])
+            os.makedirs(path)
+            return path
+
+    def responsepath_check_create(self, list_dir_names=None, chosenmodel=None):
         """method that returns path to the reponse.
 
-        Keyword argument:
+        Keyword argument: list_dir_names OR chosenmodel
         list_dir_names -- list of three string;
                           Eg. ['responses', chosenmodel.modelscale, chosenmodel.modelname]
                           this is equivalent to
                               ['responses', 'cells', 'DummyTest']
+        chosenmodel -- instantiated model
 
         Returned value:
         path (string) -- ~/cerebmodel/responses/cells/DummyTest
@@ -80,19 +93,15 @@ class FilingManager(object):
         ValueError if the argument list_dir_names is not of the form ['responses', 'cells', 'DummyTest']
 
         Use case:
-        sm = SimManager()
-        sm.responsepath_check_create(list_dir_names=['responses', 'cells', 'DummyTest'])
+        fm = FilingManager()
+        fm.responsepath_check_create(list_dir_names=['responses', 'cells', 'DummyTest'])
 
         """
 
-        if (list_dir_names is None) or (len(list_dir_names)!=3):
-            raise ValueError("The argument must be a three-string list, eg ['responses', chosenmodel.modelscale, chosenmodel.modelname]")
-        else:
-            try:
-                path = self.cr.path_to_dir(dir_names = list_dir_names)
-                return path
-            except:
-                path = self.ps.hatch_path_to_response(modelscale=list_dir_names[1],
-                                                      modelname=list_dir_names[-1])
-                os.makedirs(path)
-                return path
+        if ((list_dir_names is None) or (len(list_dir_names)!=3)) and (chosenmodel is None):
+            raise ValueError("The argument must be a three-string list, eg ['responses', chosenmodel.modelscale, chosenmodel.modelname] OR chosenmodel must be an instantiated model.")
+        elif chosenmodel is not None:
+            dir_names = ['responses', chosenmodel.modelscale, chosenmodel.modelname]
+            return self.get_responsepath_check_create(dir_names)
+        elif (list_dir_names is not None) or (len(list_dir_names)==3):
+            return self.get_responsepath_check_create(list_dir_names)

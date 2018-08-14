@@ -47,6 +47,7 @@ class TranscribeManager(object):
                                                  nwbts = nwbts )
 
     def save_nwbfile(self):
-        path = self.fm.responsepath_check_create(list_dir_names=
-                    ['responses', self.chosenmodel.modelscale, self.chosenmodel.modelname])
+        #path = self.fm.responsepath_check_create(list_dir_names=
+        #            ['responses', self.chosenmodel.modelscale, self.chosenmodel.modelname])
+        path = self.fm.responsepath_check_create(chosenmodel = self.chosenmodel)
         self.fab.write_nwbfile(nwbfile = self.nwbfile, filepath = path)

@@ -1,4 +1,4 @@
-# ~/managers/operatorsVisualize/tabModels.py
+# ~/managers/operatorsVisualize/tabModelResponses.py
 from bokeh.plotting import figure
 from bokeh.models import (CategoricalColorMapper, HoverTool, 
 			  ColumnDataSource, Panel, 
@@ -116,7 +116,7 @@ def TabModelResponses():
     # responses_with_filepaths -- dictionary with string as key value
     fm = FilingManager()
     # Generate Model Info
-    os.chdir("..") # line required for calling ~/managers/bokehtest.py
+    #os.chdir("..") # line required for calling ~/managers/bokehtest.py
     available_modelscales = fm.available_modelscales()
     scale_and_models = {}
     for modelscale in available_modelscales: # get list of models in each scale

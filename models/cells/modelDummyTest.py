@@ -13,6 +13,9 @@ class DummyCell(object):
                         'axon': 0.0}
         self.modelscale = "cells"
         self.modelname = "DummyTest"
+        #
+        self.name = "Dummy Test"
+        self.description = "This is a dummy model for testing out the managers and their operators."
         # instantiate
         #self.rc = RecordManager()
 

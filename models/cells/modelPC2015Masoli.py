@@ -14,7 +14,7 @@ class PurkinjeCell(object):
 
     def __init__(self):
         ### =====================Instantiate the cell======================
-        self.cell = Purkinje()
+        #self.cell = Purkinje()
         # ------specify cell-regions from with response are recorded-------
         self.cell_regions = {"vm_soma": 0.0, "vm_NOR3": 0.0}
         ### ===============================================================

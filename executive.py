@@ -24,8 +24,8 @@ class ExecutiveControl(object):
 
     def list_models(self, modelscale=None):
         x =  self.fm.modelscale_inventory(model_scale=modelscale)
-        if "DummyTest" in x: # DummyTest is the Dummy model for running test
-            x.remove("DummyTest")
+        #if "DummyTest" in x: # DummyTest is the Dummy model for running test
+        #    x.remove("DummyTest")
         return x
 
     def choose_model(self, modelscale=None, modelname=None):

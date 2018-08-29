@@ -1,5 +1,4 @@
 #Template of the Purkinje cell model, Masoli et al.,2015
-
 from neuron import h
 import numpy as np
 import random
@@ -508,13 +507,15 @@ class Purkinje:
 	self.axoncoll.connect(self.axonNOR2,1,0)
 	self.axoncoll2.connect(self.axoncoll,1,0)
 
+## Below has been commented out while implementing this template to cerebmodels
+## Recording will be done outside the cell template by the RecordManager()
 #vectors for the time and voltage in the soma and axon.
 	  	       		    
-	self.rec_t = h.Vector()
-	self.rec_t.record(h._ref_t)
+	#self.rec_t = h.Vector()
+	#self.rec_t.record(h._ref_t)
 
-	self.vm_soma = h.Vector()
-	self.vm_soma.record(self.soma(0.5)._ref_v)
+	#self.vm_soma = h.Vector()
+	#self.vm_soma.record(self.soma(0.5)._ref_v)
 	
-	self.vm_NOR3 = h.Vector()
-	self.vm_NOR3.record(self.axonNOR3(0.5)._ref_v)
+	#self.vm_NOR3 = h.Vector()
+	#self.vm_NOR3.record(self.axonNOR3(0.5)._ref_v)

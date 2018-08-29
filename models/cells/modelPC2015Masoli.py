@@ -1,9 +1,15 @@
 # ~/models/cells/modelPC2015Masoli.py
+import os
+pwd = os.getcwd()
+path_to_files = pwd + os.sep + "models" + os.sep + "cells" + os.sep + \
+                "PC2015Masoli" + os.sep
 
 from neuron import h # NEURON based model
 
 from managers.managerSimulation import SimulationManager
 from models.cells.PC2015Masoli.Purkinje import Purkinje
+
+sm = SimulationManager()
 
 class PurkinjeCell(object):
     """USE CASE:
@@ -14,9 +20,13 @@ class PurkinjeCell(object):
 
     def __init__(self):
         ### =====================Instantiate the cell======================
+        #path_to_files = pwd + os.sep + "models" + os.sep + "cells" + \
+        #                os.sep + "PC2015Masoli" + os.sep
+        #os.chdir(path_to_files) # change to path_to_files
         #self.cell = Purkinje()
+        #os.chdir(pwd)           # reset to start directory
         # ------specify cell-regions from with response are recorded-------
-        self.cell_regions = {"vm_soma": 0.0, "vm_NOR3": 0.0}
+        self.regions = {"soma": 0.0, "axonAIS": 0.0, "axonNOR3": 0.0}
         ### ===============================================================
         #
         ### =====================Essential Attributes======================
@@ -26,9 +36,15 @@ class PurkinjeCell(object):
         # pc.name defaults to class name, i.e, PurkinjeCell
         self.name = "Masoli et al. 2015 model of PurkinjeCell"
         self.description = "Masoli et al. 2015 model of PurkinjeCell (PC) and published in 10.3389/fncel.2015.00047 This is general PC model unlike special Z+ or Z- models. The model is based on adult (P90 or 3 months) Guinea pig. PC in younger ones are not mature and they grow until P90. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 229585."
+        #
+        sm = SimulationManager()
+        sm.si.lock_and_load_nmodl(modelscale=self.modelscale, modelname=self.modelname)
+        os.chdir(path_to_files)
+        self.cell = Purkinje()
+        os.chdir(pwd)
         ### ===============================================================
         #
-        self.sm = SimulationManager()
+        #self.sm = SimulationManager()
 
     @staticmethod
     def voltage_response(sm):

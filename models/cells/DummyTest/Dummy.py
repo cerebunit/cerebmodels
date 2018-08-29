@@ -7,6 +7,7 @@ class Dummy(object):
     def __init__(self):
         self.soma = h.Section(name='soma')
         self.axon = h.Section(name='axon')
+        #self.axon.connect(self.soma,1,0)
         
         ### ====== STANDARDIZED FOR cerebmodels =======
         ### ===== mandatory for all NEURON models =====

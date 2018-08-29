@@ -35,14 +35,12 @@ class PurkinjeCell(object):
         self.name = "Masoli et al. 2015 model of PurkinjeCell"
         self.description = "Masoli et al. 2015 model of PurkinjeCell (PC) and published in 10.3389/fncel.2015.00047 This is general PC model unlike special Z+ or Z- models. The model is based on adult (P90 or 3 months) Guinea pig. PC in younger ones are not mature and they grow until P90. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 229585."
         #
-        sm = SimulationManager()
         sm.si.lock_and_load_nmodl(modelscale=self.modelscale, modelname=self.modelname)
         os.chdir(path_to_files)
         self.cell = Purkinje()
         os.chdir(pwd)
         ### ===============================================================
         #
-        #self.sm = SimulationManager()
 
     @staticmethod
     def voltage_response(sm):

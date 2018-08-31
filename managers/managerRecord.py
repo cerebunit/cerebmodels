@@ -1,17 +1,25 @@
 # ../managers/managerRecord.py
 
-from managers.operatorsYield.recorder import Recorder
+from managers.operatorsYield.recorder import Recorder as rc
 
 class RecordManager(object):
     """Manager working under RecordManager.
 
-    Available methods:
+    Main Use methods:
     prepare_recording_NEURON
+    postrun_record_NEURON
+
+    Class methods:
+    prepare_recording_NEURON
+
+    Static methods:
+    create_response_dictionary
     postrun_record_NEURON
     """
 
     def __init__(self):
-        self.rc = Recorder()
+        #self.rc = Recorder()
+        pass
 
     @staticmethod
     def create_response_dictionary(regionslist_str, responselist_num):
@@ -29,7 +37,8 @@ class RecordManager(object):
                                     for i in range(len(regionslist_str)) ]
         return x
 
-    def prepare_recording_NEURON(self, chosenmodel, stimuli=None):
+    @classmethod
+    def prepare_recording_NEURON(cls, chosenmodel, stimuli=None):
         """method that prepares recording for time, voltage and stimulus (optional).
 
         Argument (mandatory):
@@ -77,21 +86,22 @@ class RecordManager(object):
 
         """
 
-        time_record = self.rc.time_NEURON() # record time
+        time_record = rc.time_NEURON() # record time
         volts = []         # record voltage
         for key in chosenmodel.regions.keys(): # for all the desired section
             section = getattr(chosenmodel.cell, key)
-            volts.append( self.rc.response_voltage_NEURON(section) )
-        volt_record = self.create_response_dictionary(
+            volts.append( rc.response_voltage_NEURON(section) )
+        volt_record = cls.create_response_dictionary(
                                     list(chosenmodel.regions.keys()), volts )
         if (stimuli is not None and                    # record stimulus
             stimuli != "Model is not stimulated"): # if model is stimulated
-            currents_record = self.rc.stimulus_individual_currents_NEURON( stimuli )
+            currents_record = rc.stimulus_individual_currents_NEURON( stimuli )
             return [ time_record, volt_record, currents_record ]
         else:
             return [ time_record, volt_record, "Model is not stimulated"]
 
-    def postrun_record_NEURON(self, injectedcurrents=None):
+    @staticmethod
+    def postrun_record_NEURON(injectedcurrents=None):
         """method that records variable after the simulator has been engaged.
 
         Keyword arguments (optional):
@@ -122,4 +132,4 @@ class RecordManager(object):
              injectedcurrents == "Model is not stimulated" ):
             return "Model is not stimulated"
         else:
-            return self.rc.stimulus_overall_current_NEURON( injectedcurrents )
+            return rc.stimulus_overall_current_NEURON( injectedcurrents )

@@ -6,6 +6,10 @@ class EpochGenerator(object):
     Available methods:
     epochcontainer -- classmethod called by forepoch
     forepoch
+    compute_totalepochs_per_cellregion
+    an_epoch_stimulus_window
+    an_epoch
+
     """
 
     @staticmethod
@@ -180,7 +184,8 @@ class EpochGenerator(object):
                 return cls.an_epoch_stimulus_window(epoch_no_per_region,
                                                     theregion, parameters)
 
-    def forepoch( self, chosenmodel=None, parameters=None ):
+    @classmethod
+    def forepoch( cls, chosenmodel=None, parameters=None ):
         """method that creates the NWB formatted metadata forfile.
 
         Keyword arguments (mandatory):
@@ -237,10 +242,10 @@ class EpochGenerator(object):
         if (chosenmodel is None) or (parameters is None):
             raise ValueError("passing an instantiated chosenmodel and parameters (for runtime or stimulation) are  mandatory")
         else:
-            x = self.epochcontainer( chosenmodel, parameters )
-            no_of_epochs_per_region = self.compute_totalepochs_per_cellregion(parameters)
+            x = cls.epochcontainer( chosenmodel, parameters )
+            no_of_epochs_per_region = cls.compute_totalepochs_per_cellregion(parameters)
             for cellregion in chosenmodel.regions.keys():
                 for i in range(no_of_epochs_per_region):
                     epoch = "epoch"+str(i)+cellregion
-                    x[epoch].update( self.an_epoch( i, cellregion, parameters ) )
+                    x[epoch].update( cls.an_epoch( i, cellregion, parameters ) )
             return x

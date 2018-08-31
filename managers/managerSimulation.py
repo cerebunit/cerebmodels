@@ -16,6 +16,8 @@ class SimulationManager(object):
     prepare_model_NEURON
     stimulate_model_NEURON
     trigger_NEURON
+    lock_and_load_capability
+    engage_NEURON
 
     """
 

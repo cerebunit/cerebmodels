@@ -3,25 +3,25 @@ import unittest
 import os
 import shutil
 
-from crawler import Crawler
+from crawler import Crawler as cr
 
 class CrawlerTest(unittest.TestCase):
 
     def setUp(self):
-        self.cr = Crawler() #instance for non: static & class methods.
+        #self.cr = Crawler() #instance for non: static & class methods.
         self.pwd = os.getcwd()
 
     #@unittest.skip("reason for skipping")
     def test_1_list_dirs_invalid_searchpath(self):
         invalid_path = self.pwd+os.sep+"nonexisting_dir" 
-        self.assertRaises(ValueError, self.cr.list_dirs,
+        self.assertRaises(ValueError, cr.list_dirs,
                           search_path=invalid_path)
 
     #@unittest.skip("reason for skipping")
     def test_2_list_dirs_no_subdirs(self):
         valid_path = self.pwd+os.sep+"existing_dir"
         os.mkdir(valid_path)
-        self.assertEqual(self.cr.list_dirs(search_path=valid_path), [])
+        self.assertEqual(cr.list_dirs(search_path=valid_path), [])
         os.rmdir("existing_dir")
 
     #@unittest.skip("reason for skipping")
@@ -29,13 +29,13 @@ class CrawlerTest(unittest.TestCase):
         valid_path = self.pwd+os.sep+"existing_dir"
         for i in range(3):
             os.makedirs(valid_path+os.sep+"subdir"+str(i+1))
-        self.assertEqual(len(self.cr.list_dirs(search_path=valid_path)), 3)
+        self.assertEqual(len(cr.list_dirs(search_path=valid_path)), 3)
         shutil.rmtree("existing_dir")
  
     #@unittest.skip("reason for skipping")
     def test_4_evoke_search_type_error(self):
         os.mkdir(os.getcwd()+os.sep+"existing_dir")
-        self.assertRaises(ValueError, Crawler.search_and_find,
+        self.assertRaises(ValueError, cr.search_and_find,
                          search_type="anything but 'files' or 'directories'",
                          working_dir=self.pwd,
                          desired_name="existing_dir")
@@ -44,7 +44,7 @@ class CrawlerTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_5_evoke_search_name_error(self):
         os.mkdir(os.getcwd()+os.sep+"existing_dir")
-        self.assertRaises(ValueError, Crawler.search_and_find,
+        self.assertRaises(ValueError, cr.search_and_find,
                           search_type="directories",
                           working_dir=self.pwd,
                           desired_name="non_existing_dir")
@@ -53,8 +53,8 @@ class CrawlerTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_6_path_to_subdir(self):
         os.makedirs(os.getcwd()+os.sep+"existing_dir"+os.sep+"existing_subdir")
-        subdir_path = Crawler.path_to_dir(dir_names=["existing_dir",
-                                                     "existing_subdir"])
+        subdir_path = cr.path_to_dir(dir_names=["existing_dir",
+                                                "existing_subdir"])
         self.assertTrue(os.path.isdir(subdir_path))
         shutil.rmtree("existing_dir") 
 
@@ -64,7 +64,7 @@ class CrawlerTest(unittest.TestCase):
         os.makedirs(os.path.dirname(path))
         with open(path, 'w') as temp_file:
             temp_file.write("blah blah blah")
-        file_path = self.cr.path_to_file(dir_names=["existing_dir","existing_subdir"],
+        file_path = cr.path_to_file(dir_names=["existing_dir","existing_subdir"],
                                          file_name="some.file")
         self.assertTrue(os.path.isfile(file_path))
         shutil.rmtree("existing_dir")
@@ -73,7 +73,7 @@ class CrawlerTest(unittest.TestCase):
     def test_8_evoke_nofiles_in_show_files(self):
         some_dirpath = os.getcwd()+os.sep+"some_dir"
         os.mkdir(some_dirpath)
-        x = Crawler.show_files_with_path(some_dirpath)
+        x = cr.show_files_with_path(some_dirpath)
         self.assertIs(type(x),str)
         shutil.rmtree("some_dir")
 
@@ -83,7 +83,7 @@ class CrawlerTest(unittest.TestCase):
         os.makedirs(os.path.dirname(path))
         with open(path, 'w') as temp_file:
             temp_file.write("blah blah blah")
-        x = Crawler.show_files_with_path(os.path.dirname(path))
+        x = cr.show_files_with_path(os.path.dirname(path))
         #print x
         self.assertTrue(x["some.file"], path)
         shutil.rmtree("some_dir")
@@ -94,7 +94,7 @@ class CrawlerTest(unittest.TestCase):
         os.makedirs(os.path.dirname(path))
         with open(path, 'w') as temp_file:
             temp_file.write("blah blah blah")
-        x = self.cr.show_files(dir_names=["some_dir", "its_subdir"])
+        x = cr.show_files(dir_names=["some_dir", "its_subdir"])
         #print x
         self.assertTrue(x["some.file"], path)
         shutil.rmtree("some_dir")

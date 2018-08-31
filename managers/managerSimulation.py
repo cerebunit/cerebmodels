@@ -135,7 +135,7 @@ class SimulationManager(object):
                 return stimuli_list
 
     @staticmethod
-    def lock_and_load_capability(chosenmodel, modelcapability):
+    def lock_and_load_capability(chosenmodel, modelcapability, **kwargs):
         """static method loads model capability hence running the simulation
 
         Argument (mandatory):
@@ -143,6 +143,9 @@ class SimulationManager(object):
 
         Keyword arguments (mandatory):
         modelcapability -- string; eg "produces_spike_train"
+
+        Optional Variable Keyword arguments:
+        **kwargs
 
         Returned value:
         nothing is returned
@@ -156,7 +159,7 @@ class SimulationManager(object):
 
         """
         run_model = getattr(chosenmodel, modelcapability)
-        return run_model()
+        return run_model(**kwargs)
 
     @staticmethod
     def engage_NEURON():
@@ -168,13 +171,13 @@ class SimulationManager(object):
         #print(str(h.dt) + " " + str(h.tstop))
 
     @classmethod
-    def trigger_NEURON(cls, chosenmodel, modelcapability=None):
+    def trigger_NEURON(cls, chosenmodel, modelcapability=None, **kwargs):
         """f
         """
-        if modelcapability is not None:
+        if (modelcapability is not None) and (len(kwargs) != 0):
             start_time = time.clock()
             cls.lock_and_load_capability( chosenmodel,
-                                          modelcapability = modelcapability )
+                                          modelcapability = modelcapability, **kwargs )
         else:
             start_time = time.clock()
             cls.engage_NEURON()

@@ -6,14 +6,17 @@ class Crawler(object):
 
     Available methods:
     list_dirs -- returns list of of available same-level directories
+    search_and_find -- returns full path to the directory/subdirectory/file
     path_to_dir -- returns path to a desired directory or subdirectory
     path_to_file -- returns path to a desired file in given directory path
+    show_files_with_path -- returns dictionary as {"file1.ext": "its/path/file1.ext", "file2.ext": "a/path/file2.ext"}
     show_files -- returns dictionary of filenames and its path
+    smoke_out -- return full path (os specific) to the directory/subdirectory/file
 
     """
-
-    def list_dirs(self, search_path=None):
-        """instantiated method that returns all same-level directores.
+    @classmethod
+    def list_dirs(cls, search_path=None):
+        """class method that returns all same-level directores.
 
         Keyword arguments:
         search_path -- string; "path/to/search/for/subdir/in/a/dir"
@@ -129,8 +132,9 @@ class Crawler(object):
                                                  desired_name=name)
             return nthpath
 
-    def path_to_file(self, dir_names=None, file_name=None):
-        """instantiated method that returns path to a desired file.
+    @classmethod
+    def path_to_file(cls, dir_names=None, file_name=None):
+        """class method that returns path to a desired file.
 
         Keyword arguments:
         dir_name -- string or strings list, where file is thought to reside.
@@ -153,8 +157,8 @@ class Crawler(object):
         path_to_file(dir_names=["a_dir_name", "its_subdir"], file_name="filename.ext")
 
         """
-        dir_path = self.path_to_dir(dir_names)
-        file_path = self.search_and_find(search_type="files",
+        dir_path = cls.path_to_dir(dir_names)
+        file_path = cls.search_and_find(search_type="files",
                                          working_dir=dir_path,
                                          desired_name=file_name)
         return file_path
@@ -192,8 +196,9 @@ class Crawler(object):
         else:
             return x
 
-    def show_files(self, dir_names=None):
-        """instantiated method that returns all the available files and its respective path.
+    @classmethod
+    def show_files(cls, dir_names=None):
+        """class method that returns all the available files and its respective path.
 
         Keyword arguments:
         dir_name -- string or strings list, where file is thought to reside.
@@ -217,13 +222,14 @@ class Crawler(object):
 
         """
         if dir_names is None:
-            return self.show_files_with_path(os.getcwd())
+            return cls.show_files_with_path(os.getcwd())
         else:
-            dir_path = self.path_to_dir(dir_names)
-            return self.show_files_with_path(dir_path)
+            dir_path = cls.path_to_dir(dir_names)
+            return cls.show_files_with_path(dir_path)
 
-    def smoke_out(self, search_type=None, working_dir=None, desired_name=None):
-        """instantiatedmethod that searches for and finds files or directories.
+    @staticmethod
+    def smoke_out(search_type=None, working_dir=None, desired_name=None):
+        """static method that searches for and finds files or directories.
 
         Keyword arguments:
         search_type -- valid strings; "files" or "directories"

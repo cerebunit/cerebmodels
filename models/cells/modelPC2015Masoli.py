@@ -40,23 +40,22 @@ class PurkinjeCell(object):
         self.cell = Purkinje()
         os.chdir(pwd)
         ### ===============================================================
-        #
 
-    @staticmethod
-    def voltage_response(sm):
+    # =======================================================================
+    # +++++++++++++++++++++++ MODEL CAPABILITIES ++++++++++++++++++++++++++++
+    # =======================================================================
+
+    # --------------------- produce_voltage_response ------------------------
+    def produce_voltage_response():
         """generic/essential model response
 
         Argument:
         sm -- instantiated SimulationManager()
         """
-        sm.engage_NEURON(h)
+        sm.engage_NEURON()
         
-    # =======================================================================
-    # +++++++++++++++++++++++ MODEL CAPABILITIES ++++++++++++++++++++++++++++
-    # =======================================================================
-
     # ----------------------- produce_spike_train ---------------------------
-    def produce_spike_train(self):
+    def produce_spike_train(self, **kwargs):
         """
         Use case:
         """

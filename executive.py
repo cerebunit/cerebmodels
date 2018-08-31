@@ -39,14 +39,14 @@ class ExecutiveControl(object):
 
     def launch_model( self, parameters = None, onmodel = None,
                       stimparameters = None, stimloc = None,
-                      capabilities = {'model':None, 'test':None} ):
+                      capabilities = {'model':None, 'vtest':None} ):
         # NOTE: although it is convenient to use self.chosenmodel
         # to the user having explicitly choose onmodel as an argument is clearer
         uu.check_not_None_in_arg({'parameters': parameters, 'onmodel': onmodel})
         if onmodel.modelscale is "cells":
             self.sm.prepare_model_NEURON( parameters=parameters, chosenmodel=onmodel,
                                           modelcapability = capabilities['model'],
-                                          cerebunitcapability = capabilities['test'] )
+                                          cerebunitcapability = capabilities['vtest'] )
             stimuli_list = self.sm.stimulate_model_NEURON(
                                           stimparameters = stimparameters,
                                           modelsite = stimloc )

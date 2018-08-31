@@ -46,7 +46,7 @@ class ExecutiveControlTest(unittest.TestCase):
                               parameters = parameters,
                               onmodel = pickedmodel,
                               capabilities = {'model': 'produce_spike_train',
-                                              'test': None} ),
+                                              'vtest': None} ),
                          "model was successfully simulated")
 
     #@unittest.skip("reason for skipping")

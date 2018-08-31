@@ -4,14 +4,20 @@
 class TimeseriesGenerator(object):
     """Operators working under TranscribeManager
 
-    Available methods:
-    forcellrecording -- classmethod called by forrecording
+    Main Usage Methods:
     forrecording
-    cellrecordings_response
-    recordings_cell_currentstimulus
+
+    Class methods:
     recordings_cellstimulus
     forcellrecordings_nostimulus
     forcellrecordings_stimulus
+    forcellrecording
+    forrecording
+
+    Static methods:
+    cellrecordings_response
+    recordings_cell_currentstimulus
+
     """
 
     @staticmethod

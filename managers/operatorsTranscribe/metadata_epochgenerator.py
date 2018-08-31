@@ -3,12 +3,18 @@
 class EpochGenerator(object):
     """Operators working under TranscribeManager
 
-    Available methods:
+    Main Usage Methods:
     epochcontainer -- classmethod called by forepoch
     forepoch
+
+    Class methods:
+    epochcontainer
+    anepoch
+    forepoch
+
+    Static methods:
     compute_totalepochs_per_cellregion
     an_epoch_stimulus_window
-    an_epoch
 
     """
 

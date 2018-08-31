@@ -6,8 +6,13 @@ import time
 class FileGenerator(object):
     """Operators working under TranscribeManager
 
-    Available methods:
+    Main Usage Methods:
     forfile
+
+    Class methods:
+    forfile
+
+    Static methods:
     get_modelID
     get_username
     get_testdescription

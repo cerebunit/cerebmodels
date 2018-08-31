@@ -7,20 +7,25 @@ import sys
 # import modules for other directories
 sys.path.append(os.path.dirname(os.getcwd()))
 # this is required for
+
+pwd = os.getcwd()
+os.chdir("..") # this moves you up to ~/cerebmodels
+rootwd = os.getcwd()
 from models.cells.modelDummyTest import DummyCell
+os.chdir(pwd)
 
 from managerTranscribe import TranscribeManager
 
 import numpy
-from managers.operatorsFiling.crawler import Crawler
+from managers.operatorsFiling.crawler import Crawler as cr
 from pynwb import NWBHDF5IO
 
 class TranscribeManagerTest(unittest.TestCase):
 
     def setUp(self):
-        self.pwd = os.getcwd()
+        os.chdir(rootwd)
         self.chosenmodel = DummyCell()
-        self.cr = Crawler()
+        os.chdir(pwd)
         # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
         self.runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 200, "v_init": 65}
         self.stimparameters = {"type": ["current", "IClamp"],
@@ -81,8 +86,8 @@ class TranscribeManagerTest(unittest.TestCase):
         tm.compile_nwbfile()
         tm.save_nwbfile()
         #
-        x = self.cr.show_files(dir_names=['responses', self.chosenmodel.modelscale,
-                                          self.chosenmodel.modelname])
+        x = cr.show_files(dir_names=['responses', self.chosenmodel.modelscale,
+                                    self.chosenmodel.modelname])
         #print x
         for key in x.keys():
             compare1 = key
@@ -94,7 +99,7 @@ class TranscribeManagerTest(unittest.TestCase):
         #
         path = os.getcwd() + os.sep + "responses" + os.sep + self.chosenmodel.modelscale + os.sep + self.chosenmodel.modelname
         shutil.rmtree( path )
-        os.chdir(self.pwd) # reset to the location of this managerTranscriberTest.py
+        os.chdir(pwd) # reset to the location of this managerTranscriberTest.py
         self.assertEqual( compare1, compare2 )
 
     #@unittest.skip("reason for skipping")
@@ -108,8 +113,8 @@ class TranscribeManagerTest(unittest.TestCase):
         tm.compile_nwbfile()
         tm.save_nwbfile()
         #
-        x = self.cr.show_files(dir_names=['responses', self.chosenmodel.modelscale,
-                                          self.chosenmodel.modelname])
+        x = cr.show_files(dir_names=['responses', self.chosenmodel.modelscale,
+                                     self.chosenmodel.modelname])
         #
         for key in x.keys():
             k = key
@@ -126,7 +131,7 @@ class TranscribeManagerTest(unittest.TestCase):
         #
         path = os.getcwd() + os.sep + "responses" + os.sep + self.chosenmodel.modelscale + os.sep + self.chosenmodel.modelname
         shutil.rmtree( path )
-        os.chdir(self.pwd) # reset to the location of this managerTranscriberTest.py
+        os.chdir(pwd) # reset to the location of this managerTranscriberTest.py
 
 if __name__ == '__main__':
     unittest.main()

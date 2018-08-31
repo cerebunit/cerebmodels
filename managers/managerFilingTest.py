@@ -8,8 +8,13 @@ import sys
 # set to ~/cerebmodels
 sys.path.append(os.path.dirname(os.getcwd()))
 # this is required for
+#from models.cells.modelDummyTest import DummyCell
+#
+pwd = os.getcwd()
+os.chdir("..") # this moves up to ~/cerebmodels
+rootwd = os.getcwd()
 from models.cells.modelDummyTest import DummyCell
-# called in managerAccount.py
+os.chdir(pwd)
 
 from managerFiling import FilingManager as fm
 
@@ -17,8 +22,9 @@ class FilingManagerTest(unittest.TestCase):
 
     def setUp(self):
         #self.fm = FilingManager() #instance for non: static & class methods.
-        self.pwd = os.getcwd()
+        os.chdir(rootwd)
         self.chosenmodel = DummyCell()
+        os.chdir(pwd)
 
     #@unittest.skip("reason for skipping")
     def test_1_available_modelscales_nomodelscales(self):
@@ -32,7 +38,7 @@ class FilingManagerTest(unittest.TestCase):
         os.chdir("..") # move up one directory
         x = len(fm.available_modelscales()) != 0
         self.assertEqual(x, True)
-        os.chdir(self.pwd) # come back to where this .py resides
+        os.chdir(pwd) # come back to where this .py resides
 
     #@unittest.skip("reason for skipping")
     def test_3_modelscale_inventory_nomodelscales(self):
@@ -42,7 +48,7 @@ class FilingManagerTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_4_modelscale_inventory_nomodels(self):
         #os.chdir("..") # move up one directory
-        os.mkdir(self.pwd+os.sep+"cells")
+        os.mkdir(pwd+os.sep+"cells")
         self.assertRaises(ValueError, fm.modelscale_inventory,
                           model_scale="cells")
         os.rmdir("cells")
@@ -57,7 +63,7 @@ class FilingManagerTest(unittest.TestCase):
         self.assertEqual( len(fm.modelscale_inventory(model_scale="dummyscale")),
                           3 )
         shutil.rmtree(dummyscale_path)           
-        os.chdir(self.pwd) # come back to where this .py resides
+        os.chdir(pwd) # come back to where this .py resides
  
     #@unittest.skip("reason for skipping")
     def test_6_responsepath_check_create_argumenterror(self):
@@ -73,7 +79,7 @@ class FilingManagerTest(unittest.TestCase):
         self.assertEqual( path,
              os.getcwd() + os.sep + 'responses' + os.sep + 'cells' + os.sep + 'DummyTest' )
         shutil.rmtree( os.path.dirname(os.path.dirname(path)) )
-        os.chdir(self.pwd) # come back to where this .py resides
+        os.chdir(pwd) # come back to where this .py resides
 
     #@unittest.skip("reason for skipping")
     def test_8_responsepath_check_create(self):
@@ -84,7 +90,7 @@ class FilingManagerTest(unittest.TestCase):
         self.assertEqual( path,
              os.getcwd() + os.sep + 'responses' + os.sep + 'cells' + os.sep + 'DummyTest' )
         shutil.rmtree( os.path.dirname(os.path.dirname(path)) )
-        os.chdir(self.pwd) # come back to where this .py resides
+        os.chdir(pwd) # come back to where this .py resides
  
     #@unittest.skip("reason for skipping")
     def test_9_responsepath_check_create_chosenmodel(self):
@@ -93,8 +99,7 @@ class FilingManagerTest(unittest.TestCase):
         self.assertEqual( path,
              os.getcwd() + os.sep + 'responses' + os.sep + 'cells' + os.sep + 'DummyTest' )
         shutil.rmtree( os.path.dirname(os.path.dirname(path)) )
-        os.chdir(self.pwd) # come back to where this .py resides
-        shutil.rmtree("x86_64") # remove created dir ~/cerebmodels/managers/x86_64
+        os.chdir(pwd) # come back to where this .py resides
  
 if __name__ == '__main__':
     unittest.main()

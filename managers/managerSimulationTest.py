@@ -15,6 +15,11 @@ sys.path.append(os.path.dirname(os.getcwd()))
 # and also for the utilities
 from utilities import UsefulUtils
 
+pwd = os.getcwd()
+os.chdir("..") # this moves you up to ~/cerebmodels
+rootwd = os.getcwd()
+os.chdir(pwd)
+
 from managerSimulation import SimulationManager
 
 
@@ -23,7 +28,6 @@ class SimulationManagerTest(unittest.TestCase):
     def setUp(self):
         self.sm = SimulationManager() #instance for non: static & class methods.
         self.uu = UsefulUtils() #for alternative approach see managerRecordTest.py
-        self.pwd = os.getcwd()
 
     #@unittest.skip("reason for skipping")
     def test_1_prepare_model_NEURON_nomodel(self):
@@ -31,7 +35,7 @@ class SimulationManagerTest(unittest.TestCase):
 
     #@unittest.skip("reason for skipping")
     def test_2_prepare_model_NEURON(self):
-        os.chdir("..") # move up to load the model
+        os.chdir(rootwd) # move up to load the model
         #from utilities import UsefulUtils as uu
         # pick the model
         modelmodule = importlib.import_module("models.cells.modelDummyTest")
@@ -43,11 +47,11 @@ class SimulationManagerTest(unittest.TestCase):
         self.assertEqual(self.sm.prepare_model_NEURON(
                                 parameters=parameters, chosenmodel=chosenmodel),
                          "NEURON model is ready")
-        os.chdir(self.pwd) # return to the location of this test file
+        os.chdir(pwd) # return to the location of this test file
 
     #@unittest.skip("reason for skipping")
     def test_3_lock_and_load_capability(self):
-        os.chdir("..") # move up to load the model
+        os.chdir(rootwd) # move up to load the model
         #from utilities import UsefulUtils as uu
         # pick the model
         modelmodule = importlib.import_module("models.cells.modelDummyTest")
@@ -59,11 +63,11 @@ class SimulationManagerTest(unittest.TestCase):
                                               chosenmodel,
                                               modelcapability="produce_spike_train"),
                          "DummyTest model just finished run for produce_spike_train")
-        os.chdir(self.pwd) # return to the location of this test file
+        os.chdir(pwd) # return to the location of this test file
 
     #@unittest.skip("reason for skipping")
     def test_4_trigger_NEURON_with_capability(self):
-        os.chdir("..") # move up to load the model
+        os.chdir(rootwd) # move up to load the model
         # pick the model
         modelmodule = importlib.import_module("models.cells.modelDummyTest")
         pickedmodel = getattr(modelmodule,
@@ -76,11 +80,11 @@ class SimulationManagerTest(unittest.TestCase):
                                           chosenmodel,
                                           modelcapability="produce_spike_train"),
                           "model was successfully triggered via NEURON" )
-        os.chdir(self.pwd) # return to the location of this test file
+        os.chdir(pwd) # return to the location of this test file
 
     #@unittest.skip("reason for skipping")
     def test_5_trigger_NEURON_raw(self):
-        os.chdir("..") # move up to load the model
+        os.chdir(rootwd) # move up to load the model
         # pick the model
         modelmodule = importlib.import_module("models.cells.modelDummyTest")
         pickedmodel = getattr(modelmodule,
@@ -91,11 +95,11 @@ class SimulationManagerTest(unittest.TestCase):
         self.sm.prepare_model_NEURON(parameters=parameters, chosenmodel=chosenmodel)
         self.assertEqual( self.sm.trigger_NEURON ( chosenmodel ),
                           "model was successfully triggered via NEURON" )
-        os.chdir(self.pwd) # return to the location of this test file
+        os.chdir(pwd) # return to the location of this test file
 
     #@unittest.skip("reason for skipping")
     def test_6_stimulate_model_NEURON_parameter_None(self):
-        os.chdir("..") # move up to load the model
+        os.chdir(rootwd) # move up to load the model
         # pick the model
         modelmodule = importlib.import_module("models.cells.modelDummyTest")
         pickedmodel = getattr(modelmodule,
@@ -106,11 +110,11 @@ class SimulationManagerTest(unittest.TestCase):
         self.sm.prepare_model_NEURON(parameters=parameters, chosenmodel=chosenmodel)
         self.assertEqual( self.sm.stimulate_model_NEURON(),
                           "Model is not stimulated" )
-        os.chdir(self.pwd) # return to the location of this test file
+        os.chdir(pwd) # return to the location of this test file
 
     #@unittest.skip("reason for skipping")
     def test_7_stimulate_model_NEURON_parameter_error(self):
-        os.chdir("..") # move up to load the model
+        os.chdir(rootwd) # move up to load the model
         # pick the model
         modelmodule = importlib.import_module("models.cells.modelDummyTest")
         pickedmodel = getattr(modelmodule,
@@ -125,11 +129,11 @@ class SimulationManagerTest(unittest.TestCase):
                            self.sm.stimulate_model_NEURON,
                            stimparameters = currparameters,
                            modelsite = chosenmodel.cell.soma )
-        os.chdir(self.pwd) # return to the location of this test file
+        os.chdir(pwd) # return to the location of this test file
 
     #@unittest.skip("reason for skipping")
     def test_8_stimulate_model_NEURON_current(self):
-        os.chdir("..") # move up to load the model
+        os.chdir(rootwd) # move up to load the model
         # pick the model
         modelmodule = importlib.import_module("models.cells.modelDummyTest")
         pickedmodel = getattr(modelmodule,
@@ -145,7 +149,7 @@ class SimulationManagerTest(unittest.TestCase):
                                                 stimparameters = currparameters,
                                                 modelsite = chosenmodel.cell.soma ) ),
                           len(currparameters["stimlist"]) )
-        os.chdir(self.pwd) # return to the location of this test file
+        os.chdir(pwd) # return to the location of this test file
 
 
 if __name__ == '__main__':

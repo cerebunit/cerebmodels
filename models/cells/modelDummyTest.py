@@ -7,7 +7,7 @@ path_to_files = pwd + os.sep + "models" + os.sep + "cells" + os.sep + \
 #from managers.managerRecord import RecordManager
 #from managers.managerSimulation import SimulationManager
 
-from managers.managerSimulation import SimulationManager
+from managers.managerSimulation import SimulationManager as sm
 from models.cells.DummyTest.Dummy import Dummy
 
 class DummyCell(object):
@@ -21,9 +21,9 @@ class DummyCell(object):
         self.name = "Dummy Test"
         self.description = "This is a dummy model for testing out the managers and their operators."
         #
-        self.sm = SimulationManager()
         # instantiate
-        self.sm.si.lock_and_load_nmodl(modelscale=self.modelscale, modelname=self.modelname)
+        sm.lock_and_load_model_libraries(modelscale=self.modelscale,
+                                         modelname=self.modelname)
         os.chdir(path_to_files)
         self.cell = Dummy()
         os.chdir(pwd)

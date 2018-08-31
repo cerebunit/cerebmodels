@@ -2,33 +2,55 @@
 import os
 import time
 
-from managers.operatorsSimaudit.inspector import SimInspector
-from managers.operatorsSimaudit.hardware import HardwareConfigurator
-from managers.operatorsSimaudit.assembler import SimAssembler
+from managers.operatorsSimaudit.inspector import SimInspector as si
+from managers.operatorsSimaudit.hardware import HardwareConfigurator as hc
+from managers.operatorsSimaudit.assembler import SimAssembler as sa
 from managers.operatorsSimaudit.stimulator import Stimulator
 
 from neuron import h
 
+st = Stimulator()
+
 class SimulationManager(object):
     """Manager working under ExecutiveControl.
 
-    Available methods:
+    Main Use methods:
     prepare_model_NEURON
     stimulate_model_NEURON
     trigger_NEURON
     lock_and_load_capability
     engage_NEURON
 
+    Class methods:
+    prepare_model_NEURON
+    trigger_NEURON
+
+    Static methods:
+    lock_and_load_model_libraries
+    stimulate_model_NEURON
+    lock_and_load_capability
+    engage_NEURON
+
     """
 
     def __init__(self):
-        self.si = SimInspector()
-        self.hc = HardwareConfigurator()
-        self.sa = SimAssembler()
-        self.st = Stimulator()
+        #self.si = SimInspector()
+        #self.hc = HardwareConfigurator()
+        #self.sa = SimAssembler()
+        #self.st = Stimulator()
+        pass
 
-    def prepare_model_NEURON(self, parameters=None, chosenmodel=None, modelcapability = None,
-                      cerebunitcapability = None):
+    @staticmethod
+    def lock_and_load_model_libraries(modelscale=None, modelname=None):
+        if modelscale is None:
+            raise ValueError("modelscale must be string: 'cells', 'circuits', 'networks'")
+        elif modelscale=="cells":
+            si.lock_and_load_nmodl(modelscale = modelscale, modelname = modelname)
+            return "Model libraries area loaded" # for managerSimulationTest.py
+       
+    @classmethod
+    def prepare_model_NEURON( cls, parameters=None, chosenmodel=None,
+                              modelcapability = None, cerebunitcapability = None):
         """method that checks for compiled nmodl and optionally for capability.
 
         Keyword arguments (mandatory):
@@ -60,15 +82,16 @@ class SimulationManager(object):
         if (parameters is None) or (chosenmodel is None):
             raise ValueError("an instantiated model must be given for 'chosenmodel' with its runtime 'parameters'")
         else:
-            self.si.lock_and_load_nmodl(modelscale = chosenmodel.modelscale,
-                                        modelname = chosenmodel.modelname)
-            self.si.check_compatibility(capability_name = modelcapability,
+            cls.lock_and_load_model_libraries(modelscale=chosenmodel.modelscale,
+                                              modelname=chosenmodel.modelname)
+            si.check_compatibility(capability_name = modelcapability,
                                         CerebUnit_capability = cerebunitcapability)
-            self.hc.activate_cores()
-            self.sa.set_runtime_NEURON(parameters = parameters)
+            hc.activate_cores()
+            sa.set_runtime_NEURON(parameters = parameters)
             return "NEURON model is ready" # for managerSimulationTest.py
 
-    def stimulate_model_NEURON(self, stimparameters=None, modelsite=None):
+    @staticmethod
+    def stimulate_model_NEURON(stimparameters=None, modelsite=None):
         """method that stimulates the prepared model but before locking & loading the capability or before engaging the simulator.
 
         Keyword Arguments (optional):
@@ -130,7 +153,7 @@ class SimulationManager(object):
                                    "{'amp': 1.0, 'dur': 50.0, 'delay': 10.0+100.0} ]")
         else:
             if stimparameters["type"][0] is "current":
-                stimuli_list = self.st.inject_current_NEURON(
+                stimuli_list = st.inject_current_NEURON(
                                            currenttype = stimparameters["type"][1],
                                            injparameters = stimparameters["stimlist"],
                                            neuronsection = modelsite) 

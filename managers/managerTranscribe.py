@@ -8,6 +8,14 @@ from managers.operatorsTranscribe.fabricator import Fabricator as fab
 from managerFiling import FilingManager as fm
 
 class TranscribeManager(object):
+    """
+    Available methods:
+    load_metadata
+    compile_nwbfile
+    save_nwbfile
+
+    NOTE: The method are instantiated methods.
+    """
 
     def __init__(self):
         #self.fg = FileGenerator()

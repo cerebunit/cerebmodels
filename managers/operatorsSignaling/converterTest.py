@@ -16,12 +16,10 @@ rootwd = os.getcwd()
 from models.cells.modelDummyTest import DummyCell
 os.chdir(pwd)
 
-from managers.managerSimulation import SimulationManager
-from managers.managerRecord import RecordManager
+from managers.managerSimulation import SimulationManager as sm
+from managers.managerRecord import RecordManager as rm
 from converter import Converter as co
 
-sm = SimulationManager()
-rm = RecordManager()
 
 class ConverterTest(unittest.TestCase):
 

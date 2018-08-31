@@ -1,17 +1,27 @@
 # ../managers/managerFiling.py
 import os
 
-from managers.operatorsFiling.crawler import Crawler
-from managers.operatorsFiling.pathspawner import PathSpawner
+from managers.operatorsFiling.crawler import Crawler as cr
+from managers.operatorsFiling.pathspawner import PathSpawner as ps
 
 class FilingManager(object):
+    """
+    Available methods:
+    available_modelscales -- returns list of model scales (directory names)
+    modelscale_inventory -- returns list of model names (model directory names)
+    get_responsepath_check_create -- returns path (string) NOTE: this is called by responsepath_check_create
+    responsepath_check_create -- returns path (string) eg, ~/cerebmodel/responses/cells/DummyTest
+
+    """
 
     def __init__(self):
-        self.cr = Crawler()
-        self.ps = PathSpawner()
+        #self.cr = Crawler()
+        #self.ps = PathSpawner()
+        pass
 
-    def available_modelscales(self):
-        """method that returns a list of available model_scale.
+    @staticmethod
+    def available_modelscales():
+        """static method that returns a list of available model_scale.
 
         Arguments:
         No arguments
@@ -29,14 +39,15 @@ class FilingManager(object):
         """
 
         search_in_path = os.getcwd() + os.sep + "models"
-        scale_dirs = self.cr.list_dirs(search_path = search_in_path)
+        scale_dirs = cr.list_dirs(search_path = search_in_path)
         if not scale_dirs:
             raise ValueError("There are no model_scale")
         else:
             return scale_dirs
 
-    def modelscale_inventory(self, model_scale=None):
-        """method that returns a list of available model for given model_scale.
+    @staticmethod
+    def modelscale_inventory(model_scale=None):
+        """static method that returns a list of available model for given model_scale.
 
         Keyword arguments:
         model_scale -- string; egs. "cells", "microcircuits", "networks"
@@ -58,26 +69,28 @@ class FilingManager(object):
         if not os.path.isdir(modelscale_path):
             raise ValueError("This model_scale is currently not listed.")
         else:
-            model_dirs = self.cr.list_dirs(search_path = modelscale_path)
+            model_dirs = cr.list_dirs(search_path = modelscale_path)
             if not model_dirs:
                 raise ValueError("There is no inventory for the given model_scale")
             else:
                 return model_dirs
 
-    def get_responsepath_check_create(self, list_dir_names):
-        """this method is called by responsepath_check_create() below.
+    @staticmethod
+    def get_responsepath_check_create(list_dir_names):
+        """this static method is called by responsepath_check_create() below.
         """
         try:
-            path = self.cr.path_to_dir(dir_names = list_dir_names)
+            path = cr.path_to_dir(dir_names = list_dir_names)
             return path
         except:
-            path = self.ps.hatch_path_to_response(modelscale=list_dir_names[1],
-                                                  modelname=list_dir_names[-1])
+            path = ps.hatch_path_to_response(modelscale=list_dir_names[1],
+                                             modelname=list_dir_names[-1])
             os.makedirs(path)
             return path
 
-    def responsepath_check_create(self, list_dir_names=None, chosenmodel=None):
-        """method that returns path to the reponse.
+    @classmethod
+    def responsepath_check_create(cls, list_dir_names=None, chosenmodel=None):
+        """class method that returns path to the reponse.
 
         Keyword argument: list_dir_names OR chosenmodel
         list_dir_names -- list of three string;
@@ -104,6 +117,6 @@ class FilingManager(object):
             raise ValueError("The argument must be a three-string list, eg ['responses', chosenmodel.modelscale, chosenmodel.modelname] OR chosenmodel must be an instantiated model.")
         elif chosenmodel is not None:
             dir_names = ['responses', chosenmodel.modelscale, chosenmodel.modelname]
-            return self.get_responsepath_check_create(dir_names)
+            return cls.get_responsepath_check_create(dir_names)
         elif (list_dir_names is not None) or (len(list_dir_names)==3):
-            return self.get_responsepath_check_create(list_dir_names)
+            return cls.get_responsepath_check_create(list_dir_names)

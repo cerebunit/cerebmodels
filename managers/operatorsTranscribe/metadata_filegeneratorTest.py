@@ -15,13 +15,16 @@ class FileGeneratoryTest(unittest.TestCase):
     def setUp(self):
         self.fg = FileGenerator()
         self.pwd = os.getcwd()
-        self.chosenmodel = DummyCell()
+        os.chdir(os.path.dirname(os.path.dirname(os.getcwd())))
+        print os.getcwd()
+        #self.chosenmodel = DummyCell()
+        os.chdir(self.pwd)
 
     #@unittest.skip("reason for skipping")
     def test_1_forfile_without_model(self):
         self.assertRaises(ValueError, self.fg.forfile,)
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_2_forfile_with_model(self):
         filemd = self.fg.forfile(chosenmodel = self.chosenmodel)
         compare1 = [ "no_model_uuid", "anonymous",

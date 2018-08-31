@@ -1,6 +1,8 @@
 # ~/models/cells/modelDummyTest.py
 import os
 pwd = os.getcwd()
+path_to_files = pwd + os.sep + "models" + os.sep + "cells" + os.sep + \
+                "DummyTest" + os.sep
 
 #from managers.managerRecord import RecordManager
 #from managers.managerSimulation import SimulationManager
@@ -22,7 +24,9 @@ class DummyCell(object):
         self.sm = SimulationManager()
         # instantiate
         self.sm.si.lock_and_load_nmodl(modelscale=self.modelscale, modelname=self.modelname)
+        os.chdir(path_to_files)
         self.cell = Dummy()
+        os.chdir(pwd)
         #self.rc = RecordManager()
 
     def produce_voltage_response(self):

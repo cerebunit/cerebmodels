@@ -8,6 +8,12 @@ class FileGenerator(object):
 
     Available methods:
     forfile
+    get_modelID
+    get_username
+    get_testdescription
+    get_labelname
+    get_institution
+
     """
 
     @staticmethod
@@ -46,7 +52,8 @@ class FileGenerator(object):
         else:
             return instname
 
-    def forfile( self, chosenmodel=None, vtest=None, username=None,
+    @classmethod
+    def forfile( cls, chosenmodel=None, vtest=None, username=None,
                  labname=None, institutename=None ):
         """method that creates the NWB formatted metadata forfile.
 
@@ -90,10 +97,10 @@ class FileGenerator(object):
             return {
               'source': platform.platform(), #string
               'session_description': "simulation of " + chosenmodel.modelname,
-              'identifier': self.get_modelID(chosenmodel), #string
+              'identifier': cls.get_modelID(chosenmodel), #string
               'session_start_time': time.asctime(time.gmtime(time.time()))+' '+time.tzname[0],
-              'experimenter': self.get_username(username), #string
-              'experiment_description': self.get_testdescription(vtest), #string
+              'experimenter': cls.get_username(username), #string
+              'experiment_description': cls.get_testdescription(vtest), #string
               'session_id': str(hash(str(uuid.uuid1()))).replace('-',''), # remove any minus
-              'lab': self.get_labname(labname), #string
-              'institution': self.get_institution(institutename) }
+              'lab': cls.get_labname(labname), #string
+              'institution': cls.get_institution(institutename) }

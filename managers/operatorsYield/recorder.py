@@ -13,7 +13,8 @@ class Recorder(object):
     stimulus_overall_current_NEURON
     """
 
-    def time_NEURON(self):
+    @staticmethod
+    def time_NEURON():
         """
         Use case:
         rc = Recorder()
@@ -23,7 +24,8 @@ class Recorder(object):
         recorded_time.record(h._ref_t)
         return recorded_time
 
-    def response_voltage_NEURON(self, section):
+    @staticmethod
+    def response_voltage_NEURON(section):
         """
         Use case:
         rc = Recorder()
@@ -35,7 +37,8 @@ class Recorder(object):
         recorded_voltage.record(section(0.5)._ref_v)
         return recorded_voltage
 
-    def stimulus_individual_currents_NEURON(self, stimuli):
+    @staticmethod
+    def stimulus_individual_currents_NEURON(stimuli):
         """
         Use case:
         rc = Recorder()
@@ -50,7 +53,8 @@ class Recorder(object):
             recorded_currents[key].record( stimuli[i]._ref_i )
         return recorded_currents
 
-    def stimulus_overall_current_NEURON(self, recorded_currents):
+    @staticmethod
+    def stimulus_overall_current_NEURON(recorded_currents):
         """
         Use case:
         rc = Recorder()

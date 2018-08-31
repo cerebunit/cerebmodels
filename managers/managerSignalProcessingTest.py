@@ -15,12 +15,10 @@ rootwd = os.getcwd()
 from models.cells.modelDummyTest import DummyCell
 os.chdir(pwd)
 
-from managerSimulation import SimulationManager
-from managerRecord import RecordManager
+from managerSimulation import SimulationManager as sm
+from managerRecord import RecordManager as rm
 from managerSignalProcessing import SignalProcessingManager as sp
 
-sm = SimulationManager()
-rm = RecordManager()
 
 class SignalProcessingManagerTest(unittest.TestCase):
 

@@ -15,10 +15,9 @@ rootwd = os.getcwd()
 from models.cells.modelDummyTest import DummyCell
 os.chdir(pwd)
 
-from managerSimulation import SimulationManager
+from managerSimulation import SimulationManager as sm
 from managerRecord import RecordManager as rm
 
-sm = SimulationManager()
 
 class RecordManagerTest(unittest.TestCase):
 

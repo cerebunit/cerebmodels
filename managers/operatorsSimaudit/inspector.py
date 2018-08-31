@@ -27,7 +27,8 @@ class SimInspector(object):
     """
 
     def __init__(self):
-        self.ps = PathSpawner()
+        #self.ps = PathSpawner()
+        pass
 
     @staticmethod
     def lock_and_load_nmodl(modelscale=None, modelname=None):

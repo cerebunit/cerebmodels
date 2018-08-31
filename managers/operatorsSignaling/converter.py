@@ -8,7 +8,8 @@ class Converter(object):
     """Operator working under SignalProcessingManager.
 
     Available methods:
-    voltage_to_spiketrain
+    determine_signalsign_from_threshold -- returns "+" or "-"
+    voltage_to_spiketrain -- returns array of times when spikes occured
 
     """
     @staticmethod

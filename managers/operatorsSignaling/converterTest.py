@@ -12,12 +12,12 @@ from models.cells.modelDummyTest import DummyCell
 
 from managers.managerSimulation import SimulationManager
 from managers.managerRecord import RecordManager
-from converter import Converter
+from converter import Converter as co
 
 class ConverterTest(unittest.TestCase):
 
     def setUp(self):
-        self.co = Converter()
+        #self.co = Converter()
         self.pwd = os.getcwd()
         self.chosenmodel = DummyCell()
         self.rec = {"time": None, "response": None, "stimulus": None}
@@ -28,13 +28,13 @@ class ConverterTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_1_determine_signalsign_from_threshold_above(self):
         thresh = +0.0 # 10
-        self.assertEqual( self.co.determine_signalsign_from_threshold(thresh),
+        self.assertEqual( co.determine_signalsign_from_threshold(thresh),
                           'above' )
 
     #@unittest.skip("reason for skipping")
     def test_2_determine_signalsign_from_threshold_below(self):
         thresh = -30.0
-        self.assertEqual( self.co.determine_signalsign_from_threshold(thresh),
+        self.assertEqual( co.determine_signalsign_from_threshold(thresh),
                           'below' )
 
     #@unittest.skip("reason for skipping")
@@ -46,7 +46,7 @@ class ConverterTest(unittest.TestCase):
         self.rec["time"], self.rec["response"], self.rec["stimulus"] = \
                  self.rm.prepare_recording_NEURON(self.chosenmodel)
         self.sm.engage_NEURON()
-        spikes = self.co.voltage_to_spiketrain(self.chosenmodel, self.rec)
+        spikes = co.voltage_to_spiketrain(self.chosenmodel, self.rec)
         ans = \
         len( range(
              int(spikes[self.regionslist_str[0]].t_start.magnitude),
@@ -70,7 +70,7 @@ class ConverterTest(unittest.TestCase):
         self.rec["time"], self.rec["response"], self.rec["stimulus"] = \
                  self.rm.prepare_recording_NEURON(self.chosenmodel)
         self.sm.engage_NEURON()
-        spikes = self.co.voltage_to_spiketrain(self.chosenmodel, self.rec)
+        spikes = co.voltage_to_spiketrain(self.chosenmodel, self.rec)
         ans = \
         len( range(
              int(spikes[self.regionslist_str[0]].t_start.magnitude),

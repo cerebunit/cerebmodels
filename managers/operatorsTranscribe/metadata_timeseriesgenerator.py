@@ -7,6 +7,11 @@ class TimeseriesGenerator(object):
     Available methods:
     forcellrecording -- classmethod called by forrecording
     forrecording
+    cellrecordings_response
+    recordings_cell_currentstimulus
+    recordings_cellstimulus
+    forcellrecordings_nostimulus
+    forcellrecordings_stimulus
     """
 
     @staticmethod
@@ -139,8 +144,9 @@ class TimeseriesGenerator(object):
                                             runtimeparameters )} )
         return y
 
-    def forcellrecordings_stimulus(self, chosenmodel, recordings,
-                              runtimeparameters, stimparameters):
+    @classmethod
+    def forcellrecordings_stimulus(cls, chosenmodel, recordings,
+                                   runtimeparameters, stimparameters):
         """method that creates time-series metadata for stimulated cells.
         This method called cellrecordings_response & recordings_cellstimulus
         This method is called by forcellrecording.
@@ -169,21 +175,22 @@ class TimeseriesGenerator(object):
         """
         y = {}
         y.update( {"stimulus":
-                   self.recordings_cellstimulus(
+                   cls.recordings_cellstimulus(
                                             chosenmodel,
                                             recordings["time"],
                                             recordings["stimulus"],
                                             runtimeparameters, stimparameters )} )
         for cellregion in chosenmodel.regions.keys():
             y.update( {cellregion:
-                       self.cellrecordings_response(
+                       cls.cellrecordings_response(
                                             chosenmodel, cellregion,
                                             recordings["time"], recordings["stimulus"],
                                             recordings["response"][cellregion],
                                             runtimeparameters )} )
         return y
 
-    def forcellrecording( self, chosenmodel=None, recordings=None,
+    @classmethod
+    def forcellrecording( cls, chosenmodel=None, recordings=None,
                           runtimeparameters=None, stimparameters=None ):
         """method that creates the NWB formatted time-series metadata for cells. This is normally not called by the TranscribeManager(), instead it is called by forrecording() below.
 
@@ -245,17 +252,18 @@ class TimeseriesGenerator(object):
         # numpy FutureWarning bug as it expects this to be an array as well
         # https://stackoverflow.com/questions/40659212/futurewarning-elementwise-comparison-failed-returning-scalar-but-in-the-futur
         if str(recordings["stimulus"])=="Model is not stimulated":
-            y.update( self.forcellrecordings_nostimulus( chosenmodel, recordings,
-                                                         runtimeparameters ) )
+            y.update( cls.forcellrecordings_nostimulus( chosenmodel, recordings,
+                                                        runtimeparameters ) )
         else: # for stimulus
             if (stimparameters is None):
                 raise ValueError("for recording stimuli passing stimparameters is mandatory")
             else:
-                y.update( self.forcellrecordings_stimulus( chosenmodel, recordings,
+                y.update( cls.forcellrecordings_stimulus( chosenmodel, recordings,
                                               runtimeparameters, stimparameters ) )
         return y
 
-    def forrecording( self, chosenmodel=None, recordings=None,
+    @classmethod
+    def forrecording( cls, chosenmodel=None, recordings=None,
                       runtimeparameters=None, stimparameters=None ):
         """method that creates the NWB formatted time-series metadata.
 
@@ -316,7 +324,7 @@ class TimeseriesGenerator(object):
         if (chosenmodel is None) or (recordings is None) or (runtimeparameters is None):
             raise ValueError("passing an instantiated chosenmodel, the recordings (dictionary) and runtimeparameters are  mandatory")
         elif chosenmodel.modelscale == "cells":
-            return self.forcellrecording( chosenmodel=chosenmodel,
+            return cls.forcellrecording( chosenmodel=chosenmodel,
                                           recordings=recordings,
                                           runtimeparameters=runtimeparameters,
                                           stimparameters=stimparameters )

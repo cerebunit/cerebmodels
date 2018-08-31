@@ -1,6 +1,6 @@
 # ~/managers/operatorsSimaudit/stimulatorTest.py
 import unittest
-
+import shutil
 import os
 import sys
 # import modules from other directories
@@ -14,7 +14,7 @@ from models.cells.modelDummyTest import DummyCell
 from managers.operatorsSimaudit.inspector import SimInspector as si
 #from managers.managerSimulation import SimulationManager
 
-from stimulator import Stimulator as st
+from stimulator import Stimulator
 
 from neuron import h
 h.load_file("stdrun.hoc")
@@ -22,10 +22,9 @@ h.load_file("stdrun.hoc")
 class StimulatorTest(unittest.TestCase):
 
     def setUp(self):
-        #self.st = Stimulator()
+        self.st = Stimulator()
         self.pwd = os.getcwd()
         self.chosenmodel = DummyCell()
-        #self.si = SimInspector()
         #self.sm = SimulationManager()
 
     #@unittest.skip("reason for skipping")
@@ -40,7 +39,7 @@ class StimulatorTest(unittest.TestCase):
         injparam = [ {"amplitude": 0.5, "dur": 5.0, "delay": 5.0},
                      {"amp": 1.0, "dur": 5.0, "delay": 10.0} ]
         self.assertRaises( AttributeError,
-                           st.inject_IClamp,
+                           self.st.inject_IClamp,
                            injparam,
                            self.chosenmodel.cell.soma )
         os.chdir(self.pwd) # reset to the location of this stimulatorTest.py
@@ -51,7 +50,7 @@ class StimulatorTest(unittest.TestCase):
         os.chdir("..") # you are now in parent /cerebmodels
         injparam = [ {"amp": 0.5, "dur": 5.0, "delay": 5.0},
                      {"amp": 1.0, "dur": 5.0, "delay": 10.0} ]
-        curr_stimuli = st.inject_IClamp(injparam, self.chosenmodel.cell.soma)
+        curr_stimuli = self.st.inject_IClamp(injparam, self.chosenmodel.cell.soma)
         self.assertEqual( len(curr_stimuli ), len(injparam) )
         os.chdir(self.pwd) # reset to the location of this stimulatorTest.py
 
@@ -66,7 +65,7 @@ class StimulatorTest(unittest.TestCase):
                      {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0, "delay": 10.0},
                      {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
                      {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ]
-        curr_stimuli = st.inject_IRamp(injparam, self.chosenmodel.cell.soma)
+        curr_stimuli = self.st.inject_IRamp(injparam, self.chosenmodel.cell.soma)
         # here based on the injparm
         # increasing ramp is from injparam[0] to injparam[1] while
         # decreading ramp if from injparam[2] to injparam[3]. Thus,
@@ -87,7 +86,7 @@ class StimulatorTest(unittest.TestCase):
         injparam = [ {"amp": 0.5, "dur": 5.0, "delay": 5.0},
                      {"amp": 1.0, "dur": 5.0, "delay": 10.0} ]
         self.assertRaises( ValueError,
-                           st.inject_current_NEURON,
+                           self.st.inject_current_NEURON,
                            injparameters = injparam,
                            neuronsection = self.chosenmodel.cell.soma )
         os.chdir(self.pwd) # reset to the location of this stimulatorTest.py
@@ -99,7 +98,7 @@ class StimulatorTest(unittest.TestCase):
         injparam = [ {"amp": 0.5, "dur": 5.0, "delay": 5.0},
                      {"amp": 1.0, "dur": 5.0, "delay": 10.0} ]
         self.assertRaises( ValueError,
-                           st.inject_current_NEURON,
+                           self.st.inject_current_NEURON,
                            currenttype = "xyz",
                            injparameters = injparam,
                            neuronsection = self.chosenmodel.cell.soma )
@@ -111,7 +110,7 @@ class StimulatorTest(unittest.TestCase):
         os.chdir("..") # you are now in parent /cerebmodels
         injparam = [ {"amp": 0.5, "dur": 5.0, "delay": 5.0},
                      {"amp": 1.0, "dur": 5.0, "delay": 10.0} ]
-        self.assertEqual( len( st.inject_current_NEURON(
+        self.assertEqual( len( self.st.inject_current_NEURON(
                                        currenttype = "IClamp",
                                        injparameters = injparam,
                                        neuronsection = self.chosenmodel.cell.soma)),
@@ -129,12 +128,13 @@ class StimulatorTest(unittest.TestCase):
                      {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0, "delay": 10.0},
                      {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
                      {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ]
-        curr_stimuli = st.inject_current_NEURON(
+        curr_stimuli = self.st.inject_current_NEURON(
                                        currenttype = "IRamp",
                                        injparameters = injparam,
                                        neuronsection = self.chosenmodel.cell.soma)
         self.assertEqual( len(curr_stimuli ), len(injparam) )
         os.chdir(self.pwd) # reset to the location of this stimulatorTest.py
+        shutil.rmtree("x86_64") # remove created directory ~/operatorsSimaudit/x86_64
 
 if __name__ == '__main__':
     unittest.main()

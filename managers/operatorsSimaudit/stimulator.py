@@ -78,8 +78,7 @@ class Stimulator(object):
                         setattr(list_of_currents[i], key, adjusted_value)
         return list_of_currents
 
-    @classmethod
-    def inject_current_NEURON(cls, currenttype=None, injparameters=None, neuronsection=None):
+    def inject_current_NEURON(self, currenttype=None, injparameters=None, neuronsection=None):
         """sets current injection parameters to either h.IClamp or h.IRamp
 
         Keyword Arguments:
@@ -105,7 +104,7 @@ class Stimulator(object):
             raise ValueError("currenttype must be either 'IClamp' or 'IRamp'. injparameters must be a list such that its elements are dictionaries [ {}, {}, ... ]. neuronsection must be for eg cell.soma where cell = CellTemplate().")
         else:
             if currenttype is "IClamp" or currenttype is "IRamp":
-                desiredfunc = cls.__getattribute__( "inject_"+currenttype )
+                desiredfunc = self.__getattribute__( "inject_"+currenttype )
                 stimuli_list = desiredfunc( injparameters, neuronsection )
             else:
                 raise ValueError("currenttype must be either 'IClamp' or 'IRamp'")

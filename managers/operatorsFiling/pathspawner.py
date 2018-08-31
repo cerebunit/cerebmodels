@@ -5,11 +5,14 @@ class PathSpawner(object):
     """Operator.
 
     Available methods:
-    hatch_path_to_nmodl
+    hatch_path_to_nmodl -- returns path/to/the/directory/mod_files
+                           and     path/to/the/file/libnrnmech.so.0
+    hatch_path_to_response -- returns path/to/the/directory/responses/<modelscale>/<modelname>
 
     """
 
-    def hatch_path_to_nmodl(self, modelscale=None, modelname=None):
+    @staticmethod
+    def hatch_path_to_nmodl(modelscale=None, modelname=None):
         """hatches path to directory "mod_files" and file "libnrnmech.so.0"
 
         Keyword Arguments:
@@ -33,7 +36,8 @@ class PathSpawner(object):
         else:
             raise ValueError("Give a modelscale and modelname.")
 
-    def hatch_path_to_response(self, modelscale=None, modelname=None):
+    @staticmethod
+    def hatch_path_to_response(modelscale=None, modelname=None):
         """hatches path to directory ~/responses/<modelscale>/<modelname>"
 
         Keyword Arguments:

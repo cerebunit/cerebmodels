@@ -12,6 +12,14 @@ class FilingManager(object):
     get_responsepath_check_create -- returns path (string) NOTE: this is called by responsepath_check_create
     responsepath_check_create -- returns path (string) eg, ~/cerebmodel/responses/cells/DummyTest
 
+    Class methods:
+    responsepath_check_create
+
+    Static methods:
+    available_modelscales
+    modelscale_inventory
+    get_responsepath_check_create
+
     """
 
     def __init__(self):

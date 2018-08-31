@@ -3,6 +3,14 @@
 from managers.operatorsSignaling.converter import Converter as co
 
 class SignalProcessingManager(object):
+    """
+    Available methods:
+    transform_signal
+
+    Static methods:
+    transform_signal
+
+    """
 
     def __init__(self):
         pass

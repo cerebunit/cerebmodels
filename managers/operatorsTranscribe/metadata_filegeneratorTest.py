@@ -6,27 +6,30 @@ import sys
 # import modules for other directories
 sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 # this is required for
-from models.cells.modelDummyTest import DummyCell
 
-from metadata_filegenerator import FileGenerator
+pwd = os.getcwd()
+os.chdir("..") # this moves you up to ~/managers
+os.chdir("..") # you are now in parent /cerebmodels
+rootwd = os.getcwd()
+from models.cells.modelDummyTest import DummyCell
+os.chdir(pwd)
+
+from metadata_filegenerator import FileGenerator as fg
 
 class FileGeneratoryTest(unittest.TestCase):
 
     def setUp(self):
-        self.fg = FileGenerator()
-        self.pwd = os.getcwd()
-        os.chdir(os.path.dirname(os.path.dirname(os.getcwd())))
-        print os.getcwd()
-        #self.chosenmodel = DummyCell()
-        os.chdir(self.pwd)
+        os.chdir(rootwd)
+        self.chosenmodel = DummyCell()
+        os.chdir(pwd)
 
     #@unittest.skip("reason for skipping")
     def test_1_forfile_without_model(self):
-        self.assertRaises(ValueError, self.fg.forfile,)
+        self.assertRaises(ValueError, fg.forfile,)
 
     @unittest.skip("reason for skipping")
     def test_2_forfile_with_model(self):
-        filemd = self.fg.forfile(chosenmodel = self.chosenmodel)
+        filemd = fg.forfile(chosenmodel = self.chosenmodel)
         compare1 = [ "no_model_uuid", "anonymous",
                      "raw simulation without running any CerebUnit test",
                      "no lab name was provided",

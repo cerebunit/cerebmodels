@@ -14,7 +14,8 @@ class SimAssembler(object):
     """Operator working under SimulationManager.
 
     Available methods:
-    set_runtime_NEURON
+    set_fixed_timesteps -- Nothing is returned
+    set_runtime_NEURON -- Nothing is returned 
 
     """
 

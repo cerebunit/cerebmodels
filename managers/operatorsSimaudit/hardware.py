@@ -11,7 +11,7 @@ class HardwareConfigurator(object):
         hc = HardwareConfigurator(h)
 
     Available methods:
-    activate_cores
+    activate_cores -- Nothing is returned
 
     """
 
@@ -19,7 +19,8 @@ class HardwareConfigurator(object):
         #self.h = neuron_dot_h
         pass
 
-    def activate_cores(self):
+    @staticmethod
+    def activate_cores():
         """
 
         Arguments:

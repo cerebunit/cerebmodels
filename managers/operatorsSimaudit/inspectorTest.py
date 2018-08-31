@@ -75,7 +75,6 @@ class SimInspectorTest(unittest.TestCase):
                                    CerebUnit_capability = ProducesSpikeTrain ),
                           "ProducesSpikeTrain has the method produce_spike_train" )
         os.chdir(self.pwd) # reset to the location of this inspectorTest.py
-        shutil.rmtree("x86_64") # remove directory in ~/cerebmodels/managers/operatorsSimaudit/x86_64
 
 if __name__ == '__main__':
     unittest.main()

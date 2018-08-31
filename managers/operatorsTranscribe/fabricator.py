@@ -14,14 +14,31 @@ from pynwb import NWBHDF5IO
 class Fabricator(object):
     """Operators working under TranscribeManager
 
-    Available methods:
+    Main Usage methods:
     build_nwbfile
     build_nwbseries
     affix_nwbseries_to_nwbfile
     build_nwbepochs
+    write_nwbfile
+
+    Class methods:
+    build_nwbfile
+    construct_nwbseries_nostimulus
+    build_nwbseries
+    affix_nwbseries_to_nwbfile
+    build_nwbepochs
+    write_nwbfile
+    
+    Static methods:
+    generic_timeseries
+    link_nwbseriesresponses_to_nwbfile
+    strip_out_stimulus_from_nwbseries
+    insert_a_nwbepoch
+
     """
 
-    def build_nwbfile( self, filemd ):
+    @classmethod
+    def build_nwbfile( cls, filemd ):
         """method for building the nwbfile
 
         Argument:
@@ -139,7 +156,8 @@ class Fabricator(object):
                               cls.generic_timeseries(tsmd[cellregion])} )
         return nwbseries
 
-    def build_nwbseries(self, chosenmodel=None, tsmd=None):
+    @classmethod
+    def build_nwbseries(cls, chosenmodel=None, tsmd=None):
         """
         Returned Value:
         nwbts with the attributes
@@ -161,10 +179,10 @@ class Fabricator(object):
         """
         nwbseries = {}
         if "stimulus" in tsmd:
-            nwbseries.update( {"stimulus": self.generic_timeseries(tsmd["stimulus"])} )
-            nwbseries.update( self.construct_nwbseries_nostimulus(chosenmodel, tsmd) )
+            nwbseries.update( {"stimulus": cls.generic_timeseries(tsmd["stimulus"])} )
+            nwbseries.update( cls.construct_nwbseries_nostimulus(chosenmodel, tsmd) )
         else:
-            nwbseries.update( self.construct_nwbseries_nostimulus(chosenmodel, tsmd) )
+            nwbseries.update( cls.construct_nwbseries_nostimulus(chosenmodel, tsmd) )
         return nwbseries
 
     @staticmethod
@@ -206,7 +224,8 @@ class Fabricator(object):
         return { x: nwbseries[x] for x in nwbseries
                                   if x not in {"stimulus"} }
 
-    def affix_nwbseries_to_nwbfile(self, nwbts=None, nwbfile=None):
+    @classmethod
+    def affix_nwbseries_to_nwbfile(cls, nwbts=None, nwbfile=None):
         """method that adds nwbseries with or without stimulus
 
         Keyword Arguments:
@@ -239,12 +258,12 @@ class Fabricator(object):
         """
         if "stimulus" in nwbts.keys():
             nwbfile.add_stimulus(nwbts["stimulus"])
-            stripped_nwbseries = self.strip_out_stimulus_from_nwbseries(nwbts)
-            nwbfile = self.link_nwbseriesresponses_to_nwbfile(stripped_nwbseries,
-                                                              nwbfile)
+            stripped_nwbseries = cls.strip_out_stimulus_from_nwbseries(nwbts)
+            nwbfile = cls.link_nwbseriesresponses_to_nwbfile(stripped_nwbseries,
+                                                             nwbfile)
         else:
-            nwbfile = self.link_nwbseriesresponses_to_nwbfile(nwbts,
-                                                              nwbfile)
+            nwbfile = cls.link_nwbseriesresponses_to_nwbfile(nwbts,
+                                                             nwbfile)
         return nwbfile
 
     @staticmethod
@@ -359,7 +378,8 @@ class Fabricator(object):
                               description = epochmd[epoch_i_cellregion]["description"] )
         return nwbfile
 
-    def build_nwbepochs( self, epochmd=None, nwbfile=None, nwbts=None ):
+    @classmethod
+    def build_nwbepochs( cls, epochmd=None, nwbfile=None, nwbts=None ):
         """method for contructing epochs into the built nwbfile
 
         Keyword arguments:
@@ -474,11 +494,12 @@ class Fabricator(object):
         """
         for epoch_i_region in epochmd.keys():
             region = epochmd[epoch_i_region]["source"]
-            updated_nwbfile = self.insert_a_nwbepoch( epoch_i_region, epochmd, nwbfile,
+            updated_nwbfile = cls.insert_a_nwbepoch( epoch_i_region, epochmd, nwbfile,
                                                       nwbts[region]  )
         return updated_nwbfile
 
-    def write_nwbfile(self, nwbfile=None, filepath=None):
+    @classmethod
+    def write_nwbfile(cls, nwbfile=None, filepath=None):
         sesstime = str(nwbfile.session_start_time).replace(" ", "_")[0:-6]
         filename = nwbfile.session_id + "_" + sesstime.replace(":", "-") + ".h5"
         io = NWBHDF5IO( filepath+os.sep+filename, mode='w')

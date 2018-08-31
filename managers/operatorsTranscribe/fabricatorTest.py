@@ -8,9 +8,15 @@ import sys
 # import modules for other directories
 sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 # this is required for
-from models.cells.modelDummyTest import DummyCell
 
-from fabricator import Fabricator
+pwd = os.getcwd()
+os.chdir("..") # this moves you up to ~/managers
+os.chdir("..") # you are now in parent /cerebmodels
+rootwd = os.getcwd()
+from models.cells.modelDummyTest import DummyCell
+os.chdir(pwd)
+
+from fabricator import Fabricator as fab
 
 import numpy
 
@@ -19,9 +25,9 @@ from pynwb import NWBHDF5IO
 class FabricatorTest(unittest.TestCase):
 
     def setUp(self):
-        self.fab = Fabricator()
-        self.pwd = os.getcwd()
+        os.chdir(rootwd)
         self.chosenmodel = DummyCell()
+        os.chdir(pwd)
         # parameters for generating NWBFile
         self.file_metadata = {
                 "source": "Where is the data from?, i.e, platform",
@@ -37,7 +43,7 @@ class FabricatorTest(unittest.TestCase):
 
     #@unittest.skip("reason for skipping")
     def test_1_build_nwbfile(self):
-        nwbfile = self.fab.build_nwbfile(self.file_metadata)
+        nwbfile = fab.build_nwbfile(self.file_metadata)
         #print [nwbfile.source, nwbfile.session_description, nwbfile.identifier,
         #       nwbfile.session_start_time, nwbfile.experimenter,
         #       nwbfile.experiment_description, nwbfile.session_id, nwbfile.lab,
@@ -64,7 +70,7 @@ class FabricatorTest(unittest.TestCase):
                "rate": 1/runtimeparam["dt"],
                "comment": "voltage response without stimulation",
                "description": "whole single array of voltage response from soma of DummyTest"}
-        nwbts = Fabricator.generic_timeseries(ts_metadata)
+        nwbts = fab.generic_timeseries(ts_metadata)
         # Bug with pynwb (reported by me on 1/7/2018)
         # https://github.com/NeurodataWithoutBorders/pynwb/issues/579 
         #print nwbts.resolution # float
@@ -110,7 +116,7 @@ class FabricatorTest(unittest.TestCase):
                         "timestamps": recordings["time"],
                         "comment": "voltage response without stimulation",
                         "description": "whole single array of voltage response from axon of DummyTest"} }
-        nwbts = self.fab.construct_nwbseries_nostimulus(self.chosenmodel,
+        nwbts = fab.construct_nwbseries_nostimulus(self.chosenmodel,
                                                         ts_metadata)
         #print nwbts['soma'].name # what does this return
         #print [nwbts.name, nwbts.source, nwbts.data, nwbts.unit, nwbts.resolution, nwbts.conversion, nwbts.timestamps, nwbts.starting_time, nwbts.rate, nwbts.comments, nwbts.description, nwbts.control, nwbts.control_description, nwbts.parent] # available attributes
@@ -144,8 +150,8 @@ class FabricatorTest(unittest.TestCase):
                         "timestamps": recordings["time"],
                         "comment": "voltage response without stimulation",
                         "description": "whole single array of voltage response from axon of DummyTest"} }
-        nwbts = self.fab.build_nwbseries(chosenmodel = self.chosenmodel,
-                                             tsmd = ts_metadata)
+        nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
+                                    tsmd = ts_metadata)
         #print nwbts['soma'].name # what does this return
         #print [nwbts.name, nwbts.source, nwbts.data, nwbts.unit, nwbts.resolution, nwbts.conversion, nwbts.timestamps, nwbts.starting_time, nwbts.rate, nwbts.comments, nwbts.description, nwbts.control, nwbts.control_description, nwbts.parent] # available attributes
         compare1 = [nwbts['soma'].data, nwbts['axon'].data,
@@ -190,8 +196,8 @@ class FabricatorTest(unittest.TestCase):
                             "timestamps": recordings["time"],
                             "comment": "current injection, "+stimparameters["type"][1],
                             "description": "whole single array of stimulus"} }
-        nwbts = self.fab.build_nwbseries(chosenmodel = self.chosenmodel,
-                                             tsmd = ts_metadata)
+        nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
+                                    tsmd = ts_metadata)
         #print nwbts['soma'].name # what does this return
         #print [nwbts.name, nwbts.source, nwbts.data, nwbts.unit, nwbts.resolution, nwbts.conversion, nwbts.timestamps, nwbts.starting_time, nwbts.rate, nwbts.comments, nwbts.description, nwbts.control, nwbts.control_description, nwbts.parent] # available attributes
         compare1 = [nwbts['soma'].data, nwbts['axon'].data, nwbts['stimulus'].data,
@@ -203,7 +209,7 @@ class FabricatorTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_6_link_nwbseriesresponses_to_nwbfile(self):
         # Build NWBFile
-        mynwbfile = self.fab.build_nwbfile(self.file_metadata)
+        mynwbfile = fab.build_nwbfile(self.file_metadata)
         # generate data
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         rec_t = [ t*runtimeparam["dt"]
@@ -228,10 +234,10 @@ class FabricatorTest(unittest.TestCase):
                         "timestamps": recordings["time"],
                         "comment": "voltage response without stimulation",
                         "description": "whole single array of voltage response from axon of DummyTest"} }
-        nwbts = self.fab.build_nwbseries(chosenmodel = self.chosenmodel,
-                                             tsmd = ts_metadata)
+        nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
+                                    tsmd = ts_metadata)
         # Insert
-        updated_mynwbfile = Fabricator.link_nwbseriesresponses_to_nwbfile(nwbts, mynwbfile)
+        updated_mynwbfile = fab.link_nwbseriesresponses_to_nwbfile(nwbts, mynwbfile)
         # what does the insertion lead to?
         extracted_nwbts_soma =  updated_mynwbfile.get_acquisition(nwbts["soma"].name)
         extracted_nwbts_axon =  updated_mynwbfile.get_acquisition(nwbts["axon"].name)
@@ -279,9 +285,9 @@ class FabricatorTest(unittest.TestCase):
                             "timestamps": recordings["time"],
                             "comment": "current injection, "+stimparameters["type"][1],
                             "description": "whole single array of stimulus"} }
-        nwbts = self.fab.build_nwbseries(chosenmodel = self.chosenmodel,
-                                             tsmd = ts_metadata)
-        stripped_nwbts = Fabricator.strip_out_stimulus_from_nwbseries(nwbts)
+        nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
+                                    tsmd = ts_metadata)
+        stripped_nwbts = fab.strip_out_stimulus_from_nwbseries(nwbts)
         #print type(stripped_nwbts["soma"])
         #print type(stripped_nwbts["axon"])
         #print nwbts['soma'].name # what does this return
@@ -296,7 +302,7 @@ class FabricatorTest(unittest.TestCase):
         # similar to test_6_link_nwbseriesresponses_to_nwbfile
         # output should be same as test_6_link_nwbseriesresponses_to_nwbfile
         # Build NWBFile
-        mynwbfile = self.fab.build_nwbfile(self.file_metadata)
+        mynwbfile = fab.build_nwbfile(self.file_metadata)
         # generate data
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         rec_t = [ t*runtimeparam["dt"]
@@ -321,11 +327,11 @@ class FabricatorTest(unittest.TestCase):
                         "timestamps": recordings["time"],
                         "comment": "voltage response without stimulation",
                         "description": "whole single array of voltage response from axon of DummyTest"} }
-        nwbts = self.fab.build_nwbseries(chosenmodel = self.chosenmodel,
+        nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
                                              tsmd = ts_metadata)
         # Insert
-        updated_mynwbfile = self.fab.affix_nwbseries_to_nwbfile(nwbts=nwbts,
-                                                                nwbfile=mynwbfile)
+        updated_mynwbfile = fab.affix_nwbseries_to_nwbfile(nwbts=nwbts,
+                                                           nwbfile=mynwbfile)
         # what does the insertion lead to?
         extracted_nwbts_soma =  updated_mynwbfile.get_acquisition(nwbts["soma"].name)
         extracted_nwbts_axon =  updated_mynwbfile.get_acquisition(nwbts["axon"].name)
@@ -339,7 +345,7 @@ class FabricatorTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_9_affix_nwbseries_to_nwbfile_stimulus(self):
         # Build NWBFile
-        mynwbfile = self.fab.build_nwbfile(self.file_metadata)
+        mynwbfile = fab.build_nwbfile(self.file_metadata)
         # generate data
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 200, "v_init": 65}
         stimparameters = {"type": ["current", "IClamp"],
@@ -376,11 +382,11 @@ class FabricatorTest(unittest.TestCase):
                             "timestamps": recordings["time"],
                             "comment": "current injection, "+stimparameters["type"][1],
                             "description": "whole single array of stimulus"} }
-        nwbts = self.fab.build_nwbseries(chosenmodel = self.chosenmodel,
-                                             tsmd = ts_metadata)
+        nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
+                                    tsmd = ts_metadata)
         # Insert
-        updated_mynwbfile = self.fab.affix_nwbseries_to_nwbfile(nwbts=nwbts,
-                                                                nwbfile=mynwbfile)
+        updated_mynwbfile = fab.affix_nwbseries_to_nwbfile(nwbts=nwbts,
+                                                           nwbfile=mynwbfile)
         # write test
         #io = NWBHDF5IO('updated_mynwbfile.nwb', mode='w')
         #io.write(updated_mynwbfile)
@@ -402,7 +408,7 @@ class FabricatorTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_10_insert_a_nwbepoch(self):
         # Build NWBFile
-        mynwbfile = self.fab.build_nwbfile(self.file_metadata)
+        mynwbfile = fab.build_nwbfile(self.file_metadata)
         # since self.chosenmodel.regions = {'soma': 0.0, 'axon': 0.0}
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         rec_t = [ t*runtimeparam["dt"]
@@ -426,8 +432,8 @@ class FabricatorTest(unittest.TestCase):
                         "timestamps": recordings["time"],
                         "comment": "voltage response without stimulation",
                         "description": "whole single array of voltage response from axon of DummyTest"} }
-        nwbts = self.fab.build_nwbseries(chosenmodel = self.chosenmodel,
-                                             tsmd = ts_metadata)
+        nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
+                                    tsmd = ts_metadata)
         epoch_metadata_nostimulus = \
               {"epoch0soma": {"source": "soma", "start_time": 0.0, "stop_time": 10.0,
                       "description": "first epoch",
@@ -436,9 +442,9 @@ class FabricatorTest(unittest.TestCase):
                       "description": "first epoch",
                       "tags": ('1_epoch_responses', '0', 'axon', 'DummyTest', 'cells' "epoch0axon")}}
         pickedepoch = "epoch0axon" # choose just one
-        updated_mynwbfile = Fabricator.insert_a_nwbepoch(pickedepoch,
-                                                epoch_metadata_nostimulus,
-                                                mynwbfile, nwbts["axon"])
+        updated_mynwbfile = fab.insert_a_nwbepoch(pickedepoch,
+                                                  epoch_metadata_nostimulus,
+                                                  mynwbfile, nwbts["axon"])
         # what does the output look like?
         #updated_mynwbfile = Fabricator.insert_a_nwbepoch("epoch0soma",
         #                                        epoch_metadata_nostimulus,
@@ -469,7 +475,7 @@ class FabricatorTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_11_build_nwbepoch(self):
         # Build NWBFile
-        mynwbfile = self.fab.build_nwbfile(self.file_metadata)
+        mynwbfile = fab.build_nwbfile(self.file_metadata)
         # generate data
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 200, "v_init": 65}
         stimparameters = {"type": ["current", "IClamp"],
@@ -506,8 +512,8 @@ class FabricatorTest(unittest.TestCase):
                             "timestamps": recordings["time"],
                             "comment": "current injection, "+stimparameters["type"][1],
                             "description": "whole single array of stimulus"} }
-        nwbts = self.fab.build_nwbseries(chosenmodel = self.chosenmodel,
-                                             tsmd = ts_metadata)
+        nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
+                                    tsmd = ts_metadata)
         # Insert For Write Test
         #updated_mynwbfile = self.fab.affix_nwbseries_to_nwbfile(nwbts=nwbts,
         #                                                        nwbfile=mynwbfile)
@@ -525,7 +531,7 @@ class FabricatorTest(unittest.TestCase):
                "epoch1axon": {"source": "axon", "start_time": 10.0, "stop_time": 20.0,
                      "description": "second epoch",
                      "tags": ('2_epoch_responses', '1', 'axon', 'DummyTest', 'cells', "epoch1axon")}}
-        updated_mynwbfile = self.fab.build_nwbepochs(
+        updated_mynwbfile = fab.build_nwbepochs(
                                                 nwbfile=mynwbfile,
                                                 epochmd=epoch_metadata_stimulus,
                                                 nwbts=nwbts)

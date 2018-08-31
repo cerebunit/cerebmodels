@@ -1,13 +1,14 @@
 # ../managers/managerSignalProcessing.py
 
-from managers.operatorsSignaling.converter import Converter
+from managers.operatorsSignaling.converter import Converter as co
 
 class SignalProcessingManager(object):
 
     def __init__(self):
-        self.co = Converter()
+        pass
 
-    def transform_signal(self, tosignal=None, chosenmodel=None, recordings=None):
+    @staticmethod
+    def transform_signal(tosignal=None, chosenmodel=None, recordings=None):
         """method that transforms the recorded 'response' signal.
 
         Keyword Arguments:
@@ -39,6 +40,6 @@ class SignalProcessingManager(object):
             raise ValueError("A 'chosenmodel' must be simulated resulting in 'recordings' which you want to transform to a particular 'tosignal'")
         else:
             if tosignal is 'spikes':
-                return self.co.voltage_to_spiketrain(chosenmodel, recordings)
+                return co.voltage_to_spiketrain(chosenmodel, recordings)
             else: # add here for other as needed
                 pass

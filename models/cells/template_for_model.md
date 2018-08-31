@@ -56,10 +56,8 @@ Notice that `modelABYearXYZ.py` contains the model/class `ABYearXYZ`. The cell t
 
 After setting up the path to the model libraries at the start of the 'modelPC2015Masoli.py` file, now import
 ```
-from managers.managerSimulation import SimulationManager
+from managers.managerSimulation import SimulationManager as sm
 from models.cells.ABYearXYZ.Cellname import Cellname
-
-sm = SimulationManager()
 ```
 Then under `def __init__`
 ```
@@ -75,7 +73,7 @@ self.description = "a brief description of the model"
 ### ================================================================================
 #
 ### =============================Instantiate the cell===============================
-sm.si.lock_and_load_nmodl(modelscale=self.modelscale, modelname=self.modelname)
+sm.lock_and_load_model_libraries(modelscale=self.modelscale, modelname=self.modelname)
 os.chdir(path_to_files) # temporarily change directory to model directory
 self.cell = Cellname()  # instantiate the model
 os.chdir(pwd)           # revert back to default directory ~/cerebmodels
@@ -104,6 +102,6 @@ Notice that dendrite is not a region because it is not in the cell-template. How
 Its upto the user what he/she wants to do with the model.
 * it is good practice to have both the name of the section (eg soma inside `h.Section('soma'`) and name of the cell attribute be the same (eg, soma in `self.soma`). The keys in `self.regions` are the cell attribute name. Therefore, the key 'soma' in `self.regions` corresponds to 'soma' of `self.soma` NOT 'soma' in `h.Section('soma').
 * generally, `float=0.0` which means that the membrane voltage taken from the respective `self.regions` 'whenever' required to transform them to spike-trains (zeros & ones) takes 0.0mV as the threshold for considering spike.
-* The SimulationManager is deployed from the model template so as to load the `nmodl` files before instantiating the cell-template.
+* The SimulationManager is deployed from the model template so as to load the `nmodl` files before instantiating the cell-template. This is done by calling `lock_and_load_model_libraries()`
 * If the cell-template requires loading custom files (generally located in same directory as the cell-template) required for its constructing then you must temporarily change the current working directory to the directory location of the cell-template. Then instantiate the cell-template and once done return to default working directory. Therefore, this change of directory is not necessary if the cell-template does not require loading any configuration files for its template.
 ---

@@ -11,14 +11,14 @@ sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 # from managers.operatorsFiling.pathspawner import PathSpawner
 # called in inspector.py
 
-from inspector import SimInspector
+from inspector import SimInspector as si
 
 from cerebunit.capabilities.cells.response import ProducesSpikeTrain
 
 class SimInspectorTest(unittest.TestCase):
 
     def setUp(self):
-        self.si = SimInspector() # instance for non: static & class methods
+        #self.si = SimInspector() # instance for non: static & class methods
         self.pwd = os.getcwd()
 
     #@unittest.skip("reason for skipping")
@@ -33,9 +33,9 @@ class SimInspectorTest(unittest.TestCase):
             shutil.rmtree(compile_path + os.sep + "x86_64")
         except:
             pass
-        self.assertEqual(self.si.lock_and_load_nmodl(modelscale=modelscale,
-                                                     modelname=modelname),
-                         "nmodl has just been compiled")
+        self.assertEqual( si.lock_and_load_nmodl(modelscale=modelscale,
+                                                 modelname=modelname),
+                          "nmodl has just been compiled")
         os.chdir(self.pwd) # reset to the location of this inspectorTest.py
 
     #@unittest.skip("reason for skipping")
@@ -45,9 +45,9 @@ class SimInspectorTest(unittest.TestCase):
         os.chdir("..") # this moves you up to ~/managers
         os.chdir("..") # you are now in parent /cerebmodels
         compile_path = os.getcwd() + os.sep + "models" + os.sep + modelscale + os.sep + modelname
-        self.assertEqual(self.si.lock_and_load_nmodl(modelscale=modelscale,
-                                                     modelname=modelname),
-                         "nmodl was already compiled")
+        self.assertEqual( si.lock_and_load_nmodl(modelscale=modelscale,
+                                                 modelname=modelname),
+                          "nmodl was already compiled")
         os.chdir(self.pwd) # reset to the location of this inspectorTest.py
 
     #@unittest.skip("reason for skipping")
@@ -58,7 +58,7 @@ class SimInspectorTest(unittest.TestCase):
         os.chdir("..") # you are now in parent /cerebmodels
         compile_path = os.getcwd() + os.sep + "models" + os.sep + modelscale + os.sep + modelname
         self.assertRaises( AttributeError,
-                           self.si.check_compatibility,
+                           si.check_compatibility,
                            capability_name = "produce_voltage_response",
                            CerebUnit_capability = ProducesSpikeTrain )
         os.chdir(self.pwd) # reset to the location of this inspectorTest.py
@@ -70,7 +70,7 @@ class SimInspectorTest(unittest.TestCase):
         os.chdir("..") # this moves you up to ~/managers
         os.chdir("..") # you are now in parent /cerebmodels
         compile_path = os.getcwd() + os.sep + "models" + os.sep + modelscale + os.sep + modelname
-        self.assertEqual( self.si.check_compatibility(
+        self.assertEqual( si.check_compatibility(
                                    capability_name = "produce_spike_train",
                                    CerebUnit_capability = ProducesSpikeTrain ),
                           "ProducesSpikeTrain has the method produce_spike_train" )

@@ -10,7 +10,7 @@ import neuron
 # set to ~/cerebmodels
 #sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 #
-from managers.operatorsFiling.pathspawner import PathSpawner
+from managers.operatorsFiling.pathspawner import PathSpawner as ps
 
 # import as usual for local modules
 # from local import Local
@@ -19,15 +19,19 @@ class SimInspector(object):
     """Operator working under SimulationManager.
 
     Available methods:
-    inspect_compiled_nmodl
+    inspect_compiled_nmodl -- prints "compiled files already exists" or else
+                                     Nil, it just generates the libnrnmech.so.0
+    check_compatibility -- return AttributeError if capabilities (model vs vtest) are not compatible
+                           else Nothing is returned
 
     """
 
     def __init__(self):
         self.ps = PathSpawner()
 
-    def lock_and_load_nmodl(self, modelscale=None, modelname=None):
-        """method that checks for the compiled libnrnmech.so.0 file or else generates it.
+    @staticmethod
+    def lock_and_load_nmodl(modelscale=None, modelname=None):
+        """static method that checks for the compiled libnrnmech.so.0 file or else generates it.
 
         Keyword arguments:
         modelscale -- string; egs. "cells", "microcircuits", "networks"
@@ -39,7 +43,7 @@ class SimInspector(object):
 
         """
         # generate the 'standard' path to mod and lib files
-        mod_path, lib_path = self.ps.hatch_path_to_nmodl(modelscale=modelscale,
+        mod_path, lib_path = ps.hatch_path_to_nmodl(modelscale=modelscale,
                                                     modelname=modelname)
         # check if the librnmech.so.0 already exists
         if os.path.isfile(lib_path) is False:
@@ -54,7 +58,8 @@ class SimInspector(object):
             neuron.load_mechanisms(os.path.dirname(mod_path))
             return "nmodl was already compiled"
 
-    def check_compatibility(self, capability_name=None, CerebUnit_capability=None):
+    @staticmethod
+    def check_compatibility(capability_name=None, CerebUnit_capability=None):
         """if model capability is known to be consistent with cerebunit module this module is not necessary to run.
 
         Keyword arguments:

@@ -1,5 +1,5 @@
 import os
 
-def start_bokeh():
+def dashboard_model():
     os.system("bokeh serve --show ./managers/managerVizBokeh.py")
 

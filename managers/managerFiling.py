@@ -128,3 +128,7 @@ class FilingManager(object):
             return cls.get_responsepath_check_create(dir_names)
         elif (list_dir_names is not None) or (len(list_dir_names)==3):
             return cls.get_responsepath_check_create(list_dir_names)
+
+    @staticmethod
+    def filenames_with_path(dir_names):
+        return cr.show_files(dir_names=dir_names)

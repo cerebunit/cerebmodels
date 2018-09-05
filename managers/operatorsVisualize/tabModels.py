@@ -10,8 +10,11 @@ from bokeh.models.widgets import (CheckboxGroup, Slider, RangeSlider,
 from bokeh.layouts import column, row, WidgetBox, layout
 from bokeh.palettes import Category20_16
 
+#from dask.diagnostics import Profiler, ResourceProfile, ChacheProfiler, visualize
+
 import os, sys
-#pwd = os.getcwd()
+pwd = os.getcwd()
+rootwd = os.path.dirname(pwd)
 #sys.path.append(os.path.dirname(pwd))
 
 #from managers.managerFiling import FilingManager
@@ -144,6 +147,7 @@ def TabModels():
     # Generate Model Info
     #os.chdir("..") # line required for calling ~/managers/bokehtest.py
     #available_modelscales = fm.available_modelscales()
+    os.chdir(rootwd)
     available_modelscales = ec.list_modelscales()
     scale_and_models = {}
     for modelscale in available_modelscales: # get list of models in each scale
@@ -153,6 +157,7 @@ def TabModels():
         except:
             modelslist = ["No_Models"]
         scale_and_models.update( {modelscale: modelslist} )
+    os.chdir(pwd)
     #print scale_and_models
     ### ++++++++++++++++++++END GENERATE DATA FOR THE OPTIONS++++++++++++++++++
     #

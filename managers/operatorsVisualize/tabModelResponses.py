@@ -12,9 +12,10 @@ from bokeh.palettes import Category20_16
 
 import os, sys
 pwd = os.getcwd()
-sys.path.append(os.path.dirname(os.path.dirname(pwd)))
+rootwd = os.path.dirname(pwd)
+#sys.path.append(os.path.dirname(os.path.dirname(pwd)))
 
-from managers.managerFiling import FilingManager
+from managers.managerFiling import FilingManager as fm
 
 def TabModelResponses():
     """available_modelscales = ['cells', 'microcircuit', 'network']
@@ -114,7 +115,7 @@ def TabModelResponses():
     # scale_and_models -- dictionary with list as key value
     # models_with_filenames -- dictionary with list as key value
     # responses_with_filepaths -- dictionary with string as key value
-    fm = FilingManager()
+    os.chdir(rootwd)
     # Generate Model Info
     #os.chdir("..") # line required for calling ~/managers/bokehtest.py
     available_modelscales = fm.available_modelscales()
@@ -140,7 +141,7 @@ def TabModelResponses():
             for model in modellist:
                 dir_names = ["responses", modelscale, model]
                 responsepath = fm.responsepath_check_create(list_dir_names=dir_names)
-                filesdictionary = fm.cr.show_files(dir_names=dir_names)
+                filesdictionary = fm.filenames_with_path(dir_names=dir_names)
                 if filesdictionary=="There are no files in the current path.":
                     alevel2_key_value = {model: ["There_are_no_files"]}
                 else:
@@ -153,6 +154,7 @@ def TabModelResponses():
         responses_with_filepaths.update( {modelscale: blevel1_key_value} )
         #print responses_with_filenames
         #print responses_with_filepaths
+    os.chdir(pwd)
     ### ++++++++++++++++++++END GENERATE DATA FOR THE OPTIONS++++++++++++++++++
     #
     menu = get_menu_modelscales()

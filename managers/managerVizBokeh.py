@@ -6,8 +6,10 @@ from bokeh.models.widgets import Panel#, Tabs
 from bokeh.plotting import figure#, curdoc
 
 import os, sys
-#sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
-sys.path.append(os.path.dirname(os.getcwd()))
+#sys.path.append(os.path.dirname(os.getcwd())) # for running it from ~/managers
+sys.path.append(os.getcwd()) # for running it from ~/cerebmodels
+#print os.getcwd()
+#print sys.path
 #
 from managers.operatorsVisualize.tabModels import TabModels
 from managers.operatorsVisualize.tabModelResponses import TabModelResponses

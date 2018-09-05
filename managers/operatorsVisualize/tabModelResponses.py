@@ -115,7 +115,7 @@ def TabModelResponses():
     # scale_and_models -- dictionary with list as key value
     # models_with_filenames -- dictionary with list as key value
     # responses_with_filepaths -- dictionary with string as key value
-    os.chdir(rootwd)
+    #os.chdir(rootwd) # for running it from ~/managers
     # Generate Model Info
     #os.chdir("..") # line required for calling ~/managers/bokehtest.py
     available_modelscales = fm.available_modelscales()
@@ -154,7 +154,7 @@ def TabModelResponses():
         responses_with_filepaths.update( {modelscale: blevel1_key_value} )
         #print responses_with_filenames
         #print responses_with_filepaths
-    os.chdir(pwd)
+    #os.chdir(pwd) # for running it from ~/managers
     ### ++++++++++++++++++++END GENERATE DATA FOR THE OPTIONS++++++++++++++++++
     #
     menu = get_menu_modelscales()

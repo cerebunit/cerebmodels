@@ -10,7 +10,7 @@ from bokeh.models.widgets import (CheckboxGroup, Slider, RangeSlider,
 from bokeh.layouts import column, row, WidgetBox, layout
 from bokeh.palettes import Category20_16
 
-#from dask.diagnostics import Profiler, ResourceProfile, ChacheProfiler, visualize
+from dask.diagnostics import Profiler, ResourceProfiler, CacheProfiler, visualize
 
 import os, sys
 pwd = os.getcwd()
@@ -147,7 +147,8 @@ def TabModels():
     # Generate Model Info
     #os.chdir("..") # line required for calling ~/managers/bokehtest.py
     #available_modelscales = fm.available_modelscales()
-    os.chdir(rootwd)
+    #os.chdir(rootwd) # for running it from ~/managers
+    print rootwd
     available_modelscales = ec.list_modelscales()
     scale_and_models = {}
     for modelscale in available_modelscales: # get list of models in each scale
@@ -157,7 +158,7 @@ def TabModels():
         except:
             modelslist = ["No_Models"]
         scale_and_models.update( {modelscale: modelslist} )
-    os.chdir(pwd)
+    #os.chdir(pwd) # for running it from ~/managers
     #print scale_and_models
     ### ++++++++++++++++++++END GENERATE DATA FOR THE OPTIONS++++++++++++++++++
     #
@@ -191,12 +192,8 @@ def TabModels():
     #
     runmodel = Button(label="Run Simulation", button_type="success")
     #
-    modeltitle = Div(text="""No Model has been selected yet.""", width=500, height=20)
-    modeldescr = Paragraph(text="""Your text is initialized with the 'text' argument.  The remaining Paragraph arguments are 'width' and 'height'. For this example, those values are 200 and 100 respectively.""", width=500, height=100)
-    div = Div(text="""Your <a href="https://en.wikipedia.org/wiki/HTML">HTML</a>-supported text is initialized with the <b>text</b> argument.  The
-remaining div arguments are <b>width</b> and <b>height</b>. For this example, those values
-are <i>200</i> and <i>100</i> respectively.""",
-width=200, height=100)
+    modeltitle = Div(text="""No Model has been selected yet.""", width=290, height=20)
+    modeldescr = Paragraph(text="""Your text is initialized with the 'text' argument.  The remaining Paragraph arguments are 'width' and 'height'. For this example, those values are 200 and 100 respectively. Your text is initialieze with the 'text' argument. The remaining Paragraph arguments are 'width' and 'height'. For this example, those values are 290 and 100 respectively. """, width=290, height=100)
     # disable the model texts by DEFAULT
     modeltitle.disabled = True
     modeldescr.disabled = True
@@ -212,6 +209,8 @@ width=200, height=100)
     #displays = WidgetBox(div)
 
     p = myplot()
+    prof = Profiler()
+    rprof = ResourceProfiler()
     # Create a row layout
     #mylayout = row(controls, p)
     #mylayout = row(controls, p)
@@ -224,7 +223,8 @@ width=200, height=100)
     runmodel.disabled = True
     mylayout = row(WidgetBox(modelscales_select, models_select, runtime_input,
                              stimulation, stim_type_input, stim_list_input, runmodel),
-                   WidgetBox(modeltitle, modeldescr, div))
+                   WidgetBox(modeltitle, modeldescr),
+                   row(visualize([prof, rprof])))
     #mylayout = row(WidgetBox(modelscales_select, models_select, runtime_input, stim_input, runmodel),
     #               WidgetBox(modelscales_select, models_select, runtime_input, stim_input, runmodel))
     #mylayout = row(WidgetBox(modelscales_select, models_select, runtime_input, stim_input, runmodel),

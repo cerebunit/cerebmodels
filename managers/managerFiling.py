@@ -130,5 +130,10 @@ class FilingManager(object):
             return cls.get_responsepath_check_create(list_dir_names)
 
     @staticmethod
-    def filenames_with_path(dir_names):
+    def show_filenames_with_path(dir_names):
+        """static method that is identical to Crawler.show_files
+
+        Returned Value:
+        dictionary with key => filename & value => filepath
+        """
         return cr.show_files(dir_names=dir_names)

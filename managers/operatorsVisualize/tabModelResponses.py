@@ -141,7 +141,7 @@ def TabModelResponses():
             for model in modellist:
                 dir_names = ["responses", modelscale, model]
                 responsepath = fm.responsepath_check_create(list_dir_names=dir_names)
-                filesdictionary = fm.filenames_with_path(dir_names=dir_names)
+                filesdictionary = fm.show_filenames_with_path(dir_names=dir_names)
                 if filesdictionary=="There are no files in the current path.":
                     alevel2_key_value = {model: ["There_are_no_files"]}
                 else:

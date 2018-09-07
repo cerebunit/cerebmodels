@@ -49,7 +49,7 @@ class ExecutiveControl(object):
     @staticmethod
     def choose_model(modelscale=None, modelname=None):
         #self.sm.si.lock_and_load_nmodl(modelscale=modelscale, modelname=modelname)
-        modelmodule = importlib.import_module("models."+modelscale+"."+"model"+modelname)
+        modelmodule = importlib.import_module("models."+modelscale+".model"+modelname)
         chosenmodel = getattr(modelmodule, uu.classesinmodule(modelmodule)[0].__name__)
         return chosenmodel()
         #return self.chosenmodel # the picked model is available as attribute

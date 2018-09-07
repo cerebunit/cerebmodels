@@ -82,8 +82,8 @@ class SimulationManager(object):
         if (parameters is None) or (chosenmodel is None):
             raise ValueError("an instantiated model must be given for 'chosenmodel' with its runtime 'parameters'")
         else:
-            cls.lock_and_load_model_libraries(modelscale=chosenmodel.modelscale,
-                                              modelname=chosenmodel.modelname)
+            #cls.lock_and_load_model_libraries(modelscale=chosenmodel.modelscale,
+            #                                  modelname=chosenmodel.modelname)
             si.check_compatibility(capability_name = modelcapability,
                                         CerebUnit_capability = cerebunitcapability)
             hc.activate_cores()

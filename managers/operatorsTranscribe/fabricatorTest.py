@@ -89,8 +89,9 @@ class FabricatorTest(unittest.TestCase):
         #io = NWBHDF5IO('updated_mynwbfile.nwb')
         #nwbfile = io.read()
         #
-        self.assertEqual( [nwbts.data, nwbts.timestamps],
-                          [rec_v_soma, rec_t] )
+        a = all(boolean == True for boolean in nwbts.data==rec_v_soma)
+        b = all(boolean == True for boolean in nwbts.timestamps==rec_t)
+        self.assertTrue( a and b is True )
 
     #@unittest.skip("reason for skipping")
     def test_3_construct_nwbseries_nostimulus(self):
@@ -120,10 +121,13 @@ class FabricatorTest(unittest.TestCase):
                                                         ts_metadata)
         #print nwbts['soma'].name # what does this return
         #print [nwbts.name, nwbts.source, nwbts.data, nwbts.unit, nwbts.resolution, nwbts.conversion, nwbts.timestamps, nwbts.starting_time, nwbts.rate, nwbts.comments, nwbts.description, nwbts.control, nwbts.control_description, nwbts.parent] # available attributes
-        compare1 = [nwbts['soma'].data, nwbts['axon'].data, nwbts['soma'].timestamps]
-        compare2 = [recordings['response']['soma'], recordings['response']['axon'],
-                    recordings['time']]
-        self.assertEqual( compare1, compare2 )
+        a = all(boolean == True for boolean in
+                                nwbts['soma'].data==recordings['response']['soma'])
+        b = all(boolean == True for boolean in
+                                nwbts['axon'].data==recordings['response']['axon'])
+        c = all(boolean == True for boolean in
+                                nwbts['soma'].timestamps==recordings['time'])
+        self.assertTrue( a and b and c is True )
 
     #@unittest.skip("reason for skipping")
     def test_4_build_nwbseries_nostimulus(self):
@@ -154,11 +158,13 @@ class FabricatorTest(unittest.TestCase):
                                     tsmd = ts_metadata)
         #print nwbts['soma'].name # what does this return
         #print [nwbts.name, nwbts.source, nwbts.data, nwbts.unit, nwbts.resolution, nwbts.conversion, nwbts.timestamps, nwbts.starting_time, nwbts.rate, nwbts.comments, nwbts.description, nwbts.control, nwbts.control_description, nwbts.parent] # available attributes
-        compare1 = [nwbts['soma'].data, nwbts['axon'].data,
-                    nwbts['soma'].timestamps]
-        compare2 = [recordings['response']['soma'], recordings['response']['axon'],
-                    recordings['time']]
-        self.assertEqual( compare1, compare2 )
+        a = all(boolean == True for boolean in
+                                nwbts['soma'].data==recordings['response']['soma'])
+        b = all(boolean == True for boolean in
+                                nwbts['axon'].data==recordings['response']['axon'])
+        c = all(boolean == True for boolean in
+                                nwbts['soma'].timestamps==recordings['time'])
+        self.assertTrue( a and b and c is True )
 
     #@unittest.skip("reason for skipping")
     def test_5_build_nwbseries_stimulus(self):
@@ -200,11 +206,13 @@ class FabricatorTest(unittest.TestCase):
                                     tsmd = ts_metadata)
         #print nwbts['soma'].name # what does this return
         #print [nwbts.name, nwbts.source, nwbts.data, nwbts.unit, nwbts.resolution, nwbts.conversion, nwbts.timestamps, nwbts.starting_time, nwbts.rate, nwbts.comments, nwbts.description, nwbts.control, nwbts.control_description, nwbts.parent] # available attributes
-        compare1 = [nwbts['soma'].data, nwbts['axon'].data, nwbts['stimulus'].data,
-                    nwbts['stimulus'].timestamps]
-        compare2 = [recordings['response']['soma'], recordings['response']['axon'],
-                    recordings['stimulus'], recordings['time']]
-        self.assertEqual( compare1, compare2 )
+        a = all(boolean == True for boolean in
+                                nwbts['soma'].data==recordings['response']['soma'])
+        b = all(boolean == True for boolean in
+                                nwbts['axon'].data==recordings['response']['axon'])
+        c = all(boolean == True for boolean in
+                                nwbts['soma'].timestamps==recordings['time'])
+        self.assertTrue( a and b and c is True )
 
     #@unittest.skip("reason for skipping")
     def test_6_link_nwbseriesresponses_to_nwbfile(self):
@@ -242,11 +250,14 @@ class FabricatorTest(unittest.TestCase):
         extracted_nwbts_soma =  updated_mynwbfile.get_acquisition(nwbts["soma"].name)
         extracted_nwbts_axon =  updated_mynwbfile.get_acquisition(nwbts["axon"].name)
         #
-        compare1 = [extracted_nwbts_soma.data, extracted_nwbts_axon.data,
-                    extracted_nwbts_soma.timestamps, str(type(updated_mynwbfile))[8:-2]]
-        compare2 = [nwbts['soma'].data, nwbts['axon'].data,
-                    nwbts['soma'].timestamps, "pynwb.file.NWBFile"]
-        self.assertEqual( compare1, compare2 )
+        a = all(boolean == True for boolean in
+                                extracted_nwbts_soma.data==nwbts['soma'].data)
+        b = all(boolean == True for boolean in
+                                extracted_nwbts_axon.data==nwbts['axon'].data)
+        c = all(boolean == True for boolean in
+                                extracted_nwbts_soma.timestamps==nwbts['soma'].timestamps)
+        d = ( str(type(updated_mynwbfile))[8:-2] == "pynwb.file.NWBFile" )
+        self.assertTrue( a and b and c and d is True )
 
     #@unittest.skip("reason for skipping")
     def test_7_strip_out_stimulus_from_nwbseries(self):
@@ -292,9 +303,12 @@ class FabricatorTest(unittest.TestCase):
         #print type(stripped_nwbts["axon"])
         #print nwbts['soma'].name # what does this return
         #print [nwbts.name, nwbts.source, nwbts.data, nwbts.unit, nwbts.resolution, nwbts.conversion, nwbts.timestamps, nwbts.starting_time, nwbts.rate, nwbts.comments, nwbts.description, nwbts.control, nwbts.control_description, nwbts.parent] # available attributes
-        compare1 = [len(nwbts), len(stripped_nwbts), stripped_nwbts["soma"].data,
-                                                     stripped_nwbts["axon"].data]
-        compare2 = [3, 2, nwbts['soma'].data, nwbts['axon'].data]
+        a = all(boolean == True for boolean in
+                                stripped_nwbts["soma"].data==nwbts['soma'].data)
+        b = all(boolean == True for boolean in
+                                stripped_nwbts["axon"].data==nwbts['axon'].data)
+        compare1 = [len(nwbts), len(stripped_nwbts), a, b]
+        compare2 = [3, 2, True, True]
         self.assertEqual( compare1, compare2 )
 
     #@unittest.skip("reason for skipping")
@@ -336,11 +350,14 @@ class FabricatorTest(unittest.TestCase):
         extracted_nwbts_soma =  updated_mynwbfile.get_acquisition(nwbts["soma"].name)
         extracted_nwbts_axon =  updated_mynwbfile.get_acquisition(nwbts["axon"].name)
         #
-        compare1 = [extracted_nwbts_soma.data, extracted_nwbts_axon.data,
-                    extracted_nwbts_soma.timestamps, str(type(updated_mynwbfile))[8:-2]]
-        compare2 = [nwbts['soma'].data, nwbts['axon'].data,
-                    nwbts['soma'].timestamps, "pynwb.file.NWBFile"]
-        self.assertEqual( compare1, compare2 )
+        a = all(boolean == True for boolean in
+                                extracted_nwbts_soma.data==nwbts['soma'].data)
+        b = all(boolean == True for boolean in
+                                extracted_nwbts_axon.data==nwbts['axon'].data)
+        c = all(boolean == True for boolean in
+                                extracted_nwbts_soma.timestamps==nwbts['soma'].timestamps)
+        d = ( str(type(updated_mynwbfile))[8:-2] == "pynwb.file.NWBFile" )
+        self.assertTrue( a and b and c and d is True )
 
     #@unittest.skip("reason for skipping")
     def test_9_affix_nwbseries_to_nwbfile_stimulus(self):
@@ -399,11 +416,14 @@ class FabricatorTest(unittest.TestCase):
         extracted_nwbts_axon =  updated_mynwbfile.get_acquisition(nwbts["axon"].name)
         extracted_nwbts_stim =  updated_mynwbfile.get_stimulus(nwbts["stimulus"].name)
         #
-        compare1 = [extracted_nwbts_soma.data, extracted_nwbts_axon.data,
-                    extracted_nwbts_stim.timestamps, str(type(updated_mynwbfile))[8:-2]]
-        compare2 = [nwbts['soma'].data, nwbts['axon'].data,
-                    nwbts['stimulus'].timestamps, "pynwb.file.NWBFile"]
-        self.assertEqual( compare1, compare2 )
+        a = all(boolean == True for boolean in
+                                extracted_nwbts_soma.data==nwbts['soma'].data)
+        b = all(boolean == True for boolean in
+                                extracted_nwbts_axon.data==nwbts['axon'].data)
+        c = all(boolean == True for boolean in
+                                extracted_nwbts_soma.timestamps==nwbts['soma'].timestamps)
+        d = ( str(type(updated_mynwbfile))[8:-2] == "pynwb.file.NWBFile" )
+        self.assertTrue( a and b and c and d is True )
 
     #@unittest.skip("reason for skipping")
     def test_10_insert_a_nwbepoch(self):
@@ -464,13 +484,21 @@ class FabricatorTest(unittest.TestCase):
         #print nwbts["soma"].description
         #print nwbts["axon"].description
         # "<class '__main__.ClassA'>" 1st"_"is 8 & last"'"is -2
-        compare1 = [str(type(updated_mynwbfile))[8:-2], #"<class '__main__.ClassA'>" 1st"_"is 8 & last"'"is -2
-                    updated_mynwbfile.epochs.epochs.data[0][3].data.data[0][2].timestamps,
-                    updated_mynwbfile.epochs.epochs.data[0][3].data.data[0][2].data]
-        compare2 = ["pynwb.file.NWBFile",
-                    ts_metadata[pickedepoch[-4:]]["timestamps"],
-                    ts_metadata[pickedepoch[-4:]]["data"]]
-        self.assertEqual( compare1, compare2 )
+        a = all( boolean == True for boolean in
+                 updated_mynwbfile.epochs.epochs.data[0][3].data.data[0][2].timestamps
+                 == ts_metadata[pickedepoch[-4:]]["timestamps"] )
+        b = all( boolean == True for boolean in
+                 updated_mynwbfile.epochs.epochs.data[0][3].data.data[0][2].data
+                 == ts_metadata[pickedepoch[-4:]]["data"] )
+        c = ( str(type(updated_mynwbfile))[8:-2] == "pynwb.file.NWBFile" )
+        self.assertTrue( a and b and c is True )
+        #compare1 = [str(type(updated_mynwbfile))[8:-2], #"<class '__main__.ClassA'>" 1st"_"is 8 & last"'"is -2
+        #            updated_mynwbfile.epochs.epochs.data[0][3].data.data[0][2].timestamps,
+        #            updated_mynwbfile.epochs.epochs.data[0][3].data.data[0][2].data]
+        #compare2 = ["pynwb.file.NWBFile",
+        #            ts_metadata[pickedepoch[-4:]]["timestamps"],
+        #            ts_metadata[pickedepoch[-4:]]["data"]]
+        #self.assertEqual( compare1, compare2 )
 
     #@unittest.skip("reason for skipping")
     def test_11_build_nwbepoch(self):
@@ -556,13 +584,17 @@ class FabricatorTest(unittest.TestCase):
         # 2_epoch_responses,1,soma,DummyTest,epoch1soma extract the last 4 characters
         # the last 4 characters corresponds to source of TimeSeries object
         #print updated_mynwbfile.epochs.epochs.data[0][2]#[-4:]
-        compare1 = [updated_mynwbfile.epochs.epochs.data[0][3].data.data[0][2].data,
-                    updated_mynwbfile.epochs.epochs.data[1][3].data.data[1][2].timestamps,
+        a = all( boolean == True for boolean in
+                 updated_mynwbfile.epochs.epochs.data[0][3].data.data[0][2].data
+                 == ts_metadata[ updated_mynwbfile.epochs.epochs.data[0][2][-4:] ]["data"] )
+        b = all( boolean == True for boolean in
+                 updated_mynwbfile.epochs.epochs.data[1][3].data.data[1][2].timestamps
+                 == ts_metadata[ updated_mynwbfile.epochs.epochs.data[1][2][-4:] ]["timestamps"] )
+        compare1 = [ a, b,
                     updated_mynwbfile.epochs.epochs.data[2][3].data.data[2][2].unit,
                     updated_mynwbfile.epochs.epochs.data[3][3].data.data[3][2].description]
         compare2 = \
-           [ts_metadata[ updated_mynwbfile.epochs.epochs.data[0][2][-4:] ]["data"],
-            ts_metadata[ updated_mynwbfile.epochs.epochs.data[1][2][-4:] ]["timestamps"],
+           [ True, True,
             ts_metadata[ updated_mynwbfile.epochs.epochs.data[2][2][-4:] ]["unit"],
             ts_metadata[ updated_mynwbfile.epochs.epochs.data[3][2][-4:] ]["description"]]
         self.assertEqual( compare1, compare2 )

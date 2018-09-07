@@ -2,6 +2,8 @@
 import os # only for filepath/filename in writing nwbfile
 from datetime import datetime
 
+import numpy
+
 import pynwb
 from pynwb import NWBFile
 from pynwb import TimeSeries
@@ -118,11 +120,11 @@ class Fabricator(object):
         """
         return TimeSeries( metadata["name"],
                            metadata["source"],
-                           data = metadata["data"],
+                           data = numpy.array(metadata["data"]),
                            unit = metadata["unit"],
                            resolution = metadata["resolution"],
                            conversion = metadata["conversion"],
-                           timestamps = metadata["timestamps"],
+                           timestamps = numpy.array(metadata["timestamps"]),
                            #starting_time = metadata["starting_time"],
                            #rate = metadata["rate"],
                            comments = metadata["comment"],

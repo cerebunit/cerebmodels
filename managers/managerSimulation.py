@@ -22,11 +22,11 @@ class SimulationManager(object):
     engage_NEURON
 
     Class methods:
-    prepare_model_NEURON
     trigger_NEURON
 
     Static methods:
     lock_and_load_model_libraries
+    prepare_model_NEURON
     stimulate_model_NEURON
     lock_and_load_capability
     engage_NEURON
@@ -48,8 +48,8 @@ class SimulationManager(object):
             si.lock_and_load_nmodl(modelscale = modelscale, modelname = modelname)
             return "Model libraries area loaded" # for managerSimulationTest.py
        
-    @classmethod
-    def prepare_model_NEURON( cls, parameters=None, chosenmodel=None,
+    @staticmethod
+    def prepare_model_NEURON( parameters=None, chosenmodel=None,
                               modelcapability = None, cerebunitcapability = None):
         """method that checks for compiled nmodl and optionally for capability.
 

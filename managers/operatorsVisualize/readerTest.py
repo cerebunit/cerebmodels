@@ -9,9 +9,15 @@ import sys
 # import modules for other directories
 sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 # this is required for
+
+pwd = os.getcwd()
+os.chdir(os.path.dirname(os.path.dirname(pwd))) # this moves you up to ~/cerebmodels
+rootwd = os.getcwd() # save the path ~/cerebmodels
 from models.cells.modelDummyTest import DummyCell
+os.chdir(pwd)
+
 import numpy
-from managers.operatorsTranscribe.fabricator import Fabricator # to generate NWBFile
+from managers.operatorsTranscribe.fabricator import Fabricator as fab
 from pynwb import NWBHDF5IO
 
 from reader import Reader
@@ -22,8 +28,10 @@ class ReaderTest(unittest.TestCase):
     def setUp(self):
         self.pwd = os.getcwd()
         # Create two files with/without stimulus
-        fab = Fabricator() # NOTE: Reader() is an exception for not instantiating
+        #fab = Fabricator() # NOTE: Reader() is an exception for not instantiating
+        os.chdir(rootwd)
         chosenmodel = DummyCell()
+        os.chdir(pwd)
         # Build NWBFile
         file_metadata = {
              "source": "Where is the data from?, i.e, platform",
@@ -94,9 +102,9 @@ class ReaderTest(unittest.TestCase):
         nwbts_stimulus = fab.build_nwbseries(chosenmodel = chosenmodel,
                                              tsmd = self.ts_metadata_stimulus)
         # Insert TimeSeries into NWBFile
-        updated_mynwbfile_nostimulus = fab.affix_nwbseries_to_nwbfile(nwbseries=nwbts_nostimulus,
+        updated_mynwbfile_nostimulus = fab.affix_nwbseries_to_nwbfile(nwbts=nwbts_nostimulus,
                                                                       nwbfile=mynwbfile_nostimulus)
-        updated_mynwbfile_stimulus = fab.affix_nwbseries_to_nwbfile(nwbseries=nwbts_stimulus,
+        updated_mynwbfile_stimulus = fab.affix_nwbseries_to_nwbfile(nwbts=nwbts_stimulus,
                                                                     nwbfile=mynwbfile_stimulus)
         # Build Epochs
         epoch_metadata_nostimulus = \
@@ -145,8 +153,10 @@ class ReaderTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_1_init(self):
         # loads nwbfile, extracts modelname, modelscale & instantiate model
-        reader_io_nostimulus = Reader('mynwbfile_nostimulus.h5')
-        reader_io_stimulus = Reader('mynwbfile_stimulus.h5')
+        os.chdir(rootwd)
+        reader_io_nostimulus = Reader(pwd+os.sep+"mynwbfile_nostimulus.h5")
+        reader_io_stimulus = Reader(pwd+os.sep+"mynwbfile_stimulus.h5")
+        os.chdir(pwd)
         # this tests extract_modelname_modelscale & load_model
         compare1 = [ reader_io_nostimulus.modelname,  # output of 
                      reader_io_nostimulus.modelscale ]# extract_modelname_modelscale()
@@ -159,13 +169,17 @@ class ReaderTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_2_visualizetable(self):
         # gives you session of the nwbfile
-        reader_io_nostimulus = Reader('mynwbfile_nostimulus.h5')
+        os.chdir(rootwd)
+        reader_io_nostimulus = Reader(pwd+os.sep+"mynwbfile_nostimulus.h5")
+        os.chdir(pwd)
         reader_io_nostimulus.session_info() # pretty prints table
         reader_io_nostimulus.closefile()
 
     #@unittest.skip("reason for skipping")
     def test_3_pull_epochindices_chosenregion(self):
-        reader_io_stimulus = Reader('mynwbfile_stimulus.h5')
+        os.chdir(rootwd)
+        reader_io_stimulus = Reader(pwd+os.sep+"mynwbfile_stimulus.h5")
+        os.chdir(pwd)
         epoch_indices_soma = reader_io_stimulus.pull_epochindices_chosenregion('soma')
         epoch_indices_axon = reader_io_stimulus.pull_epochindices_chosenregion('axon')
         self.assertNotEqual( epoch_indices_soma, epoch_indices_axon )
@@ -173,7 +187,9 @@ class ReaderTest(unittest.TestCase):
 
     #@unittest.skip("reason for skipping")
     def test_4_pull_epochid(self):
-        reader_io_stimulus = Reader('mynwbfile_stimulus.h5')
+        os.chdir(rootwd)
+        reader_io_stimulus = Reader(pwd+os.sep+"mynwbfile_stimulus.h5")
+        os.chdir(pwd)
         epoch_indices_soma = reader_io_stimulus.pull_epochindices_chosenregion('soma')
         epoch_indices_axon = reader_io_stimulus.pull_epochindices_chosenregion('soma')
         epoch_id_soma = reader_io_stimulus.pull_epochid(epoch_indices_soma[0])
@@ -183,7 +199,9 @@ class ReaderTest(unittest.TestCase):
 
     #@unittest.skip("reason for skipping")
     def test_5_drawout_orderedepochs(self):
-        reader_io_stimulus = Reader('mynwbfile_stimulus.h5')
+        os.chdir(rootwd)
+        reader_io_stimulus = Reader(pwd+os.sep+"mynwbfile_stimulus.h5")
+        os.chdir(pwd)
         orderedepochs_soma = reader_io_stimulus.drawout_orderedepochs('soma')
         #print orderedepochs_soma
         #print len(orderedepochs_soma)
@@ -195,7 +213,9 @@ class ReaderTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_6_get_epoch(self):
         # To get an epoch
-        reader_io_stimulus = Reader('mynwbfile_stimulus.h5') # load the file
+        os.chdir(rootwd)
+        reader_io_stimulus = Reader(pwd+os.sep+"mynwbfile_stimulus.h5")
+        os.chdir(pwd)
         orderedepochs_soma = reader_io_stimulus.drawout_orderedepochs('soma') # drawout orderedepochs
         epochs = []
         for i in range(len(orderedepochs_soma)):
@@ -209,7 +229,9 @@ class ReaderTest(unittest.TestCase):
 
     #@unittest.skip("reason for skipping")
     def test_7_get_epoch_start_stop_times(self):
-        reader_io_nostimulus = Reader('mynwbfile_nostimulus.h5') # load file
+        os.chdir(rootwd)
+        reader_io_nostimulus = Reader(pwd+os.sep+"mynwbfile_nostimulus.h5")
+        os.chdir(pwd)
         orderedepochs_soma = reader_io_nostimulus.drawout_orderedepochs('soma') #drawout orderedepoch
         orderedepochs_axon = reader_io_nostimulus.drawout_orderedepochs('axon')
         epochtuple_soma = Reader.get_epoch(0, orderedepochs_soma) # get epoch
@@ -225,7 +247,9 @@ class ReaderTest(unittest.TestCase):
 
     #@unittest.skip("reason for skipping")
     def test_8_get_epochdescription(self):
-        reader_io_stimulus = Reader('mynwbfile_stimulus.h5') # load file
+        os.chdir(rootwd)
+        reader_io_stimulus = Reader(pwd+os.sep+"mynwbfile_stimulus.h5")
+        os.chdir(pwd)
         orderedepochs_soma = reader_io_stimulus.drawout_orderedepochs('soma') #drawout ordered epoch
         epochtuple_0soma = Reader.get_epoch(0, orderedepochs_soma) # get epoch
         epochtuple_1soma = Reader.get_epoch(1, orderedepochs_soma)
@@ -240,7 +264,9 @@ class ReaderTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_9_get_epoch_data_timestamps(self):
         # also tests get_timeseries_stage1, get_timeseries_object
-        reader_io_nostimulus = Reader('mynwbfile_nostimulus.h5') # load file
+        os.chdir(rootwd)
+        reader_io_nostimulus = Reader(pwd+os.sep+"mynwbfile_nostimulus.h5")
+        os.chdir(pwd)
         #
         orderedepochs_soma = reader_io_nostimulus.drawout_orderedepochs('soma')#drawout ordered epoch
         epoch_id_soma = 0
@@ -262,8 +288,10 @@ class ReaderTest(unittest.TestCase):
 
     #@unittest.skip("reason for skipping")
     def test_10_pull_whole_datatable(self):
-        reader_io_stimulus = Reader('mynwbfile_stimulus.h5') # load file
-        reader_io_nostimulus = Reader('mynwbfile_nostimulus.h5') # load file
+        os.chdir(rootwd)
+        reader_io_nostimulus = Reader(pwd+os.sep+"mynwbfile_nostimulus.h5")
+        reader_io_stimulus = Reader(pwd+os.sep+"mynwbfile_stimulus.h5")
+        os.chdir(pwd)
         #
         stimulus_nwbts = reader_io_stimulus.pull_stimulus_nwbts()
         nostimulus_nwbts = reader_io_nostimulus.pull_stimulus_nwbts()

@@ -74,8 +74,8 @@ def TabModels():
         modelname = menu_list[1]  # update glocal modelname
         #print modelscale, modelname
         sys.path.append(pwd) # uncomment only when using executiveViz
-        chosenmodel = ExecutiveControl.choose_model( modelscale=modelscale,
-                                                     modelname=modelname )
+        chosenmodel = ExecutiveControl.choose_model( modelscale=str(modelscale),
+                                                     modelname=str(modelname) )
         modeltitle.text = chosenmodel.name
         modeldescr.text = chosenmodel.description
         modelregions.text = "Potential stimulation sites: "+str(chosenmodel.regions)

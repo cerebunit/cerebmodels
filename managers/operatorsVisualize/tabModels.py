@@ -114,7 +114,7 @@ def TabModels():
             with Profiler() as prof, ResourceProfiler() as rprof:
                 ec.launch_model( parameters=parameters, onmodel=chosenmodel )
             #myplot = visualize([prof, rprof])
-        #ec.save_response()
+        ec.save_response()
         #viz_source.data['diagnostic'][0] = prof
         #viz_source.data['diagnostic'][1] = rprof
         viz_source.data['diagnostic'] = [prof, rprof]

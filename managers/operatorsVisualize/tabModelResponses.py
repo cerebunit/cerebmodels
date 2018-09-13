@@ -16,6 +16,22 @@ rootwd = os.path.dirname(pwd)
 #sys.path.append(os.path.dirname(os.path.dirname(pwd)))
 
 from managers.managerFiling import FilingManager as fm
+from reader import Reader
+
+io = Reader("/home/main-dev/cerebmodels/responses/cells/PC2015Masoli/8446675934655480685_2018-09-13_17-00-44.h5")
+#print io
+#io = Reader()
+#print io
+
+#modelscale = None
+#modelname = None
+#filepath = None
+#all_regions = None
+#picked_region = None
+#total_epochid = None
+#picked_epochid = None
+#plotsource = ColumnDataSource(data = {"x_axis": range(10), "y_axis": range(10)})
+#plotsource = ColumnDataSource(data=data)
 
 def TabModelResponses():
     """available_modelscales = ['cells', 'microcircuit', 'network']
@@ -27,6 +43,10 @@ def TabModelResponses():
             title = "Choose a model name"
         elif menu_type=="responses":
             title = "Choose a response (file)"
+        elif menu_type=="regions":
+            title = "Pick a region"
+        elif menu_type=="epochs":
+            title = "Pick an epoch"
         return Select( title=title, value=menu_list[0][0], options=menu_list )
 
     def get_menu_modelscales():
@@ -63,9 +83,21 @@ def TabModelResponses():
                 response_value = ' '.join(
                                  [modelscale, modelname, response,
                                   responses_with_filepaths[modelscale][modelname][response]] )
-                menu.append( (response_value, response) ) # tuple (scale, string of models)
-                print response_value
+                menu.append( (response_value, response[20:]) ) # tuple (scale, string of models)
+                #print response_value
             menu.append( ('select_all', "Sellect All") )
+        return menu
+
+    def get_menu_regions(regionslist):
+        menu = [("None", "Below are available regions")]
+        for region in regionslist:
+            menu.append( ( region, region ) )
+        return menu
+
+    def get_menu_epochs(epochslist):
+        menu = [("None", "Below are epochs in response")]
+        for epochid in epochslist:
+            menu.append( ( epochid, "epoch"+str(epochid) ) )
         return menu
 
     def update_models_list( attr, old, new ):
@@ -74,22 +106,106 @@ def TabModelResponses():
         else:
             menu_list = new.split()
         models_select.options = get_menu_models(menu_list)
+        regions_select.disabled = True
+        epoch_select.disabled = True
 
     def update_responses_list( attr, old, new ):
         if new == "There_are_no_files":
             menu_list = [''.join(list(new))] # ["No Responses"]
         else:
             menu_list = new.split()
+            modelscale = menu_list[0] # update global modelscale
+            modelname = menu_list[1]  # update global modelname
         responses_select.options = get_menu_responses(menu_list)
+        regions_select.disabled = True
+        epoch_select.disabled = True
 
-    def update_plot( attr, old, new ):
+    def update_regions_epochs_list( attr, old, new ):
+        #print new
+        #print type(new)
+        #filepath = new.split()[3] # global variable 'filepath'
+        global load_file_params
+        load_file_params["filepath"] = new.split()[3] # global variable 'filepath'
+        #print filepath
+        #Reader()
+        #io = Reader("/home/main-dev/cerebmodels/responses/cells/PC2015Masoli/2102997118845107693_2018-09-07_19-32-12.h5")
+        #print io
+        #print pwd
+        print type(load_file_params["filepath"])
+        print load_file_params["filepath"]
+        print str(load_file_params["filepath"])
+        print type( str(load_file_params["filepath"]) )
+        #reader_io = Reader(filepath)
+        reader_io = Reader(pwd+os.sep+"responses"+os.sep+"cells"+os.sep+"PC2015Masoli"+os.sep+
+                           "8446675934655480685_2018-09-13_17-00-44.h5")
+        #reader_io = Reader( str(new.split()[3]) )
+        print reader_io.session_id
+        #all_regions = reader_io.chosenmodel.regions.keys() # global variable 'all_regions'
+        load_file_params["all_regions"] = reader_io.chosenmodel.regions.keys()
+        #print all_regions, type(all_regions)
+        reader_io.compute_total_epoch_id()
+        #total_epochid = reader_io.total_epoch_id # global variable 'total_epochid'
+        load_file_params["total_epochid"] = reader_io.total_epoch_id
+        menu_list = range(total_epochid)
+        #print menu_list
+        #reader_io.closefile()
+        regions_select.disabled = False
+        regions_select.options = get_menu_regions(load_file_params["all_regions"])
+        epochs_select.options = get_menu_epochs(menu_list)
+
+    def update_epoch_visibility( attr, old, new ):
         pass
+        #picked_region = new # global variable 'picked_region'
+        #global load_file_params
+        #load_file_params["picked_region"] = picked_region
+        #print new, picked_region
+        #print picked_region, type(picked_region)
+        #epochs_select.disabled = False
 
-    #def makeplot( response ):
-    #    if response=="test1.txt":
-    #        data
-    #    else:
-    #        data
+    def update_plot_data( attr, old, new ):
+        pass
+        #picked_epochid = int(new) # global variable 'picked_epochid'
+        #global load_file_param
+        #load_file_param["picked_epochid"] = picked_epochid
+        #print picked_epochid, type(picked_epochid)
+        #filepath = load_file_params["filepath"]
+        #print filepath
+        #reader_io = Reader(filepath)
+        #print reader_io
+        #picked_region = load_file_params["picked_region"]
+        #print picked_region
+        #orderedepochs = reader_io.drawout_orderedepochs(picked_region)
+        #print orderedepochs
+        #picked_epochid = load_file_params["picked_epochid"]
+        #print picked_epochid
+        #epochtuple = Reader.get_epoch(picked_epochid, orderedepochs)
+        #print epochtuple
+        #timeseries = reader_io.pull_epoch_nwbts(epochtuple)
+        #plotsource.data["x_axis"] = timeseries.timestamps.value
+        #plotsource.data["y_axis"] = timeseries.data.value
+        #print plotsource.data
+        #print plotsource.data["x_axis"], len(plotsource.data["x_axis"])
+        #print plotsource.data["y_axis"], len(plotsource.data["y_axis"])
+        #start_t, stop_t = Reader.get_epoch_start_stop_times(epochtuple)
+        #print start_t, stop_t
+        #print len(timeseries.timestamps.value), len(timeseries.data.value)
+        #print len(plotsource.data["x_axis"]), len(plotsource.data["y_axis"])
+        #    pass
+        #elif new == "select_all":
+        #    pass
+        #else:
+        #    filepath = new.split()[3]
+        #    reader_io = Reader(filepath)
+            #plotsource.data["x_values"] = 
+
+    def responseplot():
+        print plotsource.data
+        p = figure(plot_width=600, plot_height=600,
+                   title = "Some Title",
+                   x_axis_label = "X", y_axis_label = "Y")
+        p.line( plotsource.data["x_axis"],
+                plotsource.data["y_axis"] )
+        return p
 
     def myplot():
         # Create a blank figure with labels
@@ -156,7 +272,17 @@ def TabModelResponses():
         #print responses_with_filepaths
     #os.chdir(pwd) # for running it from ~/managers
     ### ++++++++++++++++++++END GENERATE DATA FOR THE OPTIONS++++++++++++++++++
-    #
+
+    ### +++++++++++++++++++++++GENERATE DATA FOR PLOTTING++++++++++++++++++++++
+    modelscale = None
+    modelname = None
+    global load_file_params
+    load_file_params = {"filepath": None, "all_regions": None, "picked_region": None,
+                        "total_epochid": None, "picked_epochid": None}
+    data = {"x_axis": range(10), "y_axis": range(10)}
+    plotsource = ColumnDataSource(data=data)
+    ### +++++++++++++++++++++END GENERATE DATA FOR PLOTTING++++++++++++++++++++
+
     menu = get_menu_modelscales()
     modelscales_select = get_select_menu( "modelscales", menu )
     #
@@ -166,15 +292,29 @@ def TabModelResponses():
     dummy_response_menu = [('None', "First select a model scale")]
     responses_select = get_select_menu( "responses", dummy_response_menu )
     #
+    dummy_region_menu = [('None', "Pick a region")]
+    regions_select = get_select_menu( "regions", dummy_region_menu )
+    #
+    dummy_epoch_menu = [('None', "Select an epoch")]
+    epochs_select = get_select_menu( "epochs", dummy_epoch_menu )
+    #
+    # Disable by DEFAULT
+    regions_select.disabled = True
+    epochs_select.disabled = True
+    #
     # INTERACTION
     modelscales_select.on_change("value", update_models_list)
     models_select.on_change("value", update_responses_list)
-    #responses_select.on_change("value", update_plot)
+    responses_select.on_change("value", update_regions_epochs_list)
+    regions_select.on_change("value", update_epoch_visibility)
+    epochs_select.on_change("value", update_plot_data)
 
     # Put controls in a single element
-    controls = WidgetBox(modelscales_select, models_select, responses_select)
+    controls = WidgetBox( modelscales_select, models_select, responses_select, 
+                          regions_select, epochs_select )
 
     p = myplot()
+    #p = responseplot()
     # Create a row layout
     layout = row(controls, p)
 

@@ -1,239 +1,130 @@
 # ~/managers/operatorsVisualize/tabModelResponses.py
 from bokeh.plotting import figure
-from bokeh.models import (CategoricalColorMapper, HoverTool, 
-			  ColumnDataSource, Panel, 
-			  FuncTickFormatter, SingleIntervalTicker, LinearAxis)
-from bokeh.models.widgets import (CheckboxGroup, Slider, RangeSlider,
-                                  Dropdown, Select,
-				  Tabs, CheckboxButtonGroup, 
-				  TableColumn, DataTable, Select)
-from bokeh.layouts import column, row, WidgetBox
-from bokeh.palettes import Category20_16
+from bokeh.models import (ColumnDataSource, Panel)
+from bokeh.models.widgets import (Dropdown, Select, Tabs)
+from bokeh.layouts import row, WidgetBox
 
 import os, sys
-pwd = os.getcwd()
-rootwd = os.path.dirname(pwd)
-#sys.path.append(os.path.dirname(os.path.dirname(pwd)))
+
+sys.path.append(os.getcwd()) # when run from ~/cerebmodels
 
 from managers.managerFiling import FilingManager as fm
 from reader import Reader
 
-io = Reader("/home/main-dev/cerebmodels/responses/cells/PC2015Masoli/8446675934655480685_2018-09-13_17-00-44.h5")
-#print io
-#io = Reader()
-#print io
-
-#modelscale = None
-#modelname = None
-#filepath = None
-#all_regions = None
-#picked_region = None
-#total_epochid = None
-#picked_epochid = None
-#plotsource = ColumnDataSource(data = {"x_axis": range(10), "y_axis": range(10)})
-#plotsource = ColumnDataSource(data=data)
-
 def TabModelResponses():
-    """available_modelscales = ['cells', 'microcircuit', 'network']
-    """
-    def get_select_menu( menu_type, menu_list ):
-        if menu_type=="modelscales":
+    ## ==================== Initiator =======================
+    def initiate_select_menu(menutype, menulist):
+        """initiates Select widgets
+        """
+        if menutype=="modelscales":
             title = "Modeling Scale Options"
-        elif menu_type=="models":
-            title = "Choose a model name"
-        elif menu_type=="responses":
+        elif menutype=="modelnames":
+            title = "Choose a model"
+        elif menutype=="modelresponses":
             title = "Choose a response (file)"
-        elif menu_type=="regions":
+        elif menutype=="modelregions":
             title = "Pick a region"
-        elif menu_type=="epochs":
+        elif menutype=="responseepochs":
             title = "Pick an epoch"
-        return Select( title=title, value=menu_list[0][0], options=menu_list )
-
+        return Select( title=title, value=menulist[0][0], options=menulist )
+    ## ====================== END =========================
+    #
+    ## ==================== Getters =======================
     def get_menu_modelscales():
-        #NOTE: available_modelscale & scale_and_models are global variables
         menu = [("None", "None")]
         for modelscale in available_modelscales:
             # tag the modelscale as first element in the value = modellist
             modellist = ' '.join( [modelscale] + scale_and_models[modelscale] )
-            menu.append( (modellist, modelscale) ) # tuple (string of models, scale)
+            menu.append( ( modellist, modelscale ) ) # tuple(list of models, scale)
         return menu
 
+    def extract_filenames(modelscale, modelname):
+        files = []
+        dir_names = ["responses", modelscale, modelname]
+        responsepath = fm.responsepath_check_create(list_dir_names=dir_names)
+        filesdictionary = fm.show_filenames_with_path(dir_names=dir_names)
+        if filesdictionary=="There are no files in the current path.":
+            files.append("There_are_no_files")
+        else:
+            for filename, filepath in filesdictionary.iteritems():
+                files.append(filename)
+        return files
+
     def get_menu_models(modellist):
-        #NOTE: models_with_filenames is a global variable
         menu = [("None", "Below are available models")]
         if modellist[1]=="No_Models": #modellist[0]=modelname
-            menu[0] = ( 'func call', modellist[1].replace("_"," ") )#tuple (scale, string of models)
+            menu[0] = ( 'func call', modellist[1].replace("_"," ") ) #tuple(value, str)
         else:
             for modelname in modellist[1:]:
-                # tag modelscale & modelname as 1st-two elements in the value = responselist
+                extract_filenames( modellist[0], modelname )
+                # tag modelscale & modelname as 1st-two elements in value=responselist
                 responselist = ' '.join( [modellist[0], modelname] +
-                                         responses_with_filenames[modellist[0]][modelname] )
-                menu.append( (responselist, modelname) ) # tuple (string of models, scale)
+                                          extract_filenames(modellist[0],modelname) )
+                menu.append( (responselist, modelname) )
         return menu
 
     def get_menu_responses(responselist):
         menu = [("None", "Below are available responses")]
         if responselist[2]=="There_are_no_files":
-            menu[0] = ('func call', responselist[2].replace("_"," "))#tuple (scale, string of models)
+            menu[0] = ('func call', responselist[2].replace("_"," "))#tuple(value, str)
         else:
-            modelscale = responselist[0]
-            modelname = responselist[1]
+            dir_names = ["responses", responselist[0], responselist[1]]
             for response in responselist[2:]:
-                # tag modelscale, modelname, filename as 1st-three elements in the value
-                response_value = ' '.join(
-                                 [modelscale, modelname, response,
-                                  responses_with_filepaths[modelscale][modelname][response]] )
-                menu.append( (response_value, response[20:]) ) # tuple (scale, string of models)
-                #print response_value
-            menu.append( ('select_all', "Sellect All") )
+                filesdictionary = fm.show_filenames_with_path(dir_names=dir_names)
+                # tag modelscale, modelname, filename as 1st-three elements in value=responsepath
+                responsepath = ' '.join( [responselist[0], responselist[1],
+                                          response, filesdictionary[response]] )
+                menu.append( (responsepath, response[20:]) )
         return menu
 
-    def get_menu_regions(regionslist):
-        menu = [("None", "Below are available regions")]
-        for region in regionslist:
-            menu.append( ( region, region ) )
-        return menu
-
-    def get_menu_epochs(epochslist):
-        menu = [("None", "Below are epochs in response")]
-        for epochid in epochslist:
-            menu.append( ( epochid, "epoch"+str(epochid) ) )
-        return menu
-
-    def update_models_list( attr, old, new ):
-        if new == "No_Models":
-            menu_list = [''.join(list(new))] # ["No Models"]
+    def get_menu_regions():
+        pass
+    def get_menu_epochs():
+        pass
+    ## ====================== END =========================
+    #
+    ## ==================== Updaters ======================
+    def update_modelslist( attr, old, new ):
+        if new=="No_Models":
+            model_list = [''.join(list(new))] # ["No Models"]
         else:
-            menu_list = new.split()
-        models_select.options = get_menu_models(menu_list)
+            model_list = new.split()
+        #print model_list
+        models_select.options = get_menu_models(model_list)
+        regions_select.disabled = True
+        epoch_select.diabled = True
+
+    def update_responseslist( attr, old, new ):
+        if new=="There_are_no_files":
+            responselist = [''.join(list(new))] # ["There are no files"]
+        else:
+            responselist = new.split()
+        responses_select.options = get_menu_responses(responselist)
         regions_select.disabled = True
         epoch_select.disabled = True
 
-    def update_responses_list( attr, old, new ):
-        if new == "There_are_no_files":
-            menu_list = [''.join(list(new))] # ["No Responses"]
-        else:
-            menu_list = new.split()
-            modelscale = menu_list[0] # update global modelscale
-            modelname = menu_list[1]  # update global modelname
-        responses_select.options = get_menu_responses(menu_list)
-        regions_select.disabled = True
-        epoch_select.disabled = True
-
-    def update_regions_epochs_list( attr, old, new ):
-        #print new
-        #print type(new)
-        #filepath = new.split()[3] # global variable 'filepath'
-        global load_file_params
-        load_file_params["filepath"] = new.split()[3] # global variable 'filepath'
-        #print filepath
-        #Reader()
-        #io = Reader("/home/main-dev/cerebmodels/responses/cells/PC2015Masoli/2102997118845107693_2018-09-07_19-32-12.h5")
-        #print io
-        #print pwd
-        print type(load_file_params["filepath"])
-        print load_file_params["filepath"]
-        print str(load_file_params["filepath"])
-        print type( str(load_file_params["filepath"]) )
-        #reader_io = Reader(filepath)
-        reader_io = Reader(pwd+os.sep+"responses"+os.sep+"cells"+os.sep+"PC2015Masoli"+os.sep+
-                           "8446675934655480685_2018-09-13_17-00-44.h5")
-        #reader_io = Reader( str(new.split()[3]) )
-        print reader_io.session_id
-        #all_regions = reader_io.chosenmodel.regions.keys() # global variable 'all_regions'
-        load_file_params["all_regions"] = reader_io.chosenmodel.regions.keys()
-        #print all_regions, type(all_regions)
-        reader_io.compute_total_epoch_id()
-        #total_epochid = reader_io.total_epoch_id # global variable 'total_epochid'
-        load_file_params["total_epochid"] = reader_io.total_epoch_id
-        menu_list = range(total_epochid)
-        #print menu_list
-        #reader_io.closefile()
-        regions_select.disabled = False
-        regions_select.options = get_menu_regions(load_file_params["all_regions"])
-        epochs_select.options = get_menu_epochs(menu_list)
-
-    def update_epoch_visibility( attr, old, new ):
+    def update_regionslist_epochslist():
         pass
-        #picked_region = new # global variable 'picked_region'
-        #global load_file_params
-        #load_file_params["picked_region"] = picked_region
-        #print new, picked_region
-        #print picked_region, type(picked_region)
-        #epochs_select.disabled = False
-
-    def update_plot_data( attr, old, new ):
+    def update_epoch_visibility():
         pass
-        #picked_epochid = int(new) # global variable 'picked_epochid'
-        #global load_file_param
-        #load_file_param["picked_epochid"] = picked_epochid
-        #print picked_epochid, type(picked_epochid)
-        #filepath = load_file_params["filepath"]
-        #print filepath
-        #reader_io = Reader(filepath)
-        #print reader_io
-        #picked_region = load_file_params["picked_region"]
-        #print picked_region
-        #orderedepochs = reader_io.drawout_orderedepochs(picked_region)
-        #print orderedepochs
-        #picked_epochid = load_file_params["picked_epochid"]
-        #print picked_epochid
-        #epochtuple = Reader.get_epoch(picked_epochid, orderedepochs)
-        #print epochtuple
-        #timeseries = reader_io.pull_epoch_nwbts(epochtuple)
-        #plotsource.data["x_axis"] = timeseries.timestamps.value
-        #plotsource.data["y_axis"] = timeseries.data.value
-        #print plotsource.data
-        #print plotsource.data["x_axis"], len(plotsource.data["x_axis"])
-        #print plotsource.data["y_axis"], len(plotsource.data["y_axis"])
-        #start_t, stop_t = Reader.get_epoch_start_stop_times(epochtuple)
-        #print start_t, stop_t
-        #print len(timeseries.timestamps.value), len(timeseries.data.value)
-        #print len(plotsource.data["x_axis"]), len(plotsource.data["y_axis"])
-        #    pass
-        #elif new == "select_all":
-        #    pass
-        #else:
-        #    filepath = new.split()[3]
-        #    reader_io = Reader(filepath)
-            #plotsource.data["x_values"] = 
-
+    def update_plotsource():
+        pass
+    ## ====================== END =========================
+    #
+    ## ===================== Plot =========================
     def responseplot():
-        print plotsource.data
-        p = figure(plot_width=600, plot_height=600,
-                   title = "Some Title",
-                   x_axis_label = "X", y_axis_label = "Y")
-        p.line( plotsource.data["x_axis"],
-                plotsource.data["y_axis"] )
-        return p
-
+        pass
     def myplot():
-        # Create a blank figure with labels
-        p = figure(plot_width = 600, plot_height = 600, 
+        p = figure(plot_width = 600, plot_height = 600,
                    title = 'Example Glyphs',
                    x_axis_label = 'X', y_axis_label = 'Y')
-
-        # Example data
-        squares_x = [1, 3, 4, 5, 8]
-        squares_y = [8, 7, 3, 1, 10]
-        circles_x = [9, 12, 4, 3, 15]
-        circles_y = [8, 4, 11, 6, 10]
-
-        # Add squares glyph
-        p.square(squares_x, squares_y, size = 12, color = 'navy', alpha = 0.6)
-        # Add circle glyph
-        p.circle(circles_x, circles_y, size = 12, color = 'red')
-
+        #squares_x = [1, 3, 4, 5, 8]
+        #squares_y = [8, 7, 3, 1, 10]
+        #p.square(squares_x, squares_y, size=12)
         return p
-
-    ### +++++++++++++++++++GENERATE DATA FOR THE OPTIONS MENU++++++++++++++++++
-    # available_modelscales -- list
-    # scale_and_models -- dictionary with list as key value
-    # models_with_filenames -- dictionary with list as key value
-    # responses_with_filepaths -- dictionary with string as key value
-    #os.chdir(rootwd) # for running it from ~/managers
-    # Generate Model Info
-    #os.chdir("..") # line required for calling ~/managers/bokehtest.py
+    ## ====================== END =========================
+    #
+    ## ================== Generate Data ===================
     available_modelscales = fm.available_modelscales()
     scale_and_models = {}
     for modelscale in available_modelscales: # get list of models in each scale
@@ -242,83 +133,50 @@ def TabModelResponses():
         except:
             modelslist = ["No_Models"]
         scale_and_models.update( {modelscale: modelslist} )
-    #print scale_and_models
-    # Gather all the response files for respective models
-    responses_with_filenames = {}
-    responses_with_filepaths = {}
-    files = []
-    for modelscale, modellist in scale_and_models.iteritems():
-        if modellist[0]=="No_Models":
-            alevel1_key_value = {"No_Models": "nil"}
-            blevel1_key_value = {"No_Models": "nil"}
-        else:
-            alevel1_key_value = {}
-            blevel1_key_value = {}
-            for model in modellist:
-                dir_names = ["responses", modelscale, model]
-                responsepath = fm.responsepath_check_create(list_dir_names=dir_names)
-                filesdictionary = fm.show_filenames_with_path(dir_names=dir_names)
-                if filesdictionary=="There are no files in the current path.":
-                    alevel2_key_value = {model: ["There_are_no_files"]}
-                else:
-                    for filename, filepath in filesdictionary.iteritems():
-                        files.append(filename)
-                    alevel2_key_value = {model: files}
-                alevel1_key_value.update( alevel2_key_value )
-                blevel1_key_value.update( {model: filesdictionary} )
-        responses_with_filenames.update( {modelscale: alevel1_key_value} )
-        responses_with_filepaths.update( {modelscale: blevel1_key_value} )
-        #print responses_with_filenames
-        #print responses_with_filepaths
-    #os.chdir(pwd) # for running it from ~/managers
-    ### ++++++++++++++++++++END GENERATE DATA FOR THE OPTIONS++++++++++++++++++
-
-    ### +++++++++++++++++++++++GENERATE DATA FOR PLOTTING++++++++++++++++++++++
-    modelscale = None
-    modelname = None
+    ## ====================== END =========================
+    #
+    ## ========= Generate Global Data For Plotting ========
     global load_file_params
-    load_file_params = {"filepath": None, "all_regions": None, "picked_region": None,
+    load_file_params = {"all_files": None, "all_files_with_paths": None,
+                        "filepath": None, "all_regions": None, "picked_regions": None,
                         "total_epochid": None, "picked_epochid": None}
-    data = {"x_axis": range(10), "y_axis": range(10)}
-    plotsource = ColumnDataSource(data=data)
-    ### +++++++++++++++++++++END GENERATE DATA FOR PLOTTING++++++++++++++++++++
-
-    menu = get_menu_modelscales()
-    modelscales_select = get_select_menu( "modelscales", menu )
+    plotsource = ColumnDataSource(data = {"x_axis": range(10), "y_axis": range(10)})
+    ## ====================== END =========================
+    #
+    ## ================ Initiate Widgets ==================
+    modelscales_select = initiate_select_menu( "modelscales", get_menu_modelscales() )
     #
     dummy_model_menu = [('None', "First select a model scale")]
-    models_select = get_select_menu( "models", dummy_model_menu )
+    models_select = initiate_select_menu( "modelnames", dummy_model_menu )
     #
     dummy_response_menu = [('None', "First select a model scale")]
-    responses_select = get_select_menu( "responses", dummy_response_menu )
+    responses_select = initiate_select_menu( "modelresponses", dummy_response_menu )
     #
     dummy_region_menu = [('None', "Pick a region")]
-    regions_select = get_select_menu( "regions", dummy_region_menu )
+    regions_select = initiate_select_menu( "modelregions", dummy_region_menu )
     #
     dummy_epoch_menu = [('None', "Select an epoch")]
-    epochs_select = get_select_menu( "epochs", dummy_epoch_menu )
+    epochs_select = initiate_select_menu( "responseepochs", dummy_epoch_menu )
     #
-    # Disable by DEFAULT
+    # DISABLE by DEFAULT
     regions_select.disabled = True
     epochs_select.disabled = True
+    ## ====================== END =========================
     #
-    # INTERACTION
-    modelscales_select.on_change("value", update_models_list)
-    models_select.on_change("value", update_responses_list)
-    responses_select.on_change("value", update_regions_epochs_list)
-    regions_select.on_change("value", update_epoch_visibility)
-    epochs_select.on_change("value", update_plot_data)
-
-    # Put controls in a single element
-    controls = WidgetBox( modelscales_select, models_select, responses_select, 
+    ## ================ Widget Interaction ================
+    modelscales_select.on_change("value", update_modelslist)
+    models_select.on_change("value", update_responseslist)
+    #responses_select.on_change("value", update_regionslist_epochslist)
+    #regions_select.on_change("value", update_epoch_visibility)
+    #epochs_select.on_change("value", update_plotsource)
+    ## ====================== END =========================
+    #
+    ## Setup Controls
+    controls = WidgetBox( modelscales_select, models_select, responses_select,
                           regions_select, epochs_select )
-
+    ## Generate Plot
     p = myplot()
-    #p = responseplot()
-    # Create a row layout
-    layout = row(controls, p)
+    ## Make a tab and return it
+    return Panel( child = row(controls, p), title = "Model Responses" )
 
-    # Make a tab with the layout
-    tab = Panel(child=layout, title = 'Model Responses')
 
-    return tab

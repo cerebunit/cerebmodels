@@ -504,6 +504,9 @@ class Fabricator(object):
     def write_nwbfile(cls, nwbfile=None, filepath=None):
         sesstime = str(nwbfile.session_start_time).replace(" ", "_")[0:-6]
         filename = nwbfile.session_id + "_" + sesstime.replace(":", "-") + ".h5"
-        io = NWBHDF5IO( filepath+os.sep+filename, mode='w')
+        if filepath is None:
+            io = NWBHDF5IO( filename, mode='w' )
+        else:
+            io = NWBHDF5IO( filepath+os.sep+filename, mode='w')
         io.write(nwbfile)
         io.close()

@@ -510,3 +510,4 @@ class Fabricator(object):
             io = NWBHDF5IO( filepath+os.sep+filename, mode='w')
         io.write(nwbfile)
         io.close()
+        return filename

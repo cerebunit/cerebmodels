@@ -671,6 +671,10 @@ class FabricatorTest(unittest.TestCase):
         io = NWBHDF5IO(filename)
         nwbfile = io.read()
         # what does the output look like?
+        #print nwbfile.source
+        #print nwbfile.session_description
+        #print nwbfile.session_start_time
+        #print nwbfile.session_id
         #print updated_mynwbfile.epochs.epochs.data # all the epochs
         #print nwbfile.epochs.epochs.data
         #print len(updated_mynwbfile.epochs.epochs.data) # total number of epochs

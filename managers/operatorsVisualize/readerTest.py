@@ -182,6 +182,8 @@ class ReaderTest(unittest.TestCase):
         os.chdir(pwd)
         epoch_indices_soma = reader_io_stimulus.pull_epochindices_chosenregion('soma')
         epoch_indices_axon = reader_io_stimulus.pull_epochindices_chosenregion('axon')
+        #print epoch_indices_soma
+        #print epoch_indices_axon
         self.assertNotEqual( epoch_indices_soma, epoch_indices_axon )
         reader_io_stimulus.closefile()
 
@@ -191,10 +193,16 @@ class ReaderTest(unittest.TestCase):
         reader_io_stimulus = Reader(pwd+os.sep+"mynwbfile_stimulus.h5")
         os.chdir(pwd)
         epoch_indices_soma = reader_io_stimulus.pull_epochindices_chosenregion('soma')
-        epoch_indices_axon = reader_io_stimulus.pull_epochindices_chosenregion('soma')
+        epoch_indices_axon = reader_io_stimulus.pull_epochindices_chosenregion('axon')
         epoch_id_soma = reader_io_stimulus.pull_epochid(epoch_indices_soma[0])
         epoch_id_axon = reader_io_stimulus.pull_epochid(epoch_indices_axon[0])
-        self.assertEqual( epoch_id_soma, epoch_id_axon ) # all first epochs have same ids=0
+        #print epoch_indices_soma, epoch_id_soma
+        #print epoch_indices_soma, reader_io_stimulus.pull_epochid(epoch_indices_soma[1])
+        #print epoch_indices_axon, epoch_id_axon
+        #print reader_io_stimulus.nwbfile.epochs.epochs.data
+        #print reader_io_stimulus.nwbfile.epochs.epochs.data[0]
+        #print reader_io_stimulus.nwbfile.epochs.epochs.data[1][2]
+        self.assertNotEqual( epoch_id_soma, epoch_id_axon )
         reader_io_stimulus.closefile()
 
     #@unittest.skip("reason for skipping")
@@ -222,6 +230,7 @@ class ReaderTest(unittest.TestCase):
             epoch_id = orderedepochs_soma[i][1]
             epochs.append( Reader.get_epoch(epoch_id, orderedepochs_soma) ) # get epoch
         #print epoch_ids_soma
+        #print epochs
         #print epochs[0]
         #print epochs[1]
         self.assertNotEqual( epochs[0], epochs[1] )
@@ -246,6 +255,24 @@ class ReaderTest(unittest.TestCase):
         reader_io_nostimulus.closefile()
 
     #@unittest.skip("reason for skipping")
+    def test_8_get_epoch_start_stop_times(self):
+        os.chdir(rootwd)
+        reader_io_stimulus = Reader(pwd+os.sep+"mynwbfile_stimulus.h5")
+        os.chdir(pwd)
+        orderedepochs_soma = reader_io_stimulus.drawout_orderedepochs('soma') #drawout orderedepoch
+        epochtuple_soma0 = Reader.get_epoch(0, orderedepochs_soma) # get epoch
+        epochtuple_soma1 = Reader.get_epoch(1, orderedepochs_soma)
+        #
+        #print epochtuple_soma
+        strt_soma0, stop_soma0 = Reader.get_epoch_start_stop_times(epochtuple_soma0) #epoch t0, tend
+        strt_soma1, stop_soma1 = Reader.get_epoch_start_stop_times(epochtuple_soma1)
+        print orderedepochs_soma
+        print strt_soma0, stop_soma0
+        print strt_soma1, stop_soma1
+        self.assertNotEqual( [ strt_soma0, stop_soma0 ], [ strt_soma1, stop_soma1 ] )
+        reader_io_stimulus.closefile()
+
+    @unittest.skip("reason for skipping")
     def test_8_get_epochdescription(self):
         os.chdir(rootwd)
         reader_io_stimulus = Reader(pwd+os.sep+"mynwbfile_stimulus.h5")
@@ -261,7 +288,7 @@ class ReaderTest(unittest.TestCase):
         self.assertNotEqual( descrip0, descrip1 )
         reader_io_stimulus.closefile()
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_9_get_epoch_data_timestamps(self):
         # also tests get_timeseries_stage1, get_timeseries_object
         os.chdir(rootwd)
@@ -286,7 +313,7 @@ class ReaderTest(unittest.TestCase):
         self.assertTrue( a and b is True )
         reader_io_nostimulus.closefile()
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_10_pull_whole_datatable(self):
         os.chdir(rootwd)
         reader_io_nostimulus = Reader(pwd+os.sep+"mynwbfile_nostimulus.h5")

@@ -6,8 +6,19 @@ h.load_file("stdrun.hoc")
 class Dummy(object):
     def __init__(self):
         self.soma = h.Section(name='soma')
+        self.soma.nseg = 1 # compartmentalized parameter
+        self.soma.diam = 30.0 # um
+        self.soma.L = 30.0    # um same as diam => sphere
+        self.soma.cm = 1.0
+        self.soma.Ra = 120
+        self.soma.insert('hh')
+        #
         self.axon = h.Section(name='axon')
-        #self.axon.connect(self.soma,1,0)
+        self.axon.nseg = 20 # compartmentalized parameter
+        self.axon.diam = 1.0  # um
+        self.soma.L = 1000.0 # um long
+        self.axon.insert('hh')
+        self.axon.connect(self.soma,1,0)
         
         ### ====== STANDARDIZED FOR cerebmodels =======
         ### ===== mandatory for all NEURON models =====

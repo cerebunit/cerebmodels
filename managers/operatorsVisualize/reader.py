@@ -10,6 +10,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 from utilities import UsefulUtils as uu
 
 from pynwb import NWBHDF5IO
+import numpy
 
 class Reader(object):
     """Operators working under VisualizeManager
@@ -29,7 +30,7 @@ class Reader(object):
         self.io = NWBHDF5IO(filepath)
         self.nwbfile = self.io.read()
         self.extract_modelname_modelscale()
-        self.load_model()
+        #self.load_model()
 
     def closefile(self):
         self.io.close()
@@ -96,6 +97,10 @@ class Reader(object):
            - most methods in Reader() extracts nwb objects AS-IS
            - this method is an exception where returned value includes index of
              the epoch of the desiredregion; index in all epochs of the model.
+           - for each element notice that the first two numbers are integers such that:
+             * first number is the index of the epoch in question of desired region
+             * index => index in list of epochs from all the regions
+             * second number is the epoch_id, thus ordering is based on this.
         """
         # https://stackoverflow.com/questions/2177590/how-can-i-reorder-a-list
         indxlist = self.pull_epochindices_chosenregion(chosenregion)
@@ -110,6 +115,38 @@ class Reader(object):
                           [indx, i, self.nwbfile.epochs.epochs.data[indx]] )
             i += 1
         return orderedepochs
+
+    @staticmethod
+    def get_tuple_for_epoch(epoch_id, orderedepochs):
+        """method returns array which is of the form
+        (tstartindex, counts, TimeSeriesObject)
+
+        orderedepoch[0]          first, ie, epoch
+        orderedepoch[0][2]       returns root tuple
+        orderedepoch[0][2][3]    return array
+        orderedepoch[0][2][3][0] returns final/only tuple in the array
+        """
+        return orderedepochs[epoch_id][2][3][0]
+
+    @classmethod
+    def get_timestamps_for_epoch(cls, epoch_id, orderedepochs):
+        """method returns timestamp values for desired epoch_id
+        This is done by stripping from the whole timestamps.
+        """
+        epochtuple = cls.get_tuple_for_epoch(epoch_id, orderedepochs)
+        return [ epochtuple[2].timestamps.value[i]
+                 for i in numpy.arange( epochtuple[0], # index for tstart
+                                        epochtuple[1] ) ] # total counts
+
+    @classmethod
+    def get_datavalues_for_epoch(cls, epoch_id, orderedepochs):
+        """method returns data values for desired epoch_id
+        This is done by stripping from the whole data.
+        """
+        epochtuple = cls.get_tuple_for_epoch(epoch_id, orderedepochs)
+        return [ epochtuple[2].data.value[i]
+                 for i in numpy.arange( epochtuple[0], # index for tstart
+                                        epochtuple[1] ) ] # total counts
 
     @staticmethod
     def get_epoch(epoch_id, orderedepochs):

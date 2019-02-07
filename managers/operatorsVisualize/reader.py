@@ -186,37 +186,13 @@ class Reader(object):
                 return an_epochtuple # epochtuple
 
     @staticmethod
-    def get_epoch_start_stop_times(epochtuple):
-        # ('start_time', 'stop_time', 'tags', 'timeseries', 'description')
-        # strt, stop = extract_epoch_start_stop_times(epochtuple)
-        return [epochtuple[0], epochtuple[1]]
+    def get_description_epoch(epoch_id, orderedepochs):
+        """method returns array which is of the form
+        (tstartindex, counts, TimeSeriesObject)
 
-    @staticmethod
-    def get_epoch_description(epochtuple):
-        # ('start_time', 'stop_time', 'tags', 'timeseries', 'description')
-        return epochtuple[4]
-
-    @staticmethod
-    def get_timeseries_stage1(epochtuple):
-        # ('start_time', 'stop_time', 'tags', 'timeseries', 'description')
-        return epochtuple[3]
-
-    @staticmethod
-    def get_timeseries_object(ts_stage1):
-        # [(0, 2000, <pynwb.base.TimeSeries object at 0x7fba16125c10>)]
-        return ts_stage1[0][2]
-
-    @classmethod
-    def pull_epoch_nwbts(cls, epochtuple):
-        # available fields: data, timestamps, conversion, description,
-        # comments, source, resolution, unit, timestamps_unit, num_samples
-        return cls.get_timeseries_object(
-                            cls.get_timeseries_stage1(epochtuple) )
-
-    def pull_stimulus_nwbts(self):
-        # available fields: data, timestamps, description,
-        # comments, source, resolution, unit, timestamps_unit, num_samples
-        try:
-            return self.nwbfile.get_stimulus(self.modelname+"_stimulus")
-        except:
-            return "Model is not stimulated"
+        orderedepoch[0]          first, ie, epoch
+        orderedepoch[0][2]       returns root tuple
+        orderedepoch[0][2][3]    return array
+        orderedepoch[0][2][3][0] returns final/only tuple in the array
+        """
+        return orderedepochs[epoch_id][2][4]

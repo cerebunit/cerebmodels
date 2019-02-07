@@ -148,6 +148,21 @@ class Reader(object):
                  for i in numpy.arange( epochtuple[0], # index for tstart
                                         epochtuple[1] ) ] # total counts
 
+    def get_stimulus(self):
+        """method returns stimulus in the first one out the three below
+        
+        print reader_io_stim.nwbfile.stimulus["DummyTest_stimulus"]
+        print reader_io_stim.nwbfile.stimulus["DummyTest_stimulus"].data
+        print reader_io_stim.nwbfile.stimulus["DummyTest_stimulus"].data.value
+
+        Usecase:
+        x = reader_io_stim.get_stimulus()
+        x.data
+        x.data.value
+        """
+        nospacename = self.chosenmodel.name.replace(" ", "")
+        return self.nwbfile.stimulus[nospacename+"_stimulus"]
+
     @staticmethod
     def get_epoch(epoch_id, orderedepochs):
         """method returns all the epochs for a desired model-region as ordered list.

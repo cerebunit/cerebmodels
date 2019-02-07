@@ -299,6 +299,16 @@ class FabricatorTest(unittest.TestCase):
         nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
                                     tsmd = ts_metadata)
         stripped_nwbts = fab.strip_out_stimulus_from_nwbseries(nwbts)
+        #print stripped_nwbts
+        #print help(stripped_nwbts['soma'])
+        #print stripped_nwbts['soma'].data
+        #print stripped_nwbts['soma'].timestamps
+        #print stripped_nwbts['soma'].starting_time
+        #print stripped_nwbts['soma'].description
+        #print stripped_nwbts['soma'].unit
+        #print stripped_nwbts['soma'].timestamps_unit
+        #print ts_metadata["stimulus"]["data"]
+        #print nwbts["stimulus"].data
         #print type(stripped_nwbts["soma"])
         #print type(stripped_nwbts["axon"])
         #print nwbts['soma'].name # what does this return

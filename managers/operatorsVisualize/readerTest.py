@@ -167,6 +167,9 @@ class ReaderTest(unittest.TestCase):
         #print len([ orderedepochs_soma[0][2][3][0][2].timestamps.value[i]
         #          for i in numpy.arange(orderedepochs_soma[0][2][3][0][0],
         #                                orderedepochs_soma[0][2][3][0][1]) ])
+        #print orderedepochs_soma[0][1]
+        #print orderedepochs_soma[0][0]
+        #print reader_io_stim.nwbfile.epochs.epochs.data[orderedepochs_soma[0][0]]
         #to compare
         compare1 = [ orderedepochs_soma[0][1], orderedepochs_soma[1][1] ]
         self.assertEqual( compare1, [0, 1] )
@@ -190,6 +193,7 @@ class ReaderTest(unittest.TestCase):
         epoch_id = 0
         epochtuple = Reader.get_tuple_for_epoch(epoch_id, orderedepochs_soma)
         #print epochtuple
+        #print epochtuple[2].timestamps_unit #description/unit/time_unit/timestamps_unit
         self.assertNotEqual( epochtuple[0], # tstart index
                              epochtuple[1] )# counts
         #self.assertNotEqual( epochs[0], epochs[1] )
@@ -245,15 +249,38 @@ class ReaderTest(unittest.TestCase):
         #print reader_io_stim.nwbfile.stimulus["DummyTest_stimulus"].data.value
         reader_io_stim.chosenmodel = self.chosenmodel
         stimulus = reader_io_stim.get_stimulus()
+        #print stimulus
         #print stimulus.data
-        #print numpy.array(self.stimulus_for_comparison)
+        #print stimulus.timestamps
         a = all(boolean == True
                 for boolean in stimulus.data.value == self.stimulus_for_comparison)
         self.assertTrue( a is True )
         reader_io_stim.closefile()
 
     #@unittest.skip("reason for skipping")
-    def test_x_get_description_epoch(self):
+    def test_x_get_stimulus(self):
+        os.chdir(rootwd)
+        for key in self.file_nostim:
+            reader_io_nostim = Reader(self.file_nostim[key])
+        for key in self.file_stim:
+            reader_io_stim = Reader(self.file_stim[key])
+        os.chdir(pwd)
+        reader_io_stim.chosenmodel = self.chosenmodel
+        stimulus = reader_io_stim.get_stimulus()
+        timestamps = reader_io_nostim.get_timestamps()
+        #print stimulus
+        #print stimulus.data
+        #print stimulus.timestamps.value
+        #print timestamps.value
+        #print help(timestamps)
+        a = all(boolean == True
+                for boolean in stimulus.timestamps.value == timestamps.value)
+        self.assertTrue( a is True )
+        reader_io_stim.closefile()
+
+    #@unittest.skip("reason for skipping")
+    def test_xi_get_description_epoch(self):
+        #print "test XI"
         os.chdir(rootwd)
         for key in self.file_stim:
             reader_io_stim = Reader(self.file_stim[key])

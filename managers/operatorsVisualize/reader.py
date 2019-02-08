@@ -15,16 +15,60 @@ import numpy
 class Reader(object):
     """Operators working under VisualizeManager
 
-    Available methods:
-    pick_an_epoch
-    extract_tsobject_of_pickedepoch
+    Useful methods:
+    load_model # if the model is not already loaded (see use case, below)
+    drawout_orderedepochs
+    get_tuple_for_epoch
+    get_timestamps_for_epoch
+    get_datavalues_for_epoch
+    get_stimulus
+    get_timestamps
 
-    Misc. but useful methods:
-    pull_epoch_id
-    get_epoch_no
+    Use Cases:
+    loading the file
+        loadedfile = Reader("path/to/HDF5file")
+    not necessary but recommended is
+        loadedfile.chosenmodel = instantiated model
+     or loadedfile.load_model()
+    visualize high-level metadata
+        loadedfile.session_info()
+    get 'all' epochs for a particular 'cell region'
+        x = loadedfile.drawout_orderedepochs('soma')
+    get timestamp values for 'an epoch'
+        loadedfile.get_timestamps_for_epoch(epoch_id, x)
+    get data values for 'an epoch'
+        loadedfile.get_datavalues_for_epoch(epoch_id, x)
+    get stimulus values
+        stim = loadedfile.get_stimulus()
+        stim.data.value
+    get timestamp value (not just for an epoch)
+        tstamps = loadedfile.get_timestamps()
+        tstamps.value
+    get additional metadata
+        for timestamps and data values
+            epochtuple = loadedfile.get_tuple_for_epoch(epoch_id, x)
+            then,
+            epochtuple[2].description
+            epochtuple[2].unit
+            epochtuple[2].timestamps_unit
+        for stimulus
+            stim.source
+            stim.comment
+            stim.unit (also stim.timestamps_unit)
+
+    NOTE:
+    For x = loadedfile.drawout_orderedepochs('soma')
+        x[epoch_id][1] = epoch_id
+        x[epoch_id][0] = its index in list of epochs for all regions (not just soma)
+    Thus,
+        x[epoch_id][1] = loadedfile.nwbfile.epochs.epochs.data[ x[epoch_id][0] ]
+    Notice that,
+        x[epoch_id][0] returns index of this epoch in list of all region epochs
+        x[epoch_id][1] returns index of this epoch in list of a region epochs
+    Therefore to differentiate them
+        x[epoch_id][0] is referred to as index
+        x[epoch_id][1] is referred to as epoch id
     """
-    #def __init__(self):
-    #    pass
 
     def __init__(self,filepath):
         self.io = NWBHDF5IO(filepath)
@@ -162,6 +206,13 @@ class Reader(object):
         """
         nospacename = self.chosenmodel.name.replace(" ", "")
         return self.nwbfile.stimulus[nospacename+"_stimulus"]
+
+    def get_timestamps(self):
+        """method returns timestamps
+
+        No epoch_id, cell_region and stimulus/nostimulus is needed to get timestamps
+        """
+        return self.nwbfile.epochs.epochs.data[0][3][0][2].timestamps #epoch_id=0
 
     @staticmethod
     def get_epoch(epoch_id, orderedepochs):

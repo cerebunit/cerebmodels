@@ -91,33 +91,42 @@ def TabModels():
             stim_list_input.disabled = False
             stim_loc_input.disabled = False
 
+    def clicked():
+        print "clicked"
+
     def simulate():
+        print "running"
         #if modelscales_select.value == "No_Models":
             #print modelscales_select.value
         #else:
             #print modelscales_select.value
+        print pwd
         sys.path.append(pwd) # uncomment only when using executiveViz
         ec = ExecutiveControl()
         modelscale = models_select.value.split()[0]
         modelname =  models_select.value.split()[1]
         chosenmodel = ec.choose_model(modelscale=modelscale, modelname=modelname)
         parameters = ast.literal_eval(runtime_input.value)
-        #print parameters
-        #print stimulation.value
+        print parameters
+        print stimulation.value
         if stimulation.value=="yes":
             stimparameters = ast.literal_eval(stim_type_input.value)
             stimparameters.update( {"stimlist": ast.literal_eval(stim_list_input.value)} )
-            with Profiler() as prof, ResourceProfiler() as rprof:
-                ec.launch_model ( parameters=parameters, onmodel=chosenmodel,
-                                  stimparameters=stimparameters, stimloc=stim_loc_input.value )
+            ec.launch_model ( parameters=parameters, onmodel=chosenmodel,
+                              stimparameters=stimparameters, stimloc=stim_loc_input.value )
+            #with Profiler() as prof, ResourceProfiler() as rprof:
+            #    ec.launch_model ( parameters=parameters, onmodel=chosenmodel,
+            #                      stimparameters=stimparameters, stimloc=stim_loc_input.value )
         else:
-            with Profiler() as prof, ResourceProfiler() as rprof:
-                ec.launch_model( parameters=parameters, onmodel=chosenmodel )
+            ec.launch_model( parameters=parameters, onmodel=chosenmodel )
+            #with Profiler() as prof, ResourceProfiler() as rprof:
+            #    ec.launch_model( parameters=parameters, onmodel=chosenmodel )
             #myplot = visualize([prof, rprof])
         ec.save_response()
+        print "done running"
         #viz_source.data['diagnostic'][0] = prof
         #viz_source.data['diagnostic'][1] = rprof
-        viz_source.data['diagnostic'] = [prof, rprof]
+        #viz_source.data['diagnostic'] = [prof, rprof]
         #viz_source.data['diagnostic'][0].results[0] = prof.results[0]
         #myplot.data['diagplots'][0] = visualize([prof, rprof])
         

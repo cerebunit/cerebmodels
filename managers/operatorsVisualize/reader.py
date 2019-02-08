@@ -180,7 +180,7 @@ class Reader(object):
         epochtuple = cls.get_tuple_for_epoch(epoch_id, orderedepochs)
         return [ epochtuple[2].timestamps.value[i]
                  for i in numpy.arange( epochtuple[0], # index for tstart
-                                        epochtuple[1] ) ] # total counts
+                                        epochtuple[0]+epochtuple[1] ) ] # to total counts
 
     @classmethod
     def get_datavalues_for_epoch(cls, epoch_id, orderedepochs):
@@ -190,7 +190,7 @@ class Reader(object):
         epochtuple = cls.get_tuple_for_epoch(epoch_id, orderedepochs)
         return [ epochtuple[2].data.value[i]
                  for i in numpy.arange( epochtuple[0], # index for tstart
-                                        epochtuple[1] ) ] # total counts
+                                        epochtuple[0]+epochtuple[1] ) ] # to total counts
 
     def get_stimulus(self):
         """method returns stimulus in the first one out the three below

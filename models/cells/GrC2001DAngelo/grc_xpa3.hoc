@@ -1,0 +1,31 @@
+objref h3
+h3 = new HBox()
+h3.intercept(1)
+   
+xpanel("1")   
+xlabel("Morphology")
+xvalue("Diameter d","soma.diam", 1,"", 0, 0 )
+xvalue("Lenght L","soma.L", 1,"", 0, 0 )
+
+xlabel("Physics")
+xvalue("Capacity cm","soma.cm", 1,"", 0, 0 )
+xvalue("Axial resistance Ra","soma.Ra", 1,"", 0, 0 )
+
+xlabel("Reversal potentials")
+xvalue("ENa","soma.ena", 1,"", 0, 0 )
+xvalue("EK","soma.ek", 1,"", 0, 0 )
+xvalue("ECa","soma.eca", 1,"", 0, 0 )
+xvalue("V0_leakage","soma.el_GrC_Lkg1", 1,"", 0, 0 )
+xvalue("V0_GabaA","soma.egaba_GrC_Lkg2", 1,"", 0, 0 )
+xpanel()
+
+h3.intercept(0)
+h3.map("GrC Characterization")
+
+
+
+
+
+
+
+

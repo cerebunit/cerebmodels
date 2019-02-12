@@ -1,0 +1,102 @@
+// Cerebellum Granular Cell Model
+// Last revised by Fontana Andrea 5.2.1999 
+// Last revised by Nieus Thierry 11.1.2001 
+
+
+xopen("$(NEURONHOME)/lib/hoc/noload.hoc") 
+
+/*
+ General settings
+*/ 
+v_init = -80
+tstop = 1000 //for IClamp
+//tstop = 50 //for VClamp
+dt = 0.025
+secondorder=0
+celsius = 30 
+SogliaSpike=0
+
+
+/*
+ Single compartment cell
+*/
+create soma 
+soma { 
+	nseg = 1 
+	diam = 9.76 
+	L = 9.76 
+	cm = 1
+	Ra = 100
+} 
+
+Area = PI*soma.diam*soma.L*1e-8
+
+access soma
+
+insert GrC_Lkg1
+insert GrG_Na
+insert GrG_Nar
+insert GrG_KV 
+insert GrC_KA 
+insert GrC_Kir 
+insert GrC_KCa
+insert GrC_CaHVA 
+insert Calc
+insert GrC_pNa
+insert GrG_KM
+insert GrC_Lkg2
+
+usetable_GrG_Na = 0
+usetable_GrC_pNa = 0
+usetable_GrC_CaHVA = 0
+usetable_GrG_KV = 0
+usetable_GrC_KA = 0
+usetable_GrC_Kir = 0
+usetable_GrC_KCa = 0
+usetable_GrG_KM = 0
+
+ena = 87.39
+ek = -84.69
+eca = 129.33
+ecl = -65
+
+/*
+ Current clamps
+*/
+
+objectvar stim0, stim
+
+
+/*
+Sinusoidal Pulse
+*/
+objectvar sinu
+
+
+
+
+/*
+ Start GUI
+*/
+load_proc("nrnmainmenu") 
+nrnmainmenu() 
+xopen("grc_xpa1.hoc")
+
+/*
+ Initialization
+*/
+finitialize(v_init)
+
+// Current clamp
+/*
+ Procedures to record data in files...
+*/
+objref tvec, data, file, vettintegra, vettore
+tvec = new Vector()
+data = new Vector()
+tvec.record(&t)
+data.record(&soma.v(0.5),tvec)
+
+
+
+

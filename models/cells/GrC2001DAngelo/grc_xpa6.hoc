@@ -1,0 +1,20 @@
+objref h6
+h6 = new HBox()
+h6.intercept(1)
+   
+xpanel("1")   
+xvalue("Del (ms)","stim0.del", 1,"", 0, 0 )
+xvalue("Dur (ms)","stim0.dur", 1,"", 0, 0 )
+xvalue("Amp (nA)","stim0.amp", 1,"", 0, 0 )
+xpanel()
+
+h6.intercept(0)
+h6.map("Step IClamp 1")
+
+
+
+
+
+
+
+

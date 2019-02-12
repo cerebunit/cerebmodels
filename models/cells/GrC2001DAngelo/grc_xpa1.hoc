@@ -1,0 +1,79 @@
+objref h1
+h1 = new VBox()
+h1.intercept(1)
+   
+xpanel("1")   
+xlabel("Conductances")
+xvalue("gLeakage","soma.gl_GrC_Lkg1", 1,"", 0, 0 )
+xvalue("gGabaA","soma.ggaba_GrC_Lkg2", 1,"", 0, 0 )
+xvalue("gNabar","soma.gnabar_GrG_Na", 1,"", 0, 0 )
+xvalue("gKVbar","soma.gkbar_GrG_KV", 1,"", 0, 0 )
+xvalue("gKAbar","soma.gkbar_GrC_KA", 1,"", 0, 0 )
+xvalue("gKirbar","soma.gkbar_GrC_Kir", 1,"", 0, 0 )
+xvalue("gKCabar","soma.gkbar_GrC_KCa", 1,"", 0, 0 )
+xvalue("gCaHVAbar","soma.gcabar_GrC_CaHVA", 1,"", 0, 0 )
+xvalue("gpNabar","soma.gnabar_GrC_pNa", 1,"", 0, 0 )
+xvalue("gKSlowbar","soma.gkbar_GrG_KM", 1,"", 0, 0 )
+xvalue("gNaresurgent","soma.gnabar_GrG_Nar", 1,"", 0, 0 )
+xpanel()
+
+xpanel("2")
+xlabel("Calcium parameters")
+xvalue("Shell thickness","soma.d_Calc", 1,"", 0, 0 )
+xvalue("Initial concentration","soma.cai0_Calc", 1,"", 0, 0 )
+xvalue("Removal rate","soma.beta_Calc", 1,"", 0, 0 )
+xpanel()
+
+xpanel("3",1)
+xbutton("Kinetics...","param1()")
+xbutton("Cell...","param3()")
+
+xpanel()
+
+xpanel("3",1)
+
+xmenu("Electrodes...")
+xbutton("Step IClamp 1","param5()")
+xbutton("Step IClamp 2","param6()")
+xbutton("Wave IClamp","param7()")
+xmenu()
+
+xpanel()
+
+h1.intercept(0)
+h1.map("Granule Cell Model")
+
+proc param1(){
+	xopen("grc_xpa2.hoc")
+}
+
+proc param3(){
+	xopen("grc_xpa3.hoc")
+}
+
+proc param5(){
+	stim0 = new IClamp(0.5)
+	stim0.del = 100 
+	stim0.dur = 800 
+	stim0.amp = 0.002 
+	xopen("grc_xpa6.hoc")
+}
+
+proc param6(){
+	stim = new IClamp(0.5)
+	stim.del = 100
+	stim.dur = 800
+	stim.amp = 0.006
+	xopen("grc_xpa7.hoc")
+}
+
+proc param7(){
+	sinu = new GrC_Sine(0.5)
+	sinu.del = 100
+	sinu.dur = 800
+	sinu.amp = 0.006
+	sinu.freq = 4
+	sinu.phase = 0 
+	xopen("grc_xpa8.hoc")
+}
+

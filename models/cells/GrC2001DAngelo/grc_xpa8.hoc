@@ -1,0 +1,22 @@
+objref h8
+h8 = new HBox()
+h8.intercept(1)
+   
+xpanel("1")   
+xvalue("Del (ms)","sinu.del", 1,"", 0, 0 )
+xvalue("Dur (ms)","sinu.dur", 1,"", 0, 0 )
+xvalue("Amp (nA)","sinu.amp", 1,"", 0, 0 )
+xvalue("Freq (Hz)","sinu.freq", 1,"", 0, 0 )
+xvalue("Phase","sinu.phase", 1,"", 0, 0 )
+xpanel()
+
+h8.intercept(0)
+h8.map("Wave IClamp")
+
+
+
+
+
+
+
+

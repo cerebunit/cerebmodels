@@ -3,6 +3,10 @@ Code Changes for cerebmodels:
 - Granule.py is the python translation of grc.hoc
 - For the sake of consistency 'del' in Grc_sine.mod is changed to
   'delay'.
+- In general parameter setting in grc.hoc secondorder=0 and
+  SogliaSpike=0 are set but their use is not found in any other
+  .hoc or .mod file. These parameters are therefore not net in
+  Granuel.py
 
 Readme file for the model associated with
 

@@ -1,3 +1,9 @@
+Code Changes for cerebmodels:
+- all the mod files are moved to the created /mod_file directory
+- Granule.py is the python translation of grc.hoc
+- For the sake of consistency 'del' in Grc_sine.mod is changed to
+  'delay'.
+
 Readme file for the model associated with
 
 D'Angelo E, Nieus T, Maffei A, Armano S, Rossi P, Taglietti V, 
@@ -38,4 +44,3 @@ file to see a couple of traces from figure 6A in the paper.
 
 Clicking on the Kinetics, Cell, or Electrodes buttons allow the
 changing of these simulation parameters.
-

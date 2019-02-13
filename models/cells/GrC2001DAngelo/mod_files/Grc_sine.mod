@@ -2,12 +2,12 @@ TITLE Electrode for sinusoidal current clamping
 
 COMMENT
 	Author: A. Fontana
-	Last revised: 28.3.99
+	Last revised: 13.2.2018 (by Lungsi)
 ENDCOMMENT
 
 NEURON {
 	POINT_PROCESS GrC_Sine
-	RANGE del, dur, amp, i, freq, phase
+	RANGE delay, dur, amp, i, freq, phase
 	ELECTRODE_CURRENT i
 }
 UNITS {
@@ -16,7 +16,7 @@ UNITS {
 
 PARAMETER {
 	PI = 3.141592
-	del (ms)
+	delay (ms)
 	dur (ms)	
 	amp = 0.006 (nA)
 	freq = 4 (1/ms)
@@ -29,10 +29,10 @@ INITIAL {
 }
 
 BREAKPOINT {
-	at_time(del)
-	at_time(del+dur)
+	at_time(delay)
+	at_time(delay+dur)
 
-	if (t < del + dur && t > del) {
+	if (t < delay + dur && t > delay) {
 
 		
 		i = amp*sin(2*PI*freq*t/1000)

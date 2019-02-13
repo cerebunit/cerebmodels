@@ -24,7 +24,7 @@ class Granule:
         self.soma.insert("GrC_CaHVA")
         self.soma.insert("Calc")
         self.soma.insert("GrC_pNa")
-        self.soma.insert("GrC_KM")
+        self.soma.insert("GrG_KM")
         self.soma.insert("GrC_Lkg2")
 
         self.soma.ena = 87.39

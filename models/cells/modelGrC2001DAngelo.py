@@ -32,7 +32,7 @@ class GranuleCell(object):
         # -----------attributed inheritance from sciunit.Model--------------
         # grc.name defaults to class name, i.e, GranuleCell
         self.name = "D'Angelo et al. 2001 model of GranuleCell"
-        self.description = "D'Angelo et al. 2001 model of GranuleCell (GrC) and published in 10.1523/JNEUROSCI.21-03-00759.2001 This is the single compartment model. It models the rat granule cells because the model was derived from slices taken from 20 ± -ay old rats. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 46839."
+        self.description = "D'Angelo et al. 2001 model of GranuleCell (GrC) and published in 10.1523/JNEUROSCI.21-03-00759.2001 This is the single compartment model. It models the rat granule cells because the model was derived from slices taken from 20 +/- 2 days old rats. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 46839."
         #
         sm.lock_and_load_model_libraries(modelscale=self.modelscale,
                                          modelname=self.modelname)

@@ -9,6 +9,7 @@ from managers.managerFiling import FilingManager as fm
 from managers.managerSimulation import SimulationManager as sm
 from managers.managerRecord import RecordManager as rm
 from managers.managerTranscribe import TranscribeManager
+from managers.operatorsVisualize.reader import Reader
 
 class ExecutiveControl(object):
     """
@@ -92,4 +93,10 @@ class ExecutiveControl(object):
         return self.filename
 
     def load_response( self ):
-        pass
+        allfiles_paths = fm.show_filenames_with_path( [ "responses",
+                                                        self.chosenmodel.modelscale,
+                                                        self.chosenmodel.modelname ] )
+        # extract filepath of current filename and load it using Reader()
+        loadedfile = Reader(allfiles_paths[self.filename])
+        loadedfile.chosenmodel = self.chosenmodel
+        return loadedfile

@@ -34,6 +34,7 @@ class ExecutiveControl(object):
     def __init__(self):
         self.recordings = {"time": None, "response": None, "stimulus": None}
         self.tm = TranscribeManager()
+        self.filename = ""
 
     @staticmethod
     def list_modelscales():
@@ -87,7 +88,8 @@ class ExecutiveControl(object):
                                runtimeparameters = self.parameters,
                                stimparameters = self.stimparameters )
         self.tm.compile_nwbfile()
-        self.tm.save_nwbfile()
+        self.filename = self.tm.save_nwbfile() # saves and returns filename
+        return self.filename
 
     def load_response( self ):
         pass

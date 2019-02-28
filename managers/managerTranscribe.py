@@ -59,4 +59,4 @@ class TranscribeManager(object):
         #path = self.fm.responsepath_check_create(list_dir_names=
         #            ['responses', self.chosenmodel.modelscale, self.chosenmodel.modelname])
         path = fm.responsepath_check_create(chosenmodel = self.chosenmodel)
-        fab.write_nwbfile(nwbfile = self.nwbfile, filepath = path)
+        return fab.write_nwbfile(nwbfile = self.nwbfile, filepath = path) #filename

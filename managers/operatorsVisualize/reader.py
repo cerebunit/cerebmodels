@@ -192,6 +192,19 @@ class Reader(object):
                  for i in numpy.arange( epochtuple[0], # index for tstart
                                         epochtuple[0]+epochtuple[1] ) ] # to total counts
 
+    def get_datavalues(self):
+        """method returns data values from t0 till end of simulation
+
+        print reader_io.nwbfile.epochs.epochs.data # all epochs
+        print reader_io.nwbfile.epochs.epochs.data[i][3][0] # tuple of i'th epoch
+        print reader_io.nwbfile.epochs.epochs.data[i][3][0][2] # timeseries object
+
+        Usecase:
+        x = reader_io.get_datavalues()
+        """
+        epoch_id = 0 # does not matter as long as its an id that exists
+        return self.nwbfile.epochs.epochs.data[epoch_id][3][0][2].data.value
+
     def get_stimulus(self):
         """method returns stimulus in the first one out the three below
         

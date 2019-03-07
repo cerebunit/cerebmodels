@@ -1,14 +1,21 @@
 # ~/models/cells/modelGrC2001DAngelo.py
 import os
-pwd = os.getcwd()
+pwd = os.getcwd() # record root directory path ~/cerebmodels
 path_to_files = pwd + os.sep + "models" + os.sep + "cells" + os.sep + \
-                "GrC2001DAngelo" + os.sep
+                "GrC2001DAngelo" + os.sep # record path to this model/folder
 
 from managers.managerSimulation import SimulationManager as sm
 from models.cells.GrC2001DAngelo.Granule import Granule
+from executive import ExecutiveControl
+from managers.managerInterpret import InterpretManager as im
 
+import sciunit
+from cerebunit.capabilities.cells.response import ProducesElectricalResponse
+from cerebunit.capabilities.measurements_ephys import ProducesEphysMeasurement
 
-class GranuleCell(object):
+class GranuleCell( sciunit.Model,
+                   ProducesElectricalResponse,
+                   ProducesEphysMeasurement ):
     """USE CASE:
     """
 
@@ -40,20 +47,41 @@ class GranuleCell(object):
         self.cell = Granule()
         os.chdir(pwd)
         ### ===============================================================
+        #
+        ec = ExecutiveControl() # only works when in ~/cerebmodels
 
     # =======================================================================
     # +++++++++++++++++++++++ MODEL CAPABILITIES ++++++++++++++++++++++++++++
     # =======================================================================
 
     # --------------------- produce_voltage_response ------------------------
-    def produce_voltage_response():
+    def produce_voltage_response(self, **kwargs):
         """generic/essential model response
 
         Argument:
         sm -- instantiated SimulationManager()
         """
         sm.engage_NEURON()
-        
+
+    # ----------------------- produce_restingVm -----------------------------
+    def produce_restingVm(self, **kwargs):
+        """
+        kwargs = { "parameters": dictionary with keys,
+                   "stimparameters": dictionary with keys "type" and "stimlist",
+                   "onmodel": instantiated model }
+        """
+        model = kwargs["onmodel"]
+        ec.launch_model( parameters = kwargs["parameters"],
+                         stimparameters = kwargs["stimparameters"],
+                         stimloc = model.cell.soma, onmodel = model,
+                         capabilities = {"model": "produce_voltage_response",
+                                         "vtest": ProducesEletricalResponse} )
+        ec.save_response()
+        timestamps, datavalues = \
+                         im.get_data_and_time_values(loadednwbfile=ec.load_response(),                                                                    modelregion="soma")
+        self.restingVm = im.gather_efel_values( im.get_efel_results( timestamps, datavalues,
+                                                                     ["voltage_base"] ) )
+
     # ----------------------- produce_spike_train ---------------------------
     def produce_spike_train(self, **kwargs):
         """

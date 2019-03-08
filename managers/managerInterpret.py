@@ -9,6 +9,9 @@ class InterpretManager(object):
     get_data_and_time_values (staticmethod)
     create_base_efel_trace_individual (staticmethod)
     create_base_efel_trace_overall (classmethod)
+    update_traces_with_feature_results (staticmethod)
+    apply_feature_after_all_prereqs (classmethod)
+    extract_and_pair_featname_values (staticmethod)
     get_efel_results (instantiated method)
     gather_efel_values (instantiated method)
 
@@ -50,16 +53,89 @@ class InterpretManager(object):
         Output: list of base_trace dictionary for each epoch
         """
         return [ cls.create_base_efel_trace_individual( timestamps[i], datavalues[i] )
-                 for i in range(len(timestamps)) ]
+                 for i in range(len(timestamps)) ] # [ trace0, trace1, trace2, ... ]
 
-    def get_efel_results(self, timestamps, datavalues, feature_name_list):
+    @staticmethod
+    def update_traces_with_feature_results(traces, feature_name):
+        """Creates key=feature_name for each traceX in [ trace0, trace1, ... ]
+        and associate it with its corresponding value, which is generated from the
+        old [ trace0, trace1, ... ] via efel.getFeatureValues().
+        This returns new [ trace0, trace1, ... ], which has the key=feature_name
+        """
+        feature_results = efel.getFeatureValues( traces, [ feature_name ] )
+        for i in range( len(feature_results) ):
+            traces[i][feature_name] = feature_results[i][feature_name]
+        return traces
+
+    @classmethod
+    def apply_feature_after_all_prereqs(cls, traces, feature_name, its_prereqs):
+        """For features that require pre-requisite features, this function considers
+        each requirement (in descending order in its_prereqs list) as a feature and
+        calls update_traces_with_feature_results(). Each requirement generates an
+        updated trace containing the requirement as a key. This is done down the
+        order of the its_prereqs list, finally ending with feature_name.
+        The method returns a new [ trace0, trace1, ... ], updated with the keys
+        that are features in its_prereqs and feature_name
+
+        NOTE:
+            - features in its_prereqs list is listed such that preceeding pre-req
+              is required by the succeeding pre-req.
+            - the last pre-req is the requirement for the feature_name
+        """
+        for i in range( len(its_prereqs) ):
+            prereq_feat = its_prereqs[i]
+            traces = cls.update_traces_with_feature_results(traces, prereq_feat)
+        return cls.update_traces_with_feature_results(traces, feature_name)
+
+    @staticmethod
+    def extract_and_pair_featname_values(traces, feature_name_list):
+        """For a given traces, [ trace0, trace1, ... ] and a desired
+        feature_name_list, [ 'feat1', 'feat2', 'feat3' ] for each featX its value
+        is extracted from the traces. For trace0, this results in {feat1: value,
+        feat2: value, feat3: value}. This is done for rest of the trace in traces.
+        This method returns a list of dictionaries
+        [ {feat1: value, feat2: value, feat3: value}, # from trace0
+          {feat1: value, feat2: value, feat3: value}, ... ] # from trace1 and so on
+        """
+        x = []
+        for i in range(len(traces)):
+            y = {}
+            for feature_name in featurelist:
+                y.update({feature_name: traces[i][feature_name]})
+            x.append(y)
+        return x # efel results
+
+    def get_efel_results( self, timestamps, datavalues,
+                          feature_name_list = ["voltage_base"],
+                          prereq_list = [ [], ]):
         """This returns a dictionary of { feature_name: feature_value }
-        feature_name_list is list of strings, eg, ['voltage_base']
+        feature_name_list is list of strings, eg, ['feat1', 'feat2', 'feat3']
+        prereq_list is list of list of strings; eg,
+                    [ ['feat1_prereq1', 'feat1_prereq2], # [] is also valid
+                      ['feat2_prereq1'],
+                      ['feat3_prereq1', 'feat3_prereq2', 'feat3_prereq3', 'feat4_prereq4'] ]
+        NOTE:
+            - for the single feature, "voltage_base" in feature_name_list
+              the method returns a list of dictionaries for each trace, the key being
+              "voltage_base"
+            - for the case of single or multiple features with some having pre-requisites
+              the method extracts feature values for each of the pre-requisite (down the list)
+              finally extracting the values for the main feature
         """
         traces = self.create_base_efel_trace_overall( timestamps, datavalues )
-        return efel.getFeatureValues( traces, feature_name_list )
+        if feature_name_list == ["voltage_base"]:
+            return efel.getFeatureValues( traces, feature_name_list ) # base voltages
+        else:
+            for i in range( len(feature_name_list) ):
+                feature_name = feature_name_list[i]
+                its_prereqs = prereq_list[i]
+                if len(its_prereqs)==0:
+                    traces = self.update_traces_with_feature_results(traces, feature_name)
+                else:
+                    traces = self.apply_feature_after_all_prereqs(traces, feature_name, its_prereqs)
+            return self.extract_and_pair_featname_values(traces, feature_name_list)
 
-    def gather_efel_values(self, trace_results):
+    def gather_efel_values(self, trace_results, a_feature_name):
         """This returns a list of feature_value
         NOTE:
            - for use in CerebUnit it is assumed that only one feature_name is in
@@ -67,21 +143,6 @@ class InterpretManager(object):
            - trace_results is a dictionary with only one key (one feature_name)
         """
         return [ feature_value
-                 for feature_name, feature_value in trace_results.items() ]
-
-#    @staticmethod
-#    def buildon_efel_trace_individual(prebuilt_trace, **kwargs):
-#        """Adds efel features to an already built trace
-#        Eg: kwargs = {"Threshold": [ -45. ], "min_spike_height": [ -50. ]}
-#        """
-#        for feature_name, its_value in kwargs.items():
-#            prebuilt_trace["feature_name"] = its_value
-#        return prebuilt_trace
-
-#    @classmethod
-#    def extract_efel_featurevalue(cls, prebuilt_trace, feature_name, prereq_features):
-#        """Passes a list of only one trace and therefore also list of only one feature
-#        which in turn returns its feature values by extracting it (first, only one
-#        index) from list of only one feature value.
-#        """
-#        return efel.getFeatureValues( [prebuilt_trace], [feature_name] )[0][feature_name]
+                 for efel_results in trace_results
+                 for feature_name, feature_value in efel_results.items()
+                 if feature_name == a_feature_name ]

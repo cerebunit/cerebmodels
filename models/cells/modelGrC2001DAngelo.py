@@ -78,9 +78,11 @@ class GranuleCell( sciunit.Model,
                                          "vtest": ProducesEletricalResponse} )
         ec.save_response()
         timestamps, datavalues = \
-                         im.get_data_and_time_values(loadednwbfile=ec.load_response(),                                                                    modelregion="soma")
-        self.restingVm = im.gather_efel_values( im.get_efel_results( timestamps, datavalues,
-                                                                     ["voltage_base"] ) )
+            im.get_data_and_time_values( loadednwbfile=ec.load_response(),                                                                    modelregion="soma")
+        self.restingVm = \
+            im.gather_efel_values( im.get_efel_results(timestamps, datavalues,
+                                                      feature_name_list=["voltage_base"]),
+                                   "voltage_base" )
 
     # ----------------------- produce_spike_train ---------------------------
     def produce_spike_train(self, **kwargs):

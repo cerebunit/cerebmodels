@@ -15,11 +15,6 @@ class InterpretManager(object):
     """
 
     def __init__(self):
-        #self.fg = FileGenerator()
-        #self.tg = TimeseriesGenerator()
-        #self.eg = EpochGenerator()
-        #self.fab = Fabricator()
-        #self.fm = FilingManager()
         pass
 
     @staticmethod

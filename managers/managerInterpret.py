@@ -7,8 +7,8 @@ class InterpretManager(object):
     """
     Available methods:
     get_data_and_time_values (staticmethod)
-    create_efel_trace_individual (staticmethod)
-    create_efel_trace_overall (classmethod)
+    create_base_efel_trace_individual (staticmethod)
+    create_base_efel_trace_overall (classmethod)
     get_efel_results (instantiated method)
     gather_efel_values (instantiated method)
 

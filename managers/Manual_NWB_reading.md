@@ -1,3 +1,7 @@
+Transcribed => nwbfile has been written using  `TranscribeManager`
+
+Written => nwbfile has been saved as a `.h5` file
+
 | Transcribed but Not-yet Written                                     |                              | File wrtitten in NWB format    |
 | --------------------------------------------------------------------| ---------------------------- | ------------------------------ |
 | `un_nwbfile.epochs.epochs.data`                                     | **All** epochs               | `w_nwbfile.epochs.epochs.data` |

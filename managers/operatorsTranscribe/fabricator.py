@@ -13,7 +13,7 @@ from pynwb import TimeSeries
 #from pynwb import get_manager
 from pynwb import NWBHDF5IO
 
-from pdb import set_trace as breakpoint
+#from pdb import set_trace as breakpoint
 
 class Fabricator(object):
     """
@@ -60,9 +60,9 @@ class Fabricator(object):
         +==========+================================================================+
         | only one | dictionary of the file metadata such that                      |
         |          |                                                                |
-        |          |.. code-block:: json                                            |
+        |          |::                                                              |
         |          |                                                                |
-        |          |   {                                                            |
+        |          |    {                                                           |
         |          |     "session_description": "How was the data generated?",      |
         |          |     "identifier": "a unique ID",                               |
         |          |     "session_start_time": datetime(time when recording began), |
@@ -71,7 +71,7 @@ class Fabricator(object):
         |          |     "session_id": "collab ID",                                 |
         |          |     "institution": "name of the institution",                  |
         |          |     "lab": "name of the lab"                                   |
-        |          |    }                                                           |
+        |          |     }                                                          |
         +----------+----------------------------------------------------------------+
 
         **Returned Value:** The returned nwbfile has the following attributes of interests: ``nwbfile.session_description``, ``nwbfile.identifier``, ``nwbfile.session_start_time``, ``nwbfile.experimenter``, ``nwbfile.experiment_description``, ``nwbfile.session_id``, ``nwbfile.lab`` and ``nwbfile.institution``.
@@ -82,7 +82,7 @@ class Fabricator(object):
 
         *NOTE:* The overall available attributes are however
 
-        .. code-block:: python
+        :: 
 
            pynwb.file.NWBFile(
                 session_description, identifier, session_start_time,
@@ -119,8 +119,8 @@ class Fabricator(object):
         +----------+--------------------------------------------------------------+
         | Argument | Value type                                                   |
         +==========+==============================================================+
-        | only one | - dictionary of time-series metadata                         |
-        |          | - it must have the following keys and their value type       |
+        | only one |- dictionary of time-series metadata                          |
+        |          |- it must have the following keys and their value type        |
         |          +-----------------+--------------------------------------------+
         |          | key             | value type                                 |
         |          +-----------------+--------------------------------------------+
@@ -145,7 +145,7 @@ class Fabricator(object):
 
         *NOTE:* The overall available attributes are however
 
-        .. code-block:: python
+        ::
 
            pynwb.base.TimeSeries(
                               name, data=None, unit=None, resolution=0.0,
@@ -186,8 +186,8 @@ class Fabricator(object):
         +===========+==============================================================+
         | first     | instantiated model                                           |
         +-----------+-----------------+--------------------------------------------+
-        | second    | - dictionary of time-series metadata                         |
-        |           | - it must have the following keys and their values           |
+        | second    |- dictionary of time-series metadata                          |
+        |           |- it must have the following keys and their values            |
         |           +-----------------+--------------------------------------------+
         |           | key             | value type                                 |
         |           +-----------------+--------------------------------------------+
@@ -210,7 +210,7 @@ class Fabricator(object):
 
         **Returned Value:** The NWB time-series object, say ``nwbts`` will have the following useful attributes
 
-        .. code-block:: python
+        ::
 
            nwbts[key].name, nwbts[key].data,
            nwbts[key].timestamps, nwbts[key].unit,
@@ -222,7 +222,7 @@ class Fabricator(object):
 
         *NOTE:* The overall available attributes are however
 
-        .. code-block:: python
+        ::
 
            pynwb.base.TimeSeries(
                                name, data=None, unit=None, resolution=0.0,
@@ -249,8 +249,8 @@ class Fabricator(object):
         +-----------------+--------------------------------------------------------------+
         | Key             | Value type                                                   |
         +=================+==============================================================+
-        | ``chosenmodel`` | instantiated model                                           |
-        | ``tsmd``        | - dictionary of time-series metadata                         |
+        | ``chosenmodel`` |instantiated model                                            |
+        | ``tsmd``        |- dictionary of time-series metadata                          |
         |                 +---------------------------+----------------------------------+
         |                 | key                       | value type                       |
         |                 +---------------------------+----------------------------------+
@@ -275,7 +275,7 @@ class Fabricator(object):
 
         **Returned Value:** The NWB time-series object, say ``nwbts`` will have the following useful attributes
 
-        .. code-block:: python
+        ::
 
            nwbts[key].name, nwbts[key].data,
            nwbts[key].timestamps, nwbts[key].unit,
@@ -287,7 +287,7 @@ class Fabricator(object):
 
         *NOTE:* The overall available attributes are however
 
-        .. code-block:: python
+        ::
 
            pynwb.base.TimeSeries(
                                name, data=None, unit=None, resolution=0.0,
@@ -316,14 +316,14 @@ class Fabricator(object):
         +-----------+------------------------------------------------------------+
         | Arguments | Value type                                                 |
         +===========+============================================================+ 
-        | first     | - dictionary of NWB time-series object                     |
-        |           | - its keys are the keys in                                 |
+        | first     |- dictionary of NWB time-series object                      |
+        |           |- its keys are the keys in                                  |
         |           |``chosenmodel.regions = {"soma": 0.0, "axon", 0.0}``        |
-        |           | - value for each key is a ``pynwb.base.TimeSeries`` object,|
+        |           |- value for each key is a ``pynwb.base.TimeSeries`` object, |
         |           | obtained using :py:meth:`.build_nwbseries method`          |
         +-----------+------------------------------------------------------------+
-        | second    | - the built NWB file of type ``pynwb.file.NWBFile``        |
-        |           | - obtained using :py:meth:`.build_nwbfile method`          |
+        | second    |- the built NWB file of type ``pynwb.file.NWBFile``         |
+        |           |- obtained using :py:meth:`.build_nwbfile method`           |
         +-----------+------------------------------------------------------------+
 
         **Returned value:** This is the NWB file fed as an argument but updated by adding the time-series, say, ``updated_nwbfile``. The ``TimeSeries`` object can be extracted as
@@ -336,7 +336,7 @@ class Fabricator(object):
 
         Then you can get all the available attributes as usual
 
-        .. code-block:: python
+        ::
 
            ts_soma.name, ts_soma.data,
            ts_soma.timestamps, ts_soma.unit,
@@ -369,15 +369,15 @@ class Fabricator(object):
         +-------------+------------------------------------------------------------+
         | Key         | Value type                                                 |
         +=============+============================================================+ 
-        | ``nwbts``   | - dictionary of NWB time-series object                     |
-        |             | - its keys are the keys in                                 |
+        | ``nwbts``   |- dictionary of NWB time-series object                      |
+        |             |- its keys are the keys in                                  |
         |             |``chosenmodel.regions = {"soma": 0.0, "axon", 0.0}``        |
-        |             | - the key ``"stimulus"`` is optional                       |
-        |             | - value for each key is a ``pynwb.base.TimeSeries`` object,|
-        |             | obtained using :py:meth:`.build_nwbseries method`          |
+        |             |- the key ``"stimulus"`` is optional                        |
+        |             |- value for each key is a ``pynwb.base.TimeSeries`` object, |
+        |             |obtained using :py:meth:`.build_nwbseries method`           |
         +-------------+------------------------------------------------------------+
-        | ``nwbfile`` | - the built NWB file of type ``pynwb.file.NWBFile``        |
-        |             | - obtained using :py:meth:`.build_nwbfile method`          |
+        | ``nwbfile`` |- the built NWB file of type ``pynwb.file.NWBFile``         |
+        |             |- obtained using :py:meth:`.build_nwbfile method`           |
         +-------------+------------------------------------------------------------+
 
         **Returned value:** This is the NWB file fed as an argument but updated by adding the time-series, say, ``updated_nwbfile``. The ``TimeSeries`` object can be extracted as
@@ -390,7 +390,7 @@ class Fabricator(object):
 
         Then you can get all the available attributes as usual
 
-        .. code-block:: python
+        ::
 
            ts_soma.name, ts_soma.data,
            ts_soma.timestamps, ts_soma.unit,
@@ -426,14 +426,14 @@ class Fabricator(object):
         +----------+------------------------------------------------------------------+
         | Argument | Value type                                                       |
         +==========+==================================================================+
-        | first    | - dictionary of time-series metadata for a particular region of  |
+        | first    |- dictionary of time-series metadata for a particular region of   |
         |          | **an** epoch                                                     |
-        |          | - considering the case                                           |
+        |          |- considering the case                                            |
         |          |``chosenmodel.regions = {'soma': 0.0, 'axon': 0.0}`` and the      |
         |          |number of epochs per region = 2                                   |
-        |          | - when there is a stimulation the dictionary will be of the form |
+        |          |- when there is a stimulation the dictionary will be of the form  |
         |          |                                                                  |
-        |          |.. code-block:: python                                            |
+        |          |::                                                                |
         |          |                                                                  |
         |          |   {                                                              |
         |          |    "epoch0soma":                                                 |
@@ -449,9 +449,9 @@ class Fabricator(object):
         |          |       {"source": "axon", "start_time": float, "stop_time": float,|
         |          |                  "description": string, "tags": tuple}}          |
         |          |                                                                  |
-        |          | - but when there is no stimulation the dictionary will look as   |
+        |          |- but when there is no stimulation the dictionary will look as    |
         |          |                                                                  |
-        |          |.. code-block:: python                                            |
+        |          |::                                                                |
         |          |                                                                  |
         |          |   {                                                              |
         |          |    "epoch0soma":                                                 |
@@ -461,12 +461,12 @@ class Fabricator(object):
         |          |       {"source": "axon", "start_time": float, "stop_time": float,|
         |          |                  "description": string, "tags": tuple}}          |
         +----------+------------------------------------------------------------------+
-        | second   | - dictionary of NWB time-series object                           |
-        |          | - its keys are the keys in                                       |
+        | second   |- dictionary of NWB time-series object                            |
+        |          |- its keys are the keys in                                        |
         |          |``chosenmodel.regions = {"soma": 0.0, "axon", 0.0}``              |
-        |          | - the key ``"stimulus"`` is optional                             |
-        |          | - value for each key is a ``pynwb.base.TimeSeries`` object,      |
-        |          | obtained using :py:meth:`.build_nwbseries method`                |
+        |          |- the key ``"stimulus"`` is optional                              |
+        |          |- value for each key is a ``pynwb.base.TimeSeries`` object,       |
+        |          |obtained using :py:meth:`.build_nwbseries method`                 |
         +----------+------------------------------------------------------------------+
 
         *NOTE:*
@@ -495,14 +495,14 @@ class Fabricator(object):
         +----------+------------------------------------------------------------------+
         | Argument | Value type                                                       |
         +==========+==================================================================+
-        | first    | - dictionary of time-series metadata for a particular region of  |
+        | first    |- dictionary of time-series metadata for a particular region of   |
         |          | **an** epoch                                                     |
-        |          | - considering the case                                           |
+        |          |- considering the case                                            |
         |          |``chosenmodel.regions = {'soma': 0.0, 'axon': 0.0}`` and the      |
         |          |number of epochs per region = 2                                   |
-        |          | - when there is a stimulation the dictionary will be of the form |
+        |          |- when there is a stimulation the dictionary will be of the form  |
         |          |                                                                  |
-        |          |.. code-block:: python                                            |
+        |          |::                                                                |
         |          |                                                                  |
         |          |   {                                                              |
         |          |    "epoch0soma":                                                 |
@@ -518,9 +518,9 @@ class Fabricator(object):
         |          |       {"source": "axon", "start_time": float, "stop_time": float,|
         |          |                  "description": string, "tags": tuple}}          |
         |          |                                                                  |
-        |          | - but when there is no stimulation the dictionary will look as   |
+        |          |- but when there is no stimulation the dictionary will look as    |
         |          |                                                                  |
-        |          |.. code-block:: python                                            |
+        |          |::                                                                |
         |          |                                                                  |
         |          |   {                                                              |
         |          |    "epoch0soma":                                                 |
@@ -530,12 +530,12 @@ class Fabricator(object):
         |          |       {"source": "axon", "start_time": float, "stop_time": float,|
         |          |                  "description": string, "tags": tuple}}          |
         +----------+------------------------------------------------------------------+
-        | second   | - dictionary of NWB time-series object                           |
-        |          | - its keys are the keys in                                       |
+        | second   |- dictionary of NWB time-series object                            |
+        |          |- its keys are the keys in                                        |
         |          |``chosenmodel.regions = {"soma": 0.0, "axon", 0.0}``              |
-        |          | - the key ``"stimulus"`` is optional                             |
-        |          | - value for each key is a ``pynwb.base.TimeSeries`` object,      |
-        |          | obtained using :py:meth:`.build_nwbseries method`                |
+        |          |- the key ``"stimulus"`` is optional                              |
+        |          |- value for each key is a ``pynwb.base.TimeSeries`` object,       |
+        |          |obtained using :py:meth:`.build_nwbseries method`                 |
         +----------+------------------------------------------------------------------+
 
         *NOTE:*
@@ -562,16 +562,16 @@ class Fabricator(object):
         +----------+------------------------------------------------------------------+
         | Argument | Value type                                                       |
         +==========+==================================================================+
-        | first    | string for key of an epoch from a particular region, say,        |
-        |          | ``"epoch1soma"``                                                 |
+        | first    |string for key of an epoch from a particular region, say,         |
+        |          |``"epoch1soma"``                                                  |
         +----------+------------------------------------------------------------------+
-        | second   | - dictionary of time-series metadata                             |
-        |          | - considering the case                                           |
+        | second   |- dictionary of time-series metadata                              |
+        |          |- considering the case                                            |
         |          |``chosenmodel.regions = {'soma': 0.0, 'axon': 0.0}`` and the      |
         |          |number of epochs per region = 2                                   |
-        |          | - when there is a stimulation the dictionary will be of the form |
+        |          |- when there is a stimulation the dictionary will be of the form  |
         |          |                                                                  |
-        |          |.. code-block:: python                                            |
+        |          |::                                                                |
         |          |                                                                  |
         |          |   {                                                              |
         |          |    "epoch0soma":                                                 |
@@ -587,9 +587,9 @@ class Fabricator(object):
         |          |       {"source": "axon", "start_time": float, "stop_time": float,|
         |          |                  "description": string, "tags": tuple}}          |
         |          |                                                                  |
-        |          | - but when there is no stimulation the dictionary will look as   |
+        |          |- but when there is no stimulation the dictionary will look as    |
         |          |                                                                  |
-        |          |.. code-block:: python                                            |
+        |          |::                                                                |
         |          |                                                                  |
         |          |   {                                                              |
         |          |    "epoch0soma":                                                 |
@@ -599,15 +599,15 @@ class Fabricator(object):
         |          |       {"source": "axon", "start_time": float, "stop_time": float,|
         |          |                  "description": string, "tags": tuple}}          |
         +----------+------------------------------------------------------------------+
-        | third    | - the built NWB file of type ``pynwb.file.NWBFile``              |
-        |          | - obtained using :py:meth:`.build_nwbfile method`                |
+        | third    |- the built NWB file of type ``pynwb.file.NWBFile``               |
+        |          |- obtained using :py:meth:`.build_nwbfile method`                 |
         +----------+------------------------------------------------------------------+
-        | fourth   | - dictionary of NWB time-series object                           |
-        |          | - its keys are the keys in                                       |
+        | fourth   |- dictionary of NWB time-series object                            |
+        |          |- its keys are the keys in                                        |
         |          |``chosenmodel.regions = {"soma": 0.0, "axon", 0.0}``              |
-        |          | - the key ``"stimulus"`` is optional                             |
-        |          | - value for each key is a ``pynwb.base.TimeSeries`` object,      |
-        |          | obtained using :py:meth:`.build_nwbseries method`                |
+        |          |- the key ``"stimulus"`` is optional                              |
+        |          |- value for each key is a ``pynwb.base.TimeSeries`` object,       |
+        |          |obtained using :py:meth:`.build_nwbseries method`                 |
         +----------+------------------------------------------------------------------+
 
         *NOTE:*
@@ -618,7 +618,7 @@ class Fabricator(object):
 
         **Use case:**
 
-        .. code-block:: python
+        ::
 
            epochmd = {"epoch0soma": {"source": "soma", "start_time": float, "stop_time": float,
                                      "description": string, "tags": tuple},
@@ -636,7 +636,7 @@ class Fabricator(object):
 
         returns ``1`` because we inserted only one epoch. The number will reflect the number of epochs. See `VectorData. <https://pynwb.readthedocs.io/en/latest/pynwb.core.html#pynwb.core.VectorData>`_ Thus ``print(nwbfile.epochs[0])`` returns a tuple such that
 
-        .. code-block:: python
+        ::
 
            ( 0,  # => row number, i.e, epoch number in the order of insertion
              0.0,   # => epochmd["epoch0soma"]["start_time"] 
@@ -679,7 +679,7 @@ class Fabricator(object):
 
         Since the last column of the table (i.e, 5th column) is labelled ``"timeseries"`` doing ``nwbfile.epochs[0][4]`` returns
 
-        .. code-block:: python
+        ::
 
            [(0, 5,
              DummyTest_axon <class 'pynwb.base.TimeSeries'>
@@ -790,13 +790,13 @@ class Fabricator(object):
         +-------------+------------------------------------------------------------------+
         | Key         | Value type                                                       |
         +=============+==================================================================+
-        | ``epochmd`` | - dictionary of time-series metadata                             |
-        |             | - considering the case                                           |
+        | ``epochmd`` |- dictionary of time-series metadata                              |
+        |             |- considering the case                                            |
         |             |``chosenmodel.regions = {'soma': 0.0, 'axon': 0.0}`` and the      |
         |             |number of epochs per region = 2                                   |
-        |             | - when there is a stimulation the dictionary will be of the form |
+        |             |- when there is a stimulation the dictionary will be of the form  |
         |             |                                                                  |
-        |             |.. code-block:: python                                            |
+        |             |::                                                                |
         |             |                                                                  |
         |             |   {                                                              |
         |             |    "epoch0soma":                                                 |
@@ -812,9 +812,9 @@ class Fabricator(object):
         |             |       {"source": "axon", "start_time": float, "stop_time": float,|
         |             |                  "description": string, "tags": tuple}}          |
         |             |                                                                  |
-        |             | - but when there is no stimulation the dictionary will look as   |
+        |             |- but when there is no stimulation the dictionary will look as    |
         |             |                                                                  |
-        |             |.. code-block:: python                                            |
+        |             |::                                                                |
         |             |                                                                  |
         |             |   {                                                              |
         |             |    "epoch0soma":                                                 |
@@ -824,15 +824,15 @@ class Fabricator(object):
         |             |       {"source": "axon", "start_time": float, "stop_time": float,|
         |             |                  "description": string, "tags": tuple}}          |
         +-------------+------------------------------------------------------------------+
-        | ``nwbfile`` | - the built NWB file of type ``pynwb.file.NWBFile``              |
-        |             | - obtained using :py:meth:`.build_nwbfile method`                |
+        | ``nwbfile`` |- the built NWB file of type ``pynwb.file.NWBFile``               |
+        |             |- obtained using :py:meth:`.build_nwbfile method`                 |
         +-------------+------------------------------------------------------------------+
-        | ``nwbts``   | - dictionary of NWB time-series object                           |
-        |             | - its keys are the keys in                                       |
+        | ``nwbts``   |- dictionary of NWB time-series object                            |
+        |             |- its keys are the keys in                                        |
         |             |``chosenmodel.regions = {"soma": 0.0, "axon", 0.0}``              |
-        |             | - the key ``"stimulus"`` is optional                             |
-        |             | - value for each key is a ``pynwb.base.TimeSeries`` object,      |
-        |             | obtained using :py:meth:`.build_nwbseries method`                |
+        |             |- the key ``"stimulus"`` is optional                              |
+        |             |- value for each key is a ``pynwb.base.TimeSeries`` object,       |
+        |             |obtained using :py:meth:`.build_nwbseries method`                 |
         +-------------+------------------------------------------------------------------+
 
         *NOTE:*
@@ -841,7 +841,7 @@ class Fabricator(object):
 
         **Use case:**
 
-        .. code-block:: python
+        ::
 
            epoch_meta_data = {
              "epoch0soma": {
@@ -863,7 +863,7 @@ class Fabricator(object):
 
         returns ``2``, reflecting the number of epochs. Thus epoch in first row ``print(nwbfile.epochs[0])`` will appear as
 
-        .. code-block:: python
+        ::
 
            [(0, # => epochmd["epoch0soma"]["start_time"] 
              5, # => epochmd["epoch0soma"]["stop_time"]
@@ -883,7 +883,7 @@ class Fabricator(object):
 
         The epoch in second row ``print(nwbfile.epochs[1])`` will return
 
-        .. code-block:: python
+        ::
 
            [(5, # => epochmd["epoch0axon"]["start_time"] 
              10, # => epochmd["epoch0axon"]["stop_time"]
@@ -911,7 +911,7 @@ class Fabricator(object):
 
         Since the last column of the table (i.e, 5th column) is labelled ``"timeseries"`` doing ``nwbfile.epochs[0][4]`` returns
 
-        .. code-block:: python
+        ::
 
            [(0, # => epochmd["epoch0soma"]["start_time"] 
              5, # => epochmd["epoch0soma"]["stop_time"]
@@ -936,7 +936,7 @@ class Fabricator(object):
 
         Doing ``nwbfile.epochs.[0][4][0][2]`` returns the ``TimeSeries`` class
 
-        .. code-block:: python
+        ::
 
            DummyTest_soma <class 'pynwb.base.TimeSeries'>
             Fields:
@@ -991,10 +991,10 @@ class Fabricator(object):
         +--------------+------------------------------------------------------+
         | Key          | Value type                                           |
         +==============+======================================================+
-        | ``nwbfile``  | - the built NWB file of type ``pynwb.file.NWBFile``  |
-        |              | - obtained using :py:meth:`.build_nwbfile method`    |
+        | ``nwbfile``  |- the built NWB file of type ``pynwb.file.NWBFile``   |
+        |              |- obtained using :py:meth:`.build_nwbfile method`     |
         +--------------+------------------------------------------------------+
-        | ``filepath`` | string; eg, "/path/to/desired/directory/"            |
+        | ``filepath`` |string; eg, "/path/to/desired/directory/"             |
         +--------------+------------------------------------------------------+
 
         **Return value:** The filename of the saved file.

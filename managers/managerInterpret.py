@@ -25,7 +25,7 @@ class InterpretManager(object):
         """loadednwbfile is the file loaded from /responses directory
            modelregion is a string, eg, "soma"
         """
-        orderedepoch = loadednwbfile.drawout_orderedepochs(modelregion)
+        orderedepochs = loadednwbfile.drawout_orderedepochs(modelregion)
         datavalues = [ loadednwbfile.get_datavalues_for_epoch(i, orderedepochs)
                        for i in range(len(orderedepochs)) ]
         timestamps = [ loadednwbfile.get_timestamps_for_epoch(i, orderedepochs)

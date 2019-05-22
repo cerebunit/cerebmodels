@@ -13,58 +13,79 @@ from pynwb import TimeSeries
 #from pynwb import get_manager
 from pynwb import NWBHDF5IO
 
+from pdb import set_trace as breakpoint
+
 class Fabricator(object):
-    """Operators working under TranscribeManager
+    """
+    **Available Methods:**
 
-    Main Usage methods:
-    build_nwbfile
-    build_nwbseries
-    affix_nwbseries_to_nwbfile
-    build_nwbepochs
-    write_nwbfile
-
-    Class methods:
-    build_nwbfile
-    construct_nwbseries_nostimulus
-    build_nwbseries
-    affix_nwbseries_to_nwbfile
-    build_nwbepochs
-    write_nwbfile
-    
-    Static methods:
-    generic_timeseries
-    link_nwbseriesresponses_to_nwbfile
-    strip_out_stimulus_from_nwbseries
-    insert_a_nwbepoch
+    +------------------------------------------------+---------------------+
+    | Method name                                    | Method type         |
+    +================================================+=====================+
+    | :py:meth:`.build_nwbfile`                      | class method        |
+    +------------------------------------------------+---------------------+
+    | :py:meth:`.build_nwbseries`                    | class method        |
+    +------------------------------------------------+---------------------+
+    | :py:meth:`.affix_nwbseries_to_nwbfile`         | class method        |
+    +------------------------------------------------+---------------------+
+    | :py:meth:`.build_nwbepochs`                    | class method        |
+    +------------------------------------------------+---------------------+
+    | :py:meth:`.write_nwbfile`                      | class method        |
+    +------------------------------------------------+---------------------+
+    | :py:meth:`.construct_nwbseries_nostimulus`     | class method        |
+    +------------------------------------------------+---------------------+
+    | :py:meth:`.generic_timeseries`                 | static method       |
+    +------------------------------------------------+---------------------+
+    | :py:meth:`.link_nwbseriesresponses_to_nwbfile` | static method       |
+    +------------------------------------------------+---------------------+
+    | :py:meth:`.strip_out_stimulus_from_nwbseries`  | static method       |
+    +------------------------------------------------+---------------------+
+    | :py:meth:`.indices_tseries_for_epoch`          | static method       |
+    +------------------------------------------------+---------------------+
+    | :py:meth:`.tseries_for_epoch`                  | class method        |
+    +------------------------------------------------+---------------------+
+    | :py:meth:`.insert_a_nwbepoch`                  | class method        |
+    +------------------------------------------------+---------------------+
 
     """
 
     @classmethod
     def build_nwbfile( cls, filemd ):
-        """method for building the nwbfile
+        """Builds the nwbfile
 
-        Argument:
-        filemd -- dictionary such that
-                  { "source": "Where is the data from?",
-                    "session_description": "How was the data generated?",
-                    "identifier": "a unique ID",
-                    "session_start_time": str(time when recording began),
-                    "experimenter": "name of the experimenter",
-                    "experiment_description": "described experiment",
-                    "session_id": "collab ID",
-                    "institution": "name of the institution",
-                    "lab": "name of the lab" }
-        file_to_write = build_nwbfile( file_metadata )
+        **Argument:**
 
-        Returned Value:
-        nwbfile with the attributes
-               nwbfile.source, nwbfile.session_description, nwbfile.identifier,
-               nwbfile.session_start_time, nwbfile.experimenter,
-               nwbfile.experiment_description, nwbfile.session_id, nwbfile.lab,
-               nwbfile.institution
+        +----------+----------------------------------------------------------------+
+        | Argument | Value type                                                     |
+        +==========+================================================================+
+        | only one | dictionary of the file metadata such that                      |
+        |          |                                                                |
+        |          |.. code-block:: json                                            |
+        |          |                                                                |
+        |          |   {                                                            |
+        |          |     "session_description": "How was the data generated?",      |
+        |          |     "identifier": "a unique ID",                               |
+        |          |     "session_start_time": datetime(time when recording began), |
+        |          |     "experimenter": "name of the experimenter",                |
+        |          |     "experiment_description": "described experiment",          |
+        |          |     "session_id": "collab ID",                                 |
+        |          |     "institution": "name of the institution",                  |
+        |          |     "lab": "name of the lab"                                   |
+        |          |    }                                                           |
+        +----------+----------------------------------------------------------------+
 
-        Availablle attributes:
-        pynwb.file.NWBFile(source, session_description, identifier, session_start_time,
+        **Returned Value:** The returned nwbfile has the following attributes of interests: ``nwbfile.session_description``, ``nwbfile.identifier``, ``nwbfile.session_start_time``, ``nwbfile.experimenter``, ``nwbfile.experiment_description``, ``nwbfile.session_id``, ``nwbfile.lab`` and ``nwbfile.institution``.
+
+        **Use case:**
+
+        ``>> file_to_write = build_nwbfile( file_metadata )``
+
+        *NOTE:* The overall available attributes are however
+
+        .. code-block:: python
+
+           pynwb.file.NWBFile(
+                session_description, identifier, session_start_time,
                 file_create_date=None, experimenter=None, experiment_description=None,
                 session_id=None, institution=None, notes=None, pharmacology=None,
                 protocol=None, related_publications=None, slices=None,
@@ -73,53 +94,77 @@ class Fabricator(object):
                 acquisition=None, stimulus=None, stimulus_template=None, epochs=None,
                 epoch_tags=set(), trials=None, modules=None, ec_electrodes=None,
                 ec_electrode_groups=None, ic_electrodes=None, imaging_planes=None,
-                ogen_sites=None, devices=None, subject=None)
+                ogen_sites=None, devices=None, subject=None )
 
-        Note:
-            - call an nwbfile.attribute
-            - http://pynwb.readthedocs.io/en/latest/pynwb.file.html#pynwb.file.NWBFile
+        `Refer to pynwb documentation. <http://pynwb.readthedocs.io/en/latest/pynwb.file.html#pynwb.file.NWBFile>`_
+
         """
-        return NWBFile( source = filemd["source"],
-                        session_description = filemd["session_description"],
-                        identifier = filemd["identifier"],
-                        session_start_time = filemd["session_start_time"],
-                        file_create_date = str(datetime.now()),                   # additions
-                        experimenter = filemd["experimenter"],
-                        experiment_description = filemd["experiment_description"],
-                        session_id = filemd["session_id"],
-                        lab = filemd["lab"],
-                        institution = filemd["institution"] )
+        return NWBFile( #source = filemd["source"],
+                        session_description = filemd["session_description"], # Required NWB2.0
+                        identifier = filemd["identifier"],                   # Required NWB2.0
+                        session_start_time = filemd["session_start_time"],   # Required NWB2.0
+                        file_create_date = datetime.now(),                   # optional datetime
+                        experimenter = filemd["experimenter"],               # optional
+                        experiment_description = filemd["experiment_description"], # optional
+                        session_id = filemd["session_id"],                   # optional
+                        lab = filemd["lab"],                                 # optional
+                        institution = filemd["institution"] )                # optional
 
     @staticmethod
     def generic_timeseries(metadata):
-        """static method called by construct_nwbseries
+        """Creates a generic NWB time-series object.
 
-        Arguments:
-        metadata -- 
+        **Argument:**
 
-        Returned Value:
-        nwbts with the attributes
-               nwbts.name, nwbts.source, nwbts.data, nwbts.timestamps, nwbts.unit,
-               nwbts.resolution, nwbts.converstion, #nwbts.starting_time, #nwbts.rate,
-               nwbts.comment, nwbts.description
+        +----------+--------------------------------------------------------------+
+        | Argument | Value type                                                   |
+        +==========+==============================================================+
+        | only one | - dictionary of time-series metadata                         |
+        |          | - it must have the following keys and their value type       |
+        |          +-----------------+--------------------------------------------+
+        |          | key             | value type                                 |
+        |          +-----------------+--------------------------------------------+
+        |          | ``"name"``      | string                                     |
+        |          +-----------------+--------------------------------------------+
+        |          | ``"data"``      | list/tuple/array                           |
+        |          +-----------------+--------------------------------------------+
+        |          | ``"unit"``      | string                                     |
+        |          +-----------------+--------------------------------------------+
+        |          | ``"resolution"``| string/float                               |
+        |          +-----------------+--------------------------------------------+
+        |          | ``"conversion"``| string/float                               |
+        |          +-----------------+--------------------------------------------+
+        |          |``"timestamps"`` | list/tuple/array                           |
+        |          +-----------------+--------------------------------------------+
+        |          |``"comments"``   | string                                     |
+        |          +-----------------+--------------------------------------------+
+        |          |``"description"``| string                                     |
+        +----------+-----------------+--------------------------------------------+
 
-        Available attributes:
-        pynwb.base.TimeSeries(name, source, data=None, unit=None, resolution=0.0,
+        **Returned Value:** The NWB time-series object, say ``nwbts`` will have the following useful attributes ``nwbts.name``, ``nwbts.data``, ``nwbts.timestamps``, ``nwbts.unit``, ``nwbts.resolution``, ``nwbts.converstion``, ``#nwbts.starting_time``, ``#nwbts.rate``, ``nwbts.comment``, ``nwbts.description``.
+
+        *NOTE:* The overall available attributes are however
+
+        .. code-block:: python
+
+           pynwb.base.TimeSeries(
+                              name, data=None, unit=None, resolution=0.0,
                               conversion=1.0, timestamps=None, starting_time=None,
                               rate=None, comments='no comments',
                               description='no description', control=None,
-                              control_description=None, parent=None)
+                              control_description=None, parent=None )
 
-        NOTE:
-            - https://pynwb.readthedocs.io/en/latest/pynwb.base.html#pynwb.base.TimeSeries
-            - due to the bug I reported https://github.com/NeurodataWithoutBorders/pynwb/issues/579
-              starting_time and rate attributes are not included thus defaults to None
-            - pynwb developer says
-              's is because you either enter timestamps or rate+starting_time, not all three. We should catch this and raise an error.'
-            - so to avoid error in future pynwb version the two attributes are taken out.
+        `Refer to pynwb documentation. <https://pynwb.readthedocs.io/en/latest/pynwb.base.html#pynwb.base.TimeSeries>`_
+
+        *Potential Bug:*
+
+        * due to the `bug I reported <https://github.com/NeurodataWithoutBorders/pynwb/issues/579>`_ ``starting_time`` and ``rate`` attributes are not included thus defaults to ``None``
+        * pynwb developer says ".. is because you either enter timestamps or rate+starting_time, not all three. We should catch this and raise an error."
+        * so to avoid error in future pynwb version the two attributes are taken out.
+
         """
         return TimeSeries( metadata["name"],
-                           metadata["source"],
+                           #metadata["source"],                 # no longer in NWB2.0
                            data = numpy.array(metadata["data"]),
                            unit = metadata["unit"],
                            resolution = metadata["resolution"],
@@ -127,30 +172,67 @@ class Fabricator(object):
                            timestamps = numpy.array(metadata["timestamps"]),
                            #starting_time = metadata["starting_time"],
                            #rate = metadata["rate"],
-                           comments = metadata["comment"],
+                           comments = metadata["comments"],
                            description = metadata["description"] )
 
     @classmethod
     def construct_nwbseries_nostimulus(cls, chosenmodel, tsmd):
-        """class method called by build_nwbseries
+        """Creates `NWB time-series object <https://pynwb.readthedocs.io/en/latest/pynwb.base.html#pynwb.base.TimeSeries>`_ without stimulus.
 
-        Returned Value:
-        nwbts with the attributes
-               nwbts[key].name, nwbts[key].source, nwbts[key].data,
-               nwbts[key].timestamps, nwbts[key].unit,
-               nwbts[key].resolution, nwbts[key].converstion,
-               nwbts[key].starting_time, nwbts[key].rate,
-               nwbts[key].comment, nwbts[key].description
-        keys are the keys in chosemodel.regions = {'soma':0.0, 'axon':0.0}
+        **Arguments:**
 
-        Available attributes:
-        pynwb.base.TimeSeries(name, source, data=None, unit=None, resolution=0.0,
-                              conversion=1.0, timestamps=None, starting_time=None,
-                              rate=None, comments='no comments',
-                              description='no description', control=None,
-                              control_description=None, parent=None)
-        NOTE:
-            - https://pynwb.readthedocs.io/en/latest/pynwb.base.html#pynwb.base.TimeSeries
+        +-----------+--------------------------------------------------------------+
+        | Arguments | Value type                                                   |
+        +===========+==============================================================+
+        | first     | instantiated model                                           |
+        +-----------+-----------------+--------------------------------------------+
+        | second    | - dictionary of time-series metadata                         |
+        |           | - it must have the following keys and their values           |
+        |           +-----------------+--------------------------------------------+
+        |           | key             | value type                                 |
+        |           +-----------------+--------------------------------------------+
+        |           | ``"name"``      | string                                     |
+        |           +-----------------+--------------------------------------------+
+        |           | ``"data"``      | list/tuple/array                           |
+        |           +-----------------+--------------------------------------------+
+        |           | ``"unit"``      | string                                     |
+        |           +-----------------+--------------------------------------------+
+        |           | ``"resolution"``| string/float                               |
+        |           +-----------------+--------------------------------------------+
+        |           | ``"conversion"``| string/float                               |
+        |           +-----------------+--------------------------------------------+
+        |           |``"timestamps"`` | list/tuple/array                           |
+        |           +-----------------+--------------------------------------------+
+        |           |``"comments"``   | string                                     |
+        |           +-----------------+--------------------------------------------+
+        |           |``"description"``| string                                     |
+        +-----------+-----------------+--------------------------------------------+
+
+        **Returned Value:** The NWB time-series object, say ``nwbts`` will have the following useful attributes
+
+        .. code-block:: python
+
+           nwbts[key].name, nwbts[key].data,
+           nwbts[key].timestamps, nwbts[key].unit,
+           nwbts[key].resolution, nwbts[key].converstion,
+           nwbts[key].starting_time, nwbts[key].rate,
+           nwbts[key].comment, nwbts[key].description
+
+        such that a ``key`` are the keys in ``chosemodel.regions = {'soma':0.0, 'axon':0.0}``.
+
+        *NOTE:* The overall available attributes are however
+
+        .. code-block:: python
+
+           pynwb.base.TimeSeries(
+                               name, data=None, unit=None, resolution=0.0,
+                               conversion=1.0, timestamps=None, starting_time=None,
+                               rate=None, comments='no comments',
+                               description='no description', control=None,
+                               control_description=None, parent=None )
+
+        `Refer to pynwb documentation. <https://pynwb.readthedocs.io/en/latest/pynwb.base.html#pynwb.base.TimeSeries>`_
+
         """
         nwbseries = {}
         for cellregion in chosenmodel.regions.keys():
@@ -160,24 +242,62 @@ class Fabricator(object):
 
     @classmethod
     def build_nwbseries(cls, chosenmodel=None, tsmd=None):
-        """
-        Returned Value:
-        nwbts with the attributes
-               nwbts[key].name, nwbts[key].source, nwbts[key].data,
-               nwbts[key].timestamps, nwbts[key].unit,
-               nwbts[key].resolution, nwbts[key].conversion,
-               nwbts[key].starting_time, nwbts[key].rate,
-               nwbts[key].comment, nwbts[key].description
-        keys are the keys in chosemodel.regions and with or without 'stimulus' as a key.
+        """Builds an `NWB time-series object. <https://pynwb.readthedocs.io/en/latest/pynwb.base.html#pynwb.base.TimeSeries>`_
 
-        Available attributes:
-        pynwb.base.TimeSeries(name, source, data=None, unit=None, resolution=0.0,
-                              conversion=1.0, timestamps=None, starting_time=None,
-                              rate=None, comments='no comments',
-                              description='no description', control=None,
-                              control_description=None, parent=None)
-        NOTE:
-            - https://pynwb.readthedocs.io/en/latest/pynwb.base.html#pynwb.base.TimeSeries
+        **Keyword Arguments:**
+
+        +-----------------+--------------------------------------------------------------+
+        | Key             | Value type                                                   |
+        +=================+==============================================================+
+        | ``chosenmodel`` | instantiated model                                           |
+        | ``tsmd``        | - dictionary of time-series metadata                         |
+        |                 +---------------------------+----------------------------------+
+        |                 | key                       | value type                       |
+        |                 +---------------------------+----------------------------------+
+        |                 | ``"name"``                | string                           |
+        |                 +---------------------------+----------------------------------+
+        |                 | ``"data"``                | list/tuple/array                 |
+        |                 +---------------------------+----------------------------------+
+        |                 | ``"unit"``                | string                           |
+        |                 +---------------------------+----------------------------------+
+        |                 | ``"resolution"``          | string/float                     |
+        |                 +---------------------------+----------------------------------+
+        |                 | ``"conversion"``          | string/float                     |
+        |                 +---------------------------+----------------------------------+
+        |                 |``"timestamps"``           | list/tuple/array                 |
+        |                 +---------------------------+----------------------------------+
+        |                 |``"comments"``             | string                           |
+        |                 +---------------------------+----------------------------------+
+        |                 |``"description"``          | string                           |
+        |                 +---------------------------+----------------------------------+
+        |                 | ``"stimulus"`` (optional) |                                  |
+        +-----------------+---------------------------+----------------------------------+
+
+        **Returned Value:** The NWB time-series object, say ``nwbts`` will have the following useful attributes
+
+        .. code-block:: python
+
+           nwbts[key].name, nwbts[key].data,
+           nwbts[key].timestamps, nwbts[key].unit,
+           nwbts[key].resolution, nwbts[key].converstion,
+           nwbts[key].starting_time, nwbts[key].rate,
+           nwbts[key].comment, nwbts[key].description
+
+        such that a ``key`` are the keys in ``chosemodel.regions = {'soma':0.0, 'axon':0.0}`` and with or without ``"stimulus"`` key.
+
+        *NOTE:* The overall available attributes are however
+
+        .. code-block:: python
+
+           pynwb.base.TimeSeries(
+                               name, data=None, unit=None, resolution=0.0,
+                               conversion=1.0, timestamps=None, starting_time=None,
+                               rate=None, comments='no comments',
+                               description='no description', control=None,
+                               control_description=None, parent=None )
+
+        `Refer to pynwb documentation. <https://pynwb.readthedocs.io/en/latest/pynwb.base.html#pynwb.base.TimeSeries>`_
+
         """
         nwbseries = {}
         if "stimulus" in tsmd:
@@ -189,31 +309,45 @@ class Fabricator(object):
 
     @staticmethod
     def link_nwbseriesresponses_to_nwbfile(nwbseries, nwbfile):
-        """static method only for adding response related timeseries NOT stimulus.
-        This is called by affix_nwbseries_to_nwbfile
+        """Adds response related time-series NOT the stimulus signal (time-series). This is called by :py:meth:`.affix_nwbseries_to_nwbfile`.
 
-        Arguments:
-        nwbseries -- dictorary; keys = keys in chosenmodel.regions = {"soma": 0.0, "axon", 0.0}
-                                values for each key is
-                                pynwb.base.TimeSeries, obtained using build_nwbseries method
-        nwbfile -- pynwb.file.NWBFile, obtained using build_nwbfile method
+        **Arguments:**
 
-        Returned value:
-        updated_nwbfile with all the TimeSeries which can be extracted as
-             ts_of_key = updated_nwbfile.get_acquisition(nwbseries[key].name)
-             where key is the region
-             Eg: 
-                ts_soma = updated_nwbfile.get_acquisition(nwbseries["soma"].name)
-                then you can get all the available attributes as usual
-                    ts_soma.name, ts_soma.source, ts_soma.data,
-                    ts_soma.timestamps, ts_soma.unit,
-                    ts_soma.resolution, ts_soma.converstion,
-                    ts_soma.starting_time, ts_soma.rate,
-                    ts_soma.comment, ts_soma.description
-              NOTE:
-                 - unlike the returned value for build_nwbseries
-                   the timeseries here are for a particular key
-                   therefore it is no longer a dictionary.
+        +-----------+------------------------------------------------------------+
+        | Arguments | Value type                                                 |
+        +===========+============================================================+ 
+        | first     | - dictionary of NWB time-series object                     |
+        |           | - its keys are the keys in                                 |
+        |           |``chosenmodel.regions = {"soma": 0.0, "axon", 0.0}``        |
+        |           | - value for each key is a ``pynwb.base.TimeSeries`` object,|
+        |           | obtained using :py:meth:`.build_nwbseries method`          |
+        +-----------+------------------------------------------------------------+
+        | second    | - the built NWB file of type ``pynwb.file.NWBFile``        |
+        |           | - obtained using :py:meth:`.build_nwbfile method`          |
+        +-----------+------------------------------------------------------------+
+
+        **Returned value:** This is the NWB file fed as an argument but updated by adding the time-series, say, ``updated_nwbfile``. The ``TimeSeries`` object can be extracted as
+
+        ``>> ts_of_key = updated_nwbfile.get_acquisition(nwbseries[key].name)``
+
+        where key is the region. For example,
+
+        ``>> ts_soma = updated_nwbfile.get_acquisition(nwbseries["soma"].name)``
+
+        Then you can get all the available attributes as usual
+
+        .. code-block:: python
+
+           ts_soma.name, ts_soma.data,
+           ts_soma.timestamps, ts_soma.unit,
+           ts_soma.resolution, ts_soma.converstion,
+           ts_soma.starting_time, ts_soma.rate,
+           ts_soma.comment, ts_soma.description
+
+        *NOTE:*
+
+        * unlike the returned value for :py:meth:`.build_nwbseries` the time-series here are for a particular key therefore it is no longer a dictionary.
+
         """
         for key in nwbseries.keys():
             nwbfile.add_acquisition(nwbseries[key])
@@ -221,42 +355,57 @@ class Fabricator(object):
 
     @staticmethod
     def strip_out_stimulus_from_nwbseries(nwbseries):
-        """static method called by affix_nwbseries_to_nwbfile
+        """Extracts from the root time-series object all the time-series objects with the exception of the stimulus time-series. This method is called by :py:meth:`.affix_nwbseries_to_nwbfile`.
         """
         return { x: nwbseries[x] for x in nwbseries
                                   if x not in {"stimulus"} }
 
     @classmethod
     def affix_nwbseries_to_nwbfile(cls, nwbts=None, nwbfile=None):
-        """method that adds nwbseries with or without stimulus
+        """Adds time-series (response time-series with or without the stimulus time-series).
 
-        Keyword Arguments:
-        nwbts -- dictionary; keys = keys in chosenmodel.regions = {"soma": 0.0, "axon", 0.0}
-                                             with or without "stimulus" as key
-                                values for each key is
-                                pynwb.base.TimeSeries, obtained using build_nwbseries method
-        nwbfile -- pynwb.file.NWBFile, obtained using build_nwbfile method
+        **Keyword Arguments:**
 
-        Returned value:
-        updated_nwbfile with all the TimeSeries which can be extracted as
-             ts_of_key = updated_nwbfile.get_acquisition(nwbseries[key].name)
-             where key is the region
-             Eg: 
-                ts_soma = updated_nwbfile.get_acquisition(nwbseries["soma"].name)
-                then you can get all the available attributes as usual
-                    ts_soma.name, ts_soma.source, ts_soma.data,
-                    ts_soma.timestamps, ts_soma.unit,
-                    ts_soma.resolution, ts_soma.converstion,
-                    ts_soma.starting_time, ts_soma.rate,
-                    ts_soma.comment, ts_soma.description
-                But
-                if "stimulus" is one of the key
-                ts_stim = updated_nwbfile.get_stimulus(nwbseries["stimulus"].name)
-                then get its attributes as usual
-              NOTE:
-                 - unlike the returned value for build_nwbseries
-                   the timeseries here are for a particular key
-                   therefore it is no longer a dictionary.
+        +-------------+------------------------------------------------------------+
+        | Key         | Value type                                                 |
+        +=============+============================================================+ 
+        | ``nwbts``   | - dictionary of NWB time-series object                     |
+        |             | - its keys are the keys in                                 |
+        |             |``chosenmodel.regions = {"soma": 0.0, "axon", 0.0}``        |
+        |             | - the key ``"stimulus"`` is optional                       |
+        |             | - value for each key is a ``pynwb.base.TimeSeries`` object,|
+        |             | obtained using :py:meth:`.build_nwbseries method`          |
+        +-------------+------------------------------------------------------------+
+        | ``nwbfile`` | - the built NWB file of type ``pynwb.file.NWBFile``        |
+        |             | - obtained using :py:meth:`.build_nwbfile method`          |
+        +-------------+------------------------------------------------------------+
+
+        **Returned value:** This is the NWB file fed as an argument but updated by adding the time-series, say, ``updated_nwbfile``. The ``TimeSeries`` object can be extracted as
+
+        ``>> ts_of_key = updated_nwbfile.get_acquisition(nwbseries[key].name)``
+
+        where key is the region. For example,
+
+        ``>> ts_soma = updated_nwbfile.get_acquisition(nwbseries["soma"].name)``
+
+        Then you can get all the available attributes as usual
+
+        .. code-block:: python
+
+           ts_soma.name, ts_soma.data,
+           ts_soma.timestamps, ts_soma.unit,
+           ts_soma.resolution, ts_soma.converstion,
+           ts_soma.starting_time, ts_soma.rate,
+           ts_soma.comment, ts_soma.description
+
+        But if ``"stimulus"`` is one of the availabe keys then do
+
+        ``>> ts_stim = updated_nwbfile.get_stimulus(nwbseries["stimulus"].name)``
+
+        Now all the aforementioned attributes are available as usual.
+
+        *NOTE:* Unlike the returned value for :py:meth:`.build_nwbseries` the time-series here are for a particular key therefore it is no longer a dictionary.
+
         """
         if "stimulus" in nwbts.keys():
             nwbfile.add_stimulus(nwbts["stimulus"])
@@ -269,230 +418,556 @@ class Fabricator(object):
         return nwbfile
 
     @staticmethod
-    def insert_a_nwbepoch( epoch_i_cellregion, epochmd, nwbfile, nwbts ):
-        """static method called by construct_nwbepochs
+    def indices_tseries_for_epoch( epochmd_i_cellregion, nwbts ):
+        """Returns list of indices of the timestamps from the given time-series that is between ``start_time`` and ``stop_time`` in **an** epoch of a given *region*.
 
-        Arguments:
-        epoch_i_cellregion -- string; eg, epoch1soma
-        epochmd -- dictionary;
-                   meta-data for case chosenmodel.regions = {'soma': 0.0, 'axon': 0.0} and no of epochs/region=2 with stimulation is of the form
-                   {"epoch0soma": {"source": "soma", "start_time": float, "stop_time": float,
-                                   "description": string, "tags": tuple}
-                    "epoch1soma": {"source": "soma", "start_time": float, "stop_time": float,
-                                   "description": string, "tags": tuple}
-                    "epoch0axon": {"source": "axon", "start_time": float, "stop_time": float,
-                                   "description": string, "tags": tuple}
-                    "epoch1axon": {"source": "axon", "start_time": float, "stop_time": float,
-                                   "description": string, "tags": tuple}}
-                  for the case without stimulation
-                   {"epoch0soma": {"source": "soma", "start_time": float, "stop_time": float,
-                                   "description": string, "tags": tuple}
-                    "epoch0axon": {"source": "axon", "start_time": float, "stop_time": float,
-                                   "description": string, "tags": tuple}}
-        nwbfile -- pynwb.file.NWBFile, obtained using build_nwbfile method
-        nwbts -- pynwb.base.TimeSeries, obtained using build_nwbseries method
+        **Arguments:**
 
-        NOTE:
-            - the whole nwbts is not passed here
-            - pass only time series that corresponds to this region
+        +----------+------------------------------------------------------------------+
+        | Argument | Value type                                                       |
+        +==========+==================================================================+
+        | first    | - dictionary of time-series metadata for a particular region of  |
+        |          | **an** epoch                                                     |
+        |          | - considering the case                                           |
+        |          |``chosenmodel.regions = {'soma': 0.0, 'axon': 0.0}`` and the      |
+        |          |number of epochs per region = 2                                   |
+        |          | - when there is a stimulation the dictionary will be of the form |
+        |          |                                                                  |
+        |          |.. code-block:: python                                            |
+        |          |                                                                  |
+        |          |   {                                                              |
+        |          |    "epoch0soma":                                                 |
+        |          |       {"source": "soma", "start_time": float, "stop_time": float,|
+        |          |                  "description": string, "tags": tuple}           |
+        |          |    "epoch1soma":                                                 |
+        |          |       {"source": "soma", "start_time": float, "stop_time": float,|
+        |          |                  "description": string, "tags": tuple}           |
+        |          |    "epoch0axon":                                                 |
+        |          |       {"source": "axon", "start_time": float, "stop_time": float,|
+        |          |                  "description": string, "tags": tuple}           |
+        |          |    "epoch1axon":                                                 |
+        |          |       {"source": "axon", "start_time": float, "stop_time": float,|
+        |          |                  "description": string, "tags": tuple}}          |
+        |          |                                                                  |
+        |          | - but when there is no stimulation the dictionary will look as   |
+        |          |                                                                  |
+        |          |.. code-block:: python                                            |
+        |          |                                                                  |
+        |          |   {                                                              |
+        |          |    "epoch0soma":                                                 |
+        |          |       {"source": "soma", "start_time": float, "stop_time": float,|
+        |          |                  "description": string, "tags": tuple}           |
+        |          |    "epoch0axon":                                                 |
+        |          |       {"source": "axon", "start_time": float, "stop_time": float,|
+        |          |                  "description": string, "tags": tuple}}          |
+        +----------+------------------------------------------------------------------+
+        | second   | - dictionary of NWB time-series object                           |
+        |          | - its keys are the keys in                                       |
+        |          |``chosenmodel.regions = {"soma": 0.0, "axon", 0.0}``              |
+        |          | - the key ``"stimulus"`` is optional                             |
+        |          | - value for each key is a ``pynwb.base.TimeSeries`` object,      |
+        |          | obtained using :py:meth:`.build_nwbseries method`                |
+        +----------+------------------------------------------------------------------+
 
-        Use case:
-        epochmd = {"epoch0soma": {"source": "soma", "start_time": float, "stop_time": float,
-                                  "description": string, "tags": tuple},
-                   "epoch1axon": {"source": "soma", "start_time": float, "stop_time": float,
-                                  "description": string, "tags": tuple},
-                   "epoch0axon": {"source": "axon", "start_time": float, "stop_time": float,
-                                  "description": string, "tags": tuple},
-                   "epoch1axon": {"source": "axon", "start_time": float, "stop_time": float,
-                                  "description": string, "tags": tuple}}
-        updated_nwbfile = insert_a_nwbepoch( "epoch0soma", epochmd, nwbfile )
+        *NOTE:*
 
-        Returned Value:
-        nwbfile.epochs.epochs.data returns a list with tuple such that
-            [( 0.0, # => epochmd["epoch0soma"]["start_time"] 
-            10.0, # => epochmd["epoch0soma"]["stop_time"]
-            '1_epoch_responses,0,soma,DummyTest,cells,epoch0soma',#=>epochmd["epoch0soma"]["tags"]
-            <pynwb.form.data_utils.ListSlicer object at 0x7ff5883a8450>, # EPOCH DATA
-            'first epoch')] # => epochmd["epoch0soma"]["description"]
-              NOTE:
-                  - above are the 5-elements for A particular epoch
-                  - a particular epoch => a row
-                  - the 5-elements => 5-columns such that
-                  - nwbfile.epochs.epochs.columns returns
-                      ('start_time', 'stop_time', 'tags', 'timeseries', 'description')
+        * the whole NWB TimeSeries is not passed here
+        * only time series that corresponds to the respective region is passed into this function
+        * the epoch metadata has the key ``"source"``. This represents the region from which epoch is considered this should not be confused with any attribute of the NWB file. Besides, since NWB2.0 ``source`` is no longer an attribute of NWB file.
 
-        Since we are interested in the Epoch Date created, to access it
-        nwbfile.epochs.epochs.data[0][3] returns
-                     <pynwb.form.data_utils.ListSlicer object at 0x7ff5883a8450>
-              NOTE:
-                  - the first index is the row index thus representing a particular epoch
-                  - here the index=0 because there is only one epoch
-                  - the data, i.e, timeseries is always index= 3
-                  - **TAKE AWAY**
-                    nwbfile.epochs.epochs.data[i][3] for i'th epoch
+        """ 
+        start_up = epochmd_i_cellregion["start_time"] + nwbts.resolution
+        start_low = epochmd_i_cellregion["start_time"] - nwbts.resolution
+        stop_up = epochmd_i_cellregion["stop_time"] + nwbts.resolution
+        stop_low = epochmd_i_cellregion["stop_time"] - nwbts.resolution
+        start_i = [indx for indx in range(nwbts.num_samples)
+                   if nwbts.timestamps[indx] > start_low and nwbts.timestamps[indx] < start_up][0]
+        stop_i = [indx for indx in range(nwbts.num_samples)
+                   if nwbts.timestamps[indx] > stop_low and nwbts.timestamps[indx] < stop_up][0]
+        return range(start_i, stop_i+1) # add 1 to include stop_i
 
-        Next nwbfile.epochs.epochs.data[0][3].data is a TimeSeries class.
+    @classmethod
+    def tseries_for_epoch( cls, epochmd_i_cellregion, nwbts ):
+        """Returns the NWB ``TimeSeries`` object with ``data`` and ``timestamps`` occuring between ``start_time`` and ``stop_time`` in **an** epoch of a given *region*. This method is called by :py:meth::`.insert_a_nwbepoch`.
 
-        To get the TimeSeries object do
-        nwbfile.epochs.epochs.data[0][3].data.data which returns a list with tuple
-                     [( 0, # => 
-                        1000, # => timeseries_metadata["soma"]["conversion"]
-                        <pynwb.base.TimeSeries object at 0x7fabf68b8690>)] # => nwb TimeSeries object
-              NOTE:
-                  - one would think that this list/data is unique to this epoch
-                  - but if you created other epochs, say "epoch0soma" & "epoch0axon" then
-                    length of this list = 2
-                    thus, len(nwbfile.epochs.epochs.data[0][3].data.data) = len(epoch_metadata)
-                  - in other words, for any i (for all epochs)
-                    nwbfile.epochs.epochs.data[i][3].data.data is the same
-                  - this is because 
-                    nwbfile.epochs.epochs.data[i][3].data.data
-                    is a TABLE
-                    recall that nwbfile.epochs.epochs.data is also a TABLE
-                  - however, it should be noted that they are not the same table types
-                  - the table nwbfile.epochs.epochs.data[i][3].data.data has 3-columns
-                    and the rows correspond to respective epoch
-                  - for i'th epoch, nwbfile.epochs.epochs.data[i][3] its corresponding
-                    data is nwbfile.epochs.epochs.data[i][3].data.data[i]
-                  - finally, its corresponding TimeSeries nwb object is the 3rd column
-                    that is nwbfile.epochs.epochs.data[i][3].data.data[i][2]
-                  - **TAKE AWAY**
-                    nwbfile.epochs.epochs.data[i][3].data.data[i][2] for i'th epoch
+        **Arguments:**
 
-        Finally to retrieve the TimeSeries data and timestamps associated with this epoch
-        follow the same format as done for the returned values of build_nwbseries
-        with some modifications as shown
-        nwbfile.epochs.epochs.data[0][3].data.data[0][2].timestamps
-        nwbfile.epochs.epochs.data[0][3].data.data[0][2].data
+        +----------+------------------------------------------------------------------+
+        | Argument | Value type                                                       |
+        +==========+==================================================================+
+        | first    | - dictionary of time-series metadata for a particular region of  |
+        |          | **an** epoch                                                     |
+        |          | - considering the case                                           |
+        |          |``chosenmodel.regions = {'soma': 0.0, 'axon': 0.0}`` and the      |
+        |          |number of epochs per region = 2                                   |
+        |          | - when there is a stimulation the dictionary will be of the form |
+        |          |                                                                  |
+        |          |.. code-block:: python                                            |
+        |          |                                                                  |
+        |          |   {                                                              |
+        |          |    "epoch0soma":                                                 |
+        |          |       {"source": "soma", "start_time": float, "stop_time": float,|
+        |          |                  "description": string, "tags": tuple}           |
+        |          |    "epoch1soma":                                                 |
+        |          |       {"source": "soma", "start_time": float, "stop_time": float,|
+        |          |                  "description": string, "tags": tuple}           |
+        |          |    "epoch0axon":                                                 |
+        |          |       {"source": "axon", "start_time": float, "stop_time": float,|
+        |          |                  "description": string, "tags": tuple}           |
+        |          |    "epoch1axon":                                                 |
+        |          |       {"source": "axon", "start_time": float, "stop_time": float,|
+        |          |                  "description": string, "tags": tuple}}          |
+        |          |                                                                  |
+        |          | - but when there is no stimulation the dictionary will look as   |
+        |          |                                                                  |
+        |          |.. code-block:: python                                            |
+        |          |                                                                  |
+        |          |   {                                                              |
+        |          |    "epoch0soma":                                                 |
+        |          |       {"source": "soma", "start_time": float, "stop_time": float,|
+        |          |                  "description": string, "tags": tuple}           |
+        |          |    "epoch0axon":                                                 |
+        |          |       {"source": "axon", "start_time": float, "stop_time": float,|
+        |          |                  "description": string, "tags": tuple}}          |
+        +----------+------------------------------------------------------------------+
+        | second   | - dictionary of NWB time-series object                           |
+        |          | - its keys are the keys in                                       |
+        |          |``chosenmodel.regions = {"soma": 0.0, "axon", 0.0}``              |
+        |          | - the key ``"stimulus"`` is optional                             |
+        |          | - value for each key is a ``pynwb.base.TimeSeries`` object,      |
+        |          | obtained using :py:meth:`.build_nwbseries method`                |
+        +----------+------------------------------------------------------------------+
 
-        NOTE:
-            - for nwb epoch attributes see
-              http://pynwb.readthedocs.io/en/latest/pynwb.epoch.html#pynwb.epoch.Epochs
-              https://github.com/AllenInstitute/nwb-api/blob/master/ainwb/nwb/nwbep.py
-              https://pynwb.readthedocs.io/en/latest/pynwb.file.html#pynwb.file.NWBFile.create_epoch
-              https://pynwb.readthedocs.io/en/latest/pynwb.epoch.html#pynwb.epoch.EpochTable
+        *NOTE:*
+
+        * the whole NWB TimeSeries is not passed here
+        * only time series that corresponds to the respective region is passed into this function
+        * the epoch metadata has the key ``"source"``. This represents the region from which epoch is considered this should not be confused with any attribute of the NWB file. Besides, since NWB2.0 ``source`` is no longer an attribute of NWB file.
+
+        """ 
+        indices = cls.indices_tseries_for_epoch( epochmd_i_cellregion, nwbts )
+        ts_md = { 
+          "name": nwbts.name, "comments": nwbts.name, "description": nwbts.description,
+          "unit": nwbts.unit, "resolution": nwbts.resolution, "conversion": nwbts.conversion,
+          "timestamps": [nwbts.timestamps[i] for i in indices],
+          "data": [nwbts.data[i] for i in indices] }
+        return cls.generic_timeseries(ts_md)
+
+    @classmethod
+    def insert_a_nwbepoch( cls, epoch_i_cellregion, epochmd, nwbfile, nwbts ):
+        """Creates an epoch for a given region and updates the already created parent NWB file. This method called by :py:meth:`.construct_nwbepochs`.
+
+        **Arguments:**
+
+        +----------+------------------------------------------------------------------+
+        | Argument | Value type                                                       |
+        +==========+==================================================================+
+        | first    | string for key of an epoch from a particular region, say,        |
+        |          | ``"epoch1soma"``                                                 |
+        +----------+------------------------------------------------------------------+
+        | second   | - dictionary of time-series metadata                             |
+        |          | - considering the case                                           |
+        |          |``chosenmodel.regions = {'soma': 0.0, 'axon': 0.0}`` and the      |
+        |          |number of epochs per region = 2                                   |
+        |          | - when there is a stimulation the dictionary will be of the form |
+        |          |                                                                  |
+        |          |.. code-block:: python                                            |
+        |          |                                                                  |
+        |          |   {                                                              |
+        |          |    "epoch0soma":                                                 |
+        |          |       {"source": "soma", "start_time": float, "stop_time": float,|
+        |          |                  "description": string, "tags": tuple}           |
+        |          |    "epoch1soma":                                                 |
+        |          |       {"source": "soma", "start_time": float, "stop_time": float,|
+        |          |                  "description": string, "tags": tuple}           |
+        |          |    "epoch0axon":                                                 |
+        |          |       {"source": "axon", "start_time": float, "stop_time": float,|
+        |          |                  "description": string, "tags": tuple}           |
+        |          |    "epoch1axon":                                                 |
+        |          |       {"source": "axon", "start_time": float, "stop_time": float,|
+        |          |                  "description": string, "tags": tuple}}          |
+        |          |                                                                  |
+        |          | - but when there is no stimulation the dictionary will look as   |
+        |          |                                                                  |
+        |          |.. code-block:: python                                            |
+        |          |                                                                  |
+        |          |   {                                                              |
+        |          |    "epoch0soma":                                                 |
+        |          |       {"source": "soma", "start_time": float, "stop_time": float,|
+        |          |                  "description": string, "tags": tuple}           |
+        |          |    "epoch0axon":                                                 |
+        |          |       {"source": "axon", "start_time": float, "stop_time": float,|
+        |          |                  "description": string, "tags": tuple}}          |
+        +----------+------------------------------------------------------------------+
+        | third    | - the built NWB file of type ``pynwb.file.NWBFile``              |
+        |          | - obtained using :py:meth:`.build_nwbfile method`                |
+        +----------+------------------------------------------------------------------+
+        | fourth   | - dictionary of NWB time-series object                           |
+        |          | - its keys are the keys in                                       |
+        |          |``chosenmodel.regions = {"soma": 0.0, "axon", 0.0}``              |
+        |          | - the key ``"stimulus"`` is optional                             |
+        |          | - value for each key is a ``pynwb.base.TimeSeries`` object,      |
+        |          | obtained using :py:meth:`.build_nwbseries method`                |
+        +----------+------------------------------------------------------------------+
+
+        *NOTE:*
+
+        * the whole NWB TimeSeries is not passed here
+        * only time series that corresponds to the respective region is passed into this function
+        * the epoch metadata has the key ``"source"``. This represents the region from which epoch is considered this should not be confused with any attribute of the NWB file. Besides, since NWB2.0 ``source`` is no longer an attribute of NWB file.
+
+        **Use case:**
+
+        .. code-block:: python
+
+           epochmd = {"epoch0soma": {"source": "soma", "start_time": float, "stop_time": float,
+                                     "description": string, "tags": tuple},
+                      "epoch1axon": {"source": "soma", "start_time": float, "stop_time": float,
+                                     "description": string, "tags": tuple},
+                      "epoch0axon": {"source": "axon", "start_time": float, "stop_time": float,
+                                     "description": string, "tags": tuple},
+                      "epoch1axon": {"source": "axon", "start_time": float, "stop_time": float,
+                                     "description": string, "tags": tuple}}
+           updated_nwbfile = insert_a_nwbepoch( "epoch0soma", epochmd, nwbfile )
+
+        **Returned Value:** The updated file, say, ``nwbfile`` is returned such that it now has ``.epochs`` attributes. For example,
+
+        ``>> len(nwbfile.epochs)``
+
+        returns ``1`` because we inserted only one epoch. The number will reflect the number of epochs. See `VectorData. <https://pynwb.readthedocs.io/en/latest/pynwb.core.html#pynwb.core.VectorData>`_ Thus ``print(nwbfile.epochs[0])`` returns a tuple such that
+
+        .. code-block:: python
+
+           ( 0,  # => row number, i.e, epoch number in the order of insertion
+             0.0,   # => epochmd["epoch0soma"]["start_time"] 
+             0.05,  # => epochmd["epoch0soma"]["stop_time"]
+             ['1_epoch_responses', '0', 'axon', 'DummyTest', 'cellsepoch0axon'], # => epochmd["epoch0soma"]["tags"]
+             [(0, 5,
+              DummyTest_axon <class 'pynwb.base.TimeSeries'>
+              Fields:
+                comments: DummyTest_axon
+                conversion: 1000.0
+                data: [0.73745691 0.16092811 0.83702311 0.73879371 0.55916576 0.78635451]
+                description: whole single array of voltage response from axon of DummyTest
+                interval: 1
+                num_samples: 6
+                resolution: 0.01
+                timestamps: [0.   0.01 0.02 0.03 0.04 0.05]
+                timestamps_unit: Seconds
+                unit: mV
+           )])
+
+         *NOTE:*
+
+         * for a particular epoch such tuple has 5-elements
+         * pynwb puts all the epochs in a `DynamicTable <https://pynwb.readthedocs.io/en/latest/pynwb.core.html#pynwb.core.DynamicTable>`_ such that
+
+           - a row corresponds to a particular epoch
+           - there are 5-columns which corresponds to the 5-elements of an epoch's tuple (as seen above)
+           - the first column (seen above as ``0`` NOT ``0.0``) is like the row number or epoch number.
+           - the rest have names which by doing ``nwbfile.epochs.colnames`` returns ``('start_time', 'stop_time', 'tags', 'timeseries')``
+
+         * if this function was called again, say, ``updated_nwbfile = insert_a_nwbepoch( "epoch0axon", epochmd, nwbfile )`` then the same ``print(nwbfile.epochs[0])`` (as above) returns the same tuple
+
+        Accessing Data
+        --------------
+
+        For all practical purposes we are interested in the created epoch data, in particular the time-series data associated with a particular epoch.
+
+        Root data for any given epoch
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        Since the last column of the table (i.e, 5th column) is labelled ``"timeseries"`` doing ``nwbfile.epochs[0][4]`` returns
+
+        .. code-block:: python
+
+           [(0, 5,
+             DummyTest_axon <class 'pynwb.base.TimeSeries'>
+             Fields:
+               comments: DummyTest_axon
+               conversion: 1000.0
+               data: [0.73745691 0.16092811 0.83702311 0.73879371 0.55916576 0.78635451]
+               description: whole single array of voltage response from axon of DummyTest
+               interval: 1
+               num_samples: 6
+               resolution: 0.01
+               timestamps: [0.   0.01 0.02 0.03 0.04 0.05]
+               timestamps_unit: Seconds
+               unit: mV
+           )]
+
+        Since this is a list with tuple elements and we are interested in the tuple this can be extracted as ``nwbfile.epochs[0][4][0]``.
+
+        * the first index (i.e, ``[0]``) is the row index thus representing a particular epoch
+
+          - here the index = 0 because there is only one epoch
+
+        * the data (i.e, timeseries) is always index = 4, i.e, 5th column
+        * therefore, **data for i'th epoch will be** ``nwbfile.epochs[i][4]``
+
+        ``TimeSeries`` object within the root data
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        Since ``nwbfile.epochs.[0][4]`` returns returned a list of tuple elements (above we see a list of only one because only one epoch was inserted), doing ``nwbfile.epochs.[0][4][0]`` returns the tuple containing the NWB ``TimeSeries`` class.
+
+        Doing ``nwbfile.epochs.[0][4][0][2]`` returns the ``TimeSeries`` class
+
+        * the third index corresponds to the row index
+        * for i'th epoch, ``nwbfile.epochs[i][4]`` its corresponding tuple containing the ``TimeSeries`` is ``nwbfile.epochs[i][4][0]``
+        * the ``TimeSeries`` object is the **3rd column** (index = 2), that is, ``nwbfile.epochs[i][4][0][2]``
+
+        Time-series ``data`` and ``timestamps`` within ``TimeSeries`` object
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        Finally to retrieve the time-series ``data`` and ``timestamps`` associated with i'th epoch is achieved by
+
+        ``nwbfile.epochs.[i][4][i][2].timestamps``
+
+        ``nwbfile.epochs.[i][4].[i][2].data``
+
+        Comments on *tables* in NWB
+        ---------------------------
+
+        * ``len(nwbfile.epochs) = len(epoch_metadata)``, i.e, the total number of rows and hence the total number of epochs in the created NWB file.
+
+          - ``nwbfile.epochs`` is a `VectorTable <https://pynwb.readthedocs.io/en/latest/pynwb.core.html#pynwb.core.VectorData>`_ whose length is equal to the number of epochs.
+          - hence ``len(nwbfile.epochs[0]) = len(nwbfile.epochs[i]) = 1``
+          - and each ``print(nwbfile.epochs[i])`` is a tuple as seen in the beginning of the above example
+
+        * the root tuple of any i'th epoch ``nwbfile.epochs[i]`` is always a tuple of **five** elements.
+
+          - ``nwbfile.epochs[i]`` is a `DynamicTable <https://pynwb.readthedocs.io/en/latest/pynwb.core.html#pynwb.core.DynamicTable>`_ with five columns.
+          - its fifth element ``nwbfile.epochs[i][4]`` is a list with one tuple
+
+        * the only child tuple of any i'th epoch ``nwbfile.epochs.[i][4][0]`` is always a tuple of **three** elements
+
+          - ``nwbfile.epochs[i][4][0]`` is a `DynamicTable <https://pynwb.readthedocs.io/en/latest/pynwb.core.html#pynwb.core.DynamicTable>`_ with three columns.
+          - the third element ``nwbfile.epochs[i][4][0][2]`` within the tuple is the ``TimeSeries`` class
+
+        * (in other words) for any i (over all epochs) ``nwbfile.epochs.[i][4]`` is the same for all the epochs.
+
+          - this is because ``nwbfile.epochs[i][4]`` is a `DynamicTable <https://pynwb.readthedocs.io/en/latest/pynwb.core.html#pynwb.core.DynamicTable>`_
+
+        * recall that ``nwbfile.epochs`` is also a *table* however, they are not the same table types
+
+          - ``nwbfile.epochs`` is a `VectorTable <https://pynwb.readthedocs.io/en/latest/pynwb.core.html#pynwb.core.VectorData>`_ whose length is equal to the number of epochs.
+          - ``nwbfile.epochs[i][4]`` is a `DynamicTable <https://pynwb.readthedocs.io/en/latest/pynwb.core.html#pynwb.core.DynamicTable>`_ with five columns.
+          - but in both tables its rows correspond to respective epoch
+          - therefore, ``nwbfile.epochs[i][4][i]`` **for i'th epoch**
+
+        *Refer:*
+
+         * http://pynwb.readthedocs.io/en/latest/pynwb.epoch.html#pynwb.epoch.Epochs
+         * https://github.com/AllenInstitute/nwb-api/blob/master/ainwb/nwb/nwbep.py
+         * https://pynwb.readthedocs.io/en/latest/pynwb.core.html#pynwb.core.VectorData
+         * https://pynwb.readthedocs.io/en/latest/pynwb.core.html#pynwb.core.DynamicTable
+
         """
-        nwbfile.create_epoch( epochmd[epoch_i_cellregion]["source"],
-                              start_time = epochmd[epoch_i_cellregion]["start_time"],
-                              stop_time = epochmd[epoch_i_cellregion]["stop_time"],
-                              timeseries = nwbts,
-                              tags = epochmd[epoch_i_cellregion]["tags"],
-                              description = epochmd[epoch_i_cellregion]["description"] )
+        # No longer available in NWB2.0
+        #nwbfile.create_epoch( epochmd[epoch_i_cellregion]["source"],
+        #                      start_time = epochmd[epoch_i_cellregion]["start_time"],
+        #                      stop_time = epochmd[epoch_i_cellregion]["stop_time"],
+        #                      timeseries = nwbts,
+        #                      tags = epochmd[epoch_i_cellregion]["tags"],
+        #                      description = epochmd[epoch_i_cellregion]["description"] )
+        #print(type(cls.tseries_for_epoch(epochmd[epoch_i_cellregion],nwbts)))
+        #print(cls.tseries_for_epoch(epochmd[epoch_i_cellregion],nwbts))
+        #print(nwbts)
+        #breakpoint()
+        nwbfile.add_epoch(start_time = epochmd[epoch_i_cellregion]["start_time"],
+                          stop_time = epochmd[epoch_i_cellregion]["stop_time"],
+                          #timeseries = cls.tseries_for_epoch(epochmd[epoch_i_cellregion],nwbts),
+                          timeseries = nwbts,
+                          tags = epochmd[epoch_i_cellregion]["tags"] )
         return nwbfile
 
     @classmethod
     def build_nwbepochs( cls, epochmd=None, nwbfile=None, nwbts=None ):
         """method for contructing epochs into the built nwbfile
 
-        Keyword arguments:
-        epochmd -- dictionary;
-                   meta-data for case chosenmodel.regions = {'soma': 0.0, 'axon': 0.0} and no of epochs/region=2 with stimulation is of the form
-                   {"epoch0soma": {"source": "soma", "start_time": float, "stop_time": float,
-                                   "description": string, "tags": tuple}
-                    "epoch1soma": {"source": "soma", "start_time": float, "stop_time": float,
-                                   "description": string, "tags": tuple}
-                    "epoch0axon": {"source": "axon", "start_time": float, "stop_time": float,
-                                   "description": string, "tags": tuple}
-                    "epoch1axon": {"source": "axon", "start_time": float, "stop_time": float,
-                                   "description": string, "tags": tuple}}
-                  for the case without stimulation
-                   {"epoch0soma": {"source": "soma", "start_time": float, "stop_time": float,
-                                   "description": string, "tags": tuple}
-                    "epoch0axon": {"source": "axon", "start_time": float, "stop_time": float,
-                                   "description": string, "tags": tuple}}
-        nwbfile -- pynwb.file.NWBFile, obtained using build_nwbfile method
-        nwbts -- pynwb.base.TimeSeries, obtained using build_nwbseries method
+        **Keyword Arguments:**
 
-        Use case:
-        epoch_meta_data = { "epoch0soma": {"source": "soma",
-                                           "start_time": 0.0, "stop_time": 10.0,
-                                           "description": "first epoch",
-                                           "tags": ('1_epoch_responses', '0', 'soma', 'DummyTest', 'cells', "epoch0soma")},
-                            "epoch0axon": {"source": "axon",
-                                           "start_time": 0.0, "stop_time": 10.0,
-                                           "description": "first epoch",
-                                           "tags": ('1_epoch_responses', '0', 'axon', 'DummyTest', 'cells', "epoch0axon")} }
-        updated_nwbfile = build_nwbepochs( nwbfile=nwbfile, epochmd=epoch_meta_data,
-                                           nwbts=nwbts )
+        +-------------+------------------------------------------------------------------+
+        | Key         | Value type                                                       |
+        +=============+==================================================================+
+        | ``epochmd`` | - dictionary of time-series metadata                             |
+        |             | - considering the case                                           |
+        |             |``chosenmodel.regions = {'soma': 0.0, 'axon': 0.0}`` and the      |
+        |             |number of epochs per region = 2                                   |
+        |             | - when there is a stimulation the dictionary will be of the form |
+        |             |                                                                  |
+        |             |.. code-block:: python                                            |
+        |             |                                                                  |
+        |             |   {                                                              |
+        |             |    "epoch0soma":                                                 |
+        |             |       {"source": "soma", "start_time": float, "stop_time": float,|
+        |             |                  "description": string, "tags": tuple}           |
+        |             |    "epoch1soma":                                                 |
+        |             |       {"source": "soma", "start_time": float, "stop_time": float,|
+        |             |                  "description": string, "tags": tuple}           |
+        |             |    "epoch0axon":                                                 |
+        |             |       {"source": "axon", "start_time": float, "stop_time": float,|
+        |             |                  "description": string, "tags": tuple}           |
+        |             |    "epoch1axon":                                                 |
+        |             |       {"source": "axon", "start_time": float, "stop_time": float,|
+        |             |                  "description": string, "tags": tuple}}          |
+        |             |                                                                  |
+        |             | - but when there is no stimulation the dictionary will look as   |
+        |             |                                                                  |
+        |             |.. code-block:: python                                            |
+        |             |                                                                  |
+        |             |   {                                                              |
+        |             |    "epoch0soma":                                                 |
+        |             |       {"source": "soma", "start_time": float, "stop_time": float,|
+        |             |                  "description": string, "tags": tuple}           |
+        |             |    "epoch0axon":                                                 |
+        |             |       {"source": "axon", "start_time": float, "stop_time": float,|
+        |             |                  "description": string, "tags": tuple}}          |
+        +-------------+------------------------------------------------------------------+
+        | ``nwbfile`` | - the built NWB file of type ``pynwb.file.NWBFile``              |
+        |             | - obtained using :py:meth:`.build_nwbfile method`                |
+        +-------------+------------------------------------------------------------------+
+        | ``nwbts``   | - dictionary of NWB time-series object                           |
+        |             | - its keys are the keys in                                       |
+        |             |``chosenmodel.regions = {"soma": 0.0, "axon", 0.0}``              |
+        |             | - the key ``"stimulus"`` is optional                             |
+        |             | - value for each key is a ``pynwb.base.TimeSeries`` object,      |
+        |             | obtained using :py:meth:`.build_nwbseries method`                |
+        +-------------+------------------------------------------------------------------+
 
-        Returned Value:
-        nwbfile.epochs.epochs.data returns a list with tuple such that
-                     [(10.0, # => epochmd["epoch1soma"]["start_time"] 
-                       20.0, # => epochmd["epoch1soma"]["stop_time"]
-        epoch1soma -> '2_epoch_responses,1,soma,DummyTest,cells,epoch1soma',#=>epochmd["epoch1soma"]["tags"]
-                       <pynwb.form.data_utils.ListSlicer object at 0x7f65f23fb410>, # EPOCH DATA
-                       'second epoch'), # => epochmd["epoch1soma"]["description"]
-        epoch0axon -> (0.0, 10.0, '2_epoch_responses,0,axon,DummyTest,cells,epoch0axon',
-                       <pynwb.form.data_utils.ListSlicer object at 0x7f65f23fb490>, 'first epoch'),
-        epoch1axon -> (10.0, 20.0, '2_epoch_responses,1,axon,DummyTest,cells,epoch1axon',
-                       <pynwb.form.data_utils.ListSlicer object at 0x7f65f23fb510>, 'second epoch'),
-        epoch0soma -> (0.0, 10.0, '2_epoch_responses,0,soma,DummyTest,cells,epoch0soma',
-                       <pynwb.form.data_utils.ListSlicer object at 0x7f65f23fb590>, 'first epoch')]
-              NOTE:
-                  - above are the 5-elements for A particular epoch
-                  - a particular epoch => a row
-                  - the 5-elements => 5-columns such that
-                  - nwbfile.epochs.epochs.columns returns
-                      ('start_time', 'stop_time', 'tags', 'timeseries', 'description')
+        *NOTE:*
 
-        Since we are interested in the Epoch Date created, to access it
-        nwbfile.epochs.epochs.data[0][3] returns
-                     <pynwb.form.data_utils.ListSlicer object at 0x7f65f23fb410
-              NOTE:
-                  - the first index is the row index thus representing a particular epoch
-                  - here the index=0 because there is only one epoch
-                  - the data, i.e, timeseries is always index= 3
-                  - **TAKE AWAY**
-                    nwbfile.epochs.epochs.data[i][3] for i'th epoch
+        * the epoch metadata has the key ``"source"``. This represents the region from which epoch is considered this should not be confused with any attribute of the NWB file. Besides, since NWB2.0 ``source`` is no longer an attribute of NWB file.
 
-        Next nwbfile.epochs.epochs.data[0][3].data is a TimeSeries class.
+        **Use case:**
 
-        To get the TimeSeries object of any i'th epoch do
-        nwbfile.epochs.epochs.data[i][3].data.data which returns a list with tuple
-                     [( 0, # => 
-                        1000, # => timeseries_metadata["soma"]["conversion"]
-                        <pynwb.base.TimeSeries object at 0x7fabf68b8690>)] # => nwb TimeSeries object
-              NOTE:
-                  - one would think that this list/data is unique to this epoch
-                  - but if you created other epochs, say "epoch0soma" & "epoch0axon" then
-                    length of this list = 2
-                    thus, len(nwbfile.epochs.epochs.data[0][3].data.data) = len(epoch_metadata)
-                  - in other words, for any i (for all epochs)
-                    nwbfile.epochs.epochs.data[i][3].data.data is the same
-                  - this is because 
-                    nwbfile.epochs.epochs.data[i][3].data.data
-                    is a TABLE
-                    recall that nwbfile.epochs.epochs.data is also a TABLE
-                  - however, it should be noted that they are not the same table types
-                  - the table nwbfile.epochs.epochs.data[i][3].data.data has 3-columns
-                    and the rows correspond to respective epoch
-                  - for i'th epoch, nwbfile.epochs.epochs.data[i][3] its corresponding
-                    data is nwbfile.epochs.epochs.data[i][3].data.data[i]
-                  - finally, its corresponding TimeSeries nwb object is the 3rd column
-                    that is nwbfile.epochs.epochs.data[i][3].data.data[i][2]
-                  - **TAKE AWAY**
-                    nwbfile.epochs.epochs.data[i][3].data.data[i][2] for i'th epoch
-                  - ##IMPORTANT## as implemented in operationsVisualize/reader.py
-                    nwbfile.epochs.epochs.data[i][3][0][2] give nwbts for i'th epoch
-                  - when the nwbfile is written in a file the extraction from the file
-                    is slightly (but significantly) different as the timeseries data is
-                    stored as HDF5 dataset object
-                  - if ts_i = nwbfile.epochs.epochs.data[i][3][0][2]
-                    then ts_i.data.value to get the data value and similarly for
-                    ts_i.timestamps.value
+        .. code-block:: python
 
-        Finally to retrieve the TimeSeries data and timestamps associated with this epoch
-        follow the same format as done for the returned values of build_nwbseries
-        with some modifications as shown
-        nwbfile.epochs.epochs.data[0][3].data.data[0][2].timestamps
-        nwbfile.epochs.epochs.data[0][3].data.data[0][2].data
+           epoch_meta_data = {
+             "epoch0soma": {
+                  "source": "soma",
+                  "start_time": 0.0, "stop_time": 5.0,
+                  "description": "first epoch",
+                  "tags": ('1_epoch_responses', '0', 'soma', 'DummyTest', 'cells', "epoch0soma")},
+             "epoch0axon": {
+                  "source": "axon",
+                  "start_time": 5.0, "stop_time": 10.0,
+                  "description": "first epoch",
+                  "tags": ('1_epoch_responses', '0', 'axon', 'DummyTest', 'cells', "epoch0axon")}
+                  }
+           updated_nwbfile = build_nwbepochs(nwbfile=nwbfile, epochmd=epoch_meta_data, nwbts=nwbts)
 
-        NOTE:
-            - for nwb epoch attributes see
-              http://pynwb.readthedocs.io/en/latest/pynwb.epoch.html#pynwb.epoch.Epochs
-              https://github.com/AllenInstitute/nwb-api/blob/master/ainwb/nwb/nwbep.py
-              https://pynwb.readthedocs.io/en/latest/pynwb.file.html#pynwb.file.NWBFile.create_epoch
-              https://pynwb.readthedocs.io/en/latest/pynwb.epoch.html#pynwb.epoch.EpochTable
+        **Returned Value:** The updated file, say, ``nwbfile`` is returned such that it now has ``.epochs`` attributes. For example,
+
+        ``>> len(nwbfile.epochs)``
+
+        returns ``2``, reflecting the number of epochs. Thus epoch in first row ``print(nwbfile.epochs[0])`` will appear as
+
+        .. code-block:: python
+
+           [(0, # => epochmd["epoch0soma"]["start_time"] 
+             5, # => epochmd["epoch0soma"]["stop_time"]
+             DummyTest_soma <class 'pynwb.base.TimeSeries'>
+             Fields:
+               comments: DummyTest_soma
+               conversion: 1000.0
+               data: [0.73745691 0.16092811 0.83702311 ... 0.78635451]
+               description: whole single array of voltage response from soma of DummyTest
+               interval: 1
+               num_samples: 501
+               resolution: 0.01
+               timestamps: [0.   0.01 0.02 ... 5.0]
+               timestamps_unit: Seconds
+               unit: mV
+           )]
+
+        The epoch in second row ``print(nwbfile.epochs[1])`` will return
+
+        .. code-block:: python
+
+           [(5, # => epochmd["epoch0axon"]["start_time"] 
+             10, # => epochmd["epoch0axon"]["stop_time"]
+             DummyTest_axon <class 'pynwb.base.TimeSeries'>
+             Fields:
+               comments: DummyTest_axon
+               conversion: 1000.0
+               data: [0.73745691 0.16092811 0.83702311 ... 0.78635451]
+               description: whole single array of voltage response from axon of DummyTest
+               interval: 1
+               num_samples: 501
+               resolution: 0.01
+               timestamps: [5.   5.01 5.02 ... 10.0]
+               timestamps_unit: Seconds
+               unit: mV
+           )]
+
+        Accessing Data
+        --------------
+
+        For all practical purposes we are interested in the created epoch data, in particular the time-series data associated with a particular epoch. Let us assume our epoch of interest is in the first row of ``nwbfile.epochs``, i.e, ``nwbfile.epochs[0]``.
+
+        Root data for any given epoch
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        Since the last column of the table (i.e, 5th column) is labelled ``"timeseries"`` doing ``nwbfile.epochs[0][4]`` returns
+
+        .. code-block:: python
+
+           [(0, # => epochmd["epoch0soma"]["start_time"] 
+             5, # => epochmd["epoch0soma"]["stop_time"]
+             DummyTest_soma <class 'pynwb.base.TimeSeries'>
+             Fields:
+               comments: DummyTest_soma
+               conversion: 1000.0
+               data: [0.73745691 0.16092811 0.83702311 ... 0.78635451]
+               description: whole single array of voltage response from soma of DummyTest
+               interval: 1
+               num_samples: 501
+               resolution: 0.01
+               timestamps: [0.   0.01 0.02 ... 5.0]
+               timestamps_unit: Seconds
+               unit: mV
+           )]
+
+        * therefore, **root data for i'th epoch will be** ``nwbfile.epochs[i][4]``
+
+        ``TimeSeries`` object within the root data
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        Doing ``nwbfile.epochs.[0][4][0][2]`` returns the ``TimeSeries`` class
+
+        .. code-block:: python
+
+           DummyTest_soma <class 'pynwb.base.TimeSeries'>
+            Fields:
+              comments: DummyTest_soma
+              conversion: 1000.0
+              data: [0.73745691 0.16092811 0.83702311 ... 0.78635451]
+              description: whole single array of voltage response from soma of DummyTest
+              interval: 1
+              num_samples: 501
+              resolution: 0.01
+              timestamps: [0.   0.01 0.02 ... 5.0]
+              timestamps_unit: Seconds
+              unit: mV
+
+        * the ``TimeSeries`` object is the **3rd column** (index = 2), that is, ``nwbfile.epochs[i][4][0][2]``
+
+        Time-series ``data`` and ``timestamps`` within ``TimeSeries`` object
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        Finally to retrieve the time-series ``data`` and ``timestamps`` associated with i'th epoch is achieved by
+
+        ``nwbfile.epochs.[i][4][i][2].timestamps``
+
+        ``nwbfile.epochs.[i][4].[i][2].data``
+
+        *Refer:*
+
+         * :py:meth:`.insert_a_nwbepoch` documentation.
+
+        *NOTE:* If we are interested in extracting an epoch in a more organized manner for instance epoch of interest may be a particular epoch for recording done from a particular region, then using the above method of extraction based on picking a row of the `VectorTable <https://pynwb.readthedocs.io/en/latest/pynwb.core.html#pynwb.core.VectorData>`_ is not sufficient. The more improved approach of extraction will be done by the manager.
+
         """
         for epoch_i_region in epochmd.keys():
             region = epochmd[epoch_i_region]["source"]
@@ -500,14 +975,44 @@ class Fabricator(object):
                                                       nwbts[region]  )
         return updated_nwbfile
 
+    @staticmethod
+    def less(other, lines):
+        s = str(other).split("\n")
+        for i in range(0, len(s), lines):
+            print "\n".join(s[i: i+lines])
+            raw_input("Press <Enter> for more")
+
     @classmethod
     def write_nwbfile(cls, nwbfile=None, filepath=None):
+        """Writes the created NWB file into a HDF5 file in the given filepath.
+
+        **Keyword Arguments:**
+
+        +--------------+------------------------------------------------------+
+        | Key          | Value type                                           |
+        +==============+======================================================+
+        | ``nwbfile``  | - the built NWB file of type ``pynwb.file.NWBFile``  |
+        |              | - obtained using :py:meth:`.build_nwbfile method`    |
+        +--------------+------------------------------------------------------+
+        | ``filepath`` | string; eg, "/path/to/desired/directory/"            |
+        +--------------+------------------------------------------------------+
+
+        **Return value:** The filename of the saved file.
+
+        """
         sesstime = str(nwbfile.session_start_time).replace(" ", "_")[0:-6]
         filename = nwbfile.session_id + "_" + sesstime.replace(":", "-") + ".h5"
         if filepath is None:
-            io = NWBHDF5IO( filename, mode='w' )
+            fullname = filename
+            io = NWBHDF5IO( fullname, mode='w' )
         else:
-            io = NWBHDF5IO( filepath+os.sep+filename, mode='w')
+            fullname = filepath+os.sep+filename
+            io = NWBHDF5IO( fullname, mode='w')
+        #print(nwbfile)
+        #cls.less(nwbfile, 5)
+        #breakpoint()
         io.write(nwbfile)
+        #print("debug")
+        #breakpoint()
         io.close()
-        return filename
+        return fullname

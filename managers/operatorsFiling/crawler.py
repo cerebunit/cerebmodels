@@ -4,34 +4,50 @@ import os
 class Crawler(object):
     """Operator working under SimManager.
 
-    Available methods:
-    list_dirs -- returns list of of available same-level directories
-    search_and_find -- returns full path to the directory/subdirectory/file
-    path_to_dir -- returns path to a desired directory or subdirectory
-    path_to_file -- returns path to a desired file in given directory path
-    show_files_with_path -- returns dictionary as {"file1.ext": "its/path/file1.ext", "file2.ext": "a/path/file2.ext"}
-    show_files -- returns dictionary of filenames and its path
-    smoke_out -- return full path (os specific) to the directory/subdirectory/file
+    **Available methods:**
+
+    +---------------------------------+----------------------+
+    | Method name                     | Method type          |
+    +=================================+======================+
+    | :py:meth:`list_dirs`            | class method         |
+    +---------------------------------+----------------------+
+    | :py:meth:`search_and_find`      | static method        |
+    +---------------------------------+----------------------+
+    | :py:meth:`path_to_dir`          | class method         |
+    +---------------------------------+----------------------+
+    | :py:meth:`path_to_file`         | class method         |
+    +---------------------------------+----------------------+
+    | :py:meth:`show_files_with_path` | static method        |
+    +---------------------------------+----------------------+
+    | :py:meth:`show_files`           | class method         |
+    +---------------------------------+----------------------+
+    | :py:meth:`smoke_out`            | static method        |
+    +---------------------------------+----------------------+
+
+    *NOTE:*
+
+    * ``list_dirs`` returns list of of available same-level directories
+    * ``search_and_find`` returns full path to the directory/subdirectory/file
+    * ``path_to_dir`` returns path to a desired directory or subdirectory
+    * ``path_to_file`` returns path to a desired file in given directory path
+    * ``show_files_with_path`` returns dictionary as ``{"file1.ext": "its/path/file1.ext", "file2.ext": "a/path/file2.ext"}``
+    * ``show_files`` returns dictionary of filenames and its path
+    * ``smoke_out`` return full path (os specific) to the directory/subdirectory/file
 
     """
     @classmethod
     def list_dirs(cls, search_path=None):
-        """class method that returns all same-level directores.
+        """Returns all same-level directores.
 
-        Keyword arguments:
-        search_path -- string; "path/to/search/for/subdir/in/a/dir"
+        **Keyword argument:** ``search_path`` key whose value is a  string of the form ``"path/to/search/for/subdir/in/a/dir"``.
 
-        Returned value:
-        list of available directory names.
+        **Returned value:** list of available directory names. An empty list is returned if there are no directories within the ``search_path``.
 
-        Note:
-        If the search_path does not exist ValueError is returned.
-        But is there are no directories within the search_path,
-        an empty list is returned.
+        **Raised Exception:** ``ValueError`` is returned if the ``search_path`` does not exist.
 
-        Use case:
-        **** List the available model scales ****
-        list_dirs(search_path=os.getcwd()+os.sep+"models")
+        **Use case:**
+        
+        * To list the available model scales ``list_dirs(search_path=os.getcwd()+os.sep+"models")``
 
         """
         current_path = os.getcwd()
@@ -46,39 +62,50 @@ class Crawler(object):
 
     @staticmethod
     def search_and_find(search_type=None, working_dir=None, desired_name=None):
-        """staticmethod that searches for and finds files or directories.
+        """Searches for and finds files or directories.
 
-        Keyword arguments:
-        search_type -- valid strings; "files" or "directories"
-        working_dir -- path string; "current/working/directory"
-        desired_name -- string or list of strings;
-                        strings for "file.name" or "a_directory_name";
-                        list of strings for ["a_dir_name", "its_subdir"]
+        **Keyword arguments:**
 
-        Returned value:
-        full path (os specific) to the directory/subdirectory/file
+        +------------------+----------------------------------------------------+
+        | Key              | Value                                              |
+        +==================+====================================================+
+        | ``search_type``  | valid strings; "files" or "directories"            |
+        +------------------+----------------------------------------------------+
+        | ``working_dir``  | path string; "current/working/directory"           |
+        +------------------+----------------------------------------------------+
+        | ``desired_name`` | - string or list of strings;                       |
+        |                  | - strings for "file.name" or "a_directory_name";   |
+        |                  | - list of strings for ["a_dir_name", "its_subdir"] |
+        +------------------+----------------------------------------------------+
 
-        Raised Exceptions:
-        ValueError if search_type is anything else other than "files" or "directories"
-        ValueError if directory or file does not exist.
+        **Returned value:** full path (os specific) to the directory/subdirectory/file
 
-        Use case:
-        present_dirpath = "/path/to/current/working/directory"
-        ###### To search for a subdirectory ######
-        search_for = ["a_dir_name", "its_subdir"]
-        search_and_find(search_type="directories",
-                        working_dir=present_dirpath,
-                        desired_name=search_for)
-        ###### To search for a directory ######
-        search_for = "a_dir_name"
-        search_and_find(search_type="directories",
-                        working_dir=present_dirpath,
-                        desired_name=search_for)
-        ###### To search for a file ####
-        search_for = "filename.ext"
-        search_and_find(search_type="files",
-                        working_dir=present_dirpath,
-                        desired_name=search_for)
+        **Raised Exceptions:**
+
+        * ``ValueError`` if ``search_type`` is anything else other than "files" or "directories"
+        * ``ValueError`` if directory or file does not exist.
+
+        **Use case:**
+
+        Assuming ``present_dirpath = "/path/to/current/working/directory"`` then,
+
+        * To search for a subdirectory
+
+        ``>> search_for = ["a_dir_name", "its_subdir"]``
+
+        ``>>search_and_find(search_type="directories", working_dir=present_dirpath, desired_name=search_for)``
+
+        * To search for a directory
+
+        ``>> search_for = "a_dir_name"``
+
+        ``>> search_and_find(search_type="directories", working_dir=present_dirpath, desired_name=search_for)``
+
+        * To search for a file
+
+        ``>> search_for = "filename.ext"``
+
+        ``>> search_and_find(search_type="files", working_dir=present_dirpath, desired_name=search_for)``
 
         """
         for (dirpath, dirnames, filenames) in os.walk(working_dir):
@@ -95,26 +122,31 @@ class Crawler(object):
 
     @classmethod
     def path_to_dir(cls, dir_names=None):
-        """classmethod that returns path to a desired directory or subdirectory.
+        """Returns path to a desired directory or subdirectory.
 
-        Keyword arguments:
-        dir_name -- string or list of strings;
-                    strings for just "a_directory_name";
-                    list of strings for ["a_dir_name", "its_subdir"]
+        **Keyword argument:**
 
-        Returned value:
-        full path (os specific) to the directory/subdirectory
+        +--------------+------------------------------------------------------+
+        | Key          | Value                                                |
+        +==============+======================================================+
+        | ``dir_name`` | - string or list of strings;                         |
+        |              | - strings for just "a_directory_name";               |
+        |              | - list of strings for ["a_dir_name", "its_subdir"]   |
+        +--------------+------------------------------------------------------+
 
-        Note:
-        If only one directory name is given it is assumed this is available in
-        the current working path (where this method is called from).
-        This also applies to the first directory in the list of directory names.
+        **Returned value:** full path (os specific) to the directory/subdirectory
 
-        Use case:
-        ###### Path to a directory in current working path ######
-        path_to_dir(dir_names="a_dir_name")
-        ###### Path to a subdirectory within the directory in current working path ######
-        path_to_dir(dir_names=["a_dir_name", "its_subdir"])
+        *Note:* If only one directory name is given it is assumed this is available in the current working path (where this method is called from). This also applies to the first directory in the list of directory names.
+
+        **Use case:**
+
+        * Path to a directory in current working path
+
+        ``>> path_to_dir(dir_names="a_dir_name")``
+
+        * Path to a subdirectory within the directory in current working path
+
+        ``>> path_to_dir(dir_names=["a_dir_name", "its_subdir"])``
 
         """
 
@@ -134,27 +166,33 @@ class Crawler(object):
 
     @classmethod
     def path_to_file(cls, dir_names=None, file_name=None):
-        """class method that returns path to a desired file.
+        """Returns path to a desired file.
 
-        Keyword arguments:
-        dir_name -- string or strings list, where file is thought to reside.
-                    strings for just "a_directory_name";
-                    list of strings for ["a_dir_name", "its_subdir"]
-        file_name -- string; "filename.ext"
+        **Keyword arguments:**
 
-        Returned value:
-        full path (os specific) to the filename
+        +---------------+------------------------------------------------------------+
+        | Key           | Value                                                      |
+        +===============+============================================================+
+        | ``dir_name``  | - string or strings list, where file is thought to reside. |
+        |               | - strings for just "a_directory_name";                     |
+        |               | - list of strings for ["a_dir_name", "its_subdir"]         |
+        +---------------+------------------------------------------------------------+
+        | ``file_name`` | string; "filename.ext"                                     |
+        +---------------+------------------------------------------------------------+
 
-        Note:
-        If only one directory name is given it is assumed this is available in
-        the current working path (where this method is called from).
-        This also applies to the first directory in the list of directory names.
+        **Returned value:** full path (os specific) to the filename
 
-        Use case:
-        ###### Path to a file in current working path ######
-        path_to_file(dir_names="a_dir_name", file_name="filename.ext")
-        ###### Path to a file in subdirectory within the directory in current working path ######
-        path_to_file(dir_names=["a_dir_name", "its_subdir"], file_name="filename.ext")
+        *Note:* If only one directory name is given it is assumed this is available in the current working path (where this method is called from). This also applies to the first directory in the list of directory names.
+
+        **Use case:**
+
+        * Path to a file in current working path
+
+        ``>> path_to_file(dir_names="a_dir_name", file_name="filename.ext")``
+
+        * Path to a file in subdirectory within the directory in current working path
+
+        ``>> path_to_file(dir_names=["a_dir_name", "its_subdir"], file_name="filename.ext")``
 
         """
         dir_path = cls.path_to_dir(dir_names)
@@ -165,24 +203,28 @@ class Crawler(object):
 
     @staticmethod
     def show_files_with_path(path_to_current_working_directory):
-        """staticmethod that searches for all available files within scope
+        """Searches for all available files within scope.
 
-        Argument:
-        path_to_current_working_directory -- path string; "current/working/directory"
+        **Argument:** string of the form "current/working/directory"
 
-        Returned value:
-        dictionary as {"file1.ext": "its/path/file1.ext", "file2.ext": "a/path/file2.ext"}
+        **Returned value:** dictionary of the form {"file1.ext": "its/path/file1.ext", "file2.ext": "a/path/file2.ext"}
 
-        Raised Exceptions:
-        if dictionary is empty, returns "There are no files in the current path."
+        **Raised Exceptions:** If dictionary is empty, returns ``"There are no files in the current path."``
 
-        Use case:
-        present_dirpath = "/path/to/current/working/directory"
-        ###### To show all the files in current working directory ######
-        show_files_with_path(os.getcwd())
-        ###### To show all the files in a desired directory ######
-        dirpath = "path/to/desired/directory"
-        show_files_with_path(dirpath)
+        **Use case:**
+
+        Assuming ``present_dirpath = "/path/to/current/working/directory"`` then
+
+        * To show all the files in current working directory
+
+        ``>> show_files_with_path(os.getcwd())``
+
+        * To show all the files in a desired directory
+
+        ``>> dirpath = "path/to/desired/directory"``
+
+        ``>> show_files_with_path(dirpath)``
+
         """
         x = {}
         for (dirpath, dirnames, filenames) in os.walk(path_to_current_working_directory):
@@ -198,27 +240,34 @@ class Crawler(object):
 
     @classmethod
     def show_files(cls, dir_names=None):
-        """class method that returns all the available files and its respective path.
+        """Returns all the available files and its respective path.
 
-        Keyword arguments:
-        dir_name -- string or strings list, where file is thought to reside.
-                    strings for just "a_directory_name";
-                    list of strings for ["a_dir_name", "its_subdir"]
+        **Keyword argument:**
 
-        Returned value:
-        dictionary with keys <- filenames and its path in respective value.
+        +--------------+-------------------------------------------------------------+
+        | Key          | Value                                                       |
+        +==============+=============================================================+
+        | ``dir_name`` | - string or strings list, where file is thought to reside.  |
+        |              | - strings for just "a_directory_name";                      |
+        |              | - list of strings for ["a_dir_name", "its_subdir"]          |
+        +--------------+-------------------------------------------------------------+
 
-        Note:
-        If NO directory name is given it will find files in all the directory and subdirectory.
-        If only one directory name is given it is assumed this is available in
-        the current working path (where this method is called from).
-        This also applies to the first directory in the list of directory names.
+        **Returned value:** dictionary with keys representing filenames and its path in respective value.
 
-        Use case:
-        ###### For files in current working path ######
-        show_files()
-        ###### For files in a subdirectory within the directory in current working path ######
-        show_files(dir_names=["a_dir_name", "its_subdir"])
+        *Note:*
+
+        * If NO directory name is given it will find files in all the directory and subdirectory.
+        * If only one directory name is given it is assumed this is available in the current working path (where this method is called from). This also applies to the first directory in the list of directory names.
+
+        **Use case:**
+
+        * For files in current working path
+
+        ``>> show_files()``
+
+        * For files in a subdirectory within the directory in current working path
+
+        ``>> show_files(dir_names=["a_dir_name", "its_subdir"])``
 
         """
         if dir_names is None:
@@ -229,39 +278,50 @@ class Crawler(object):
 
     @staticmethod
     def smoke_out(search_type=None, working_dir=None, desired_name=None):
-        """static method that searches for and finds files or directories.
+        """Searches for and finds files or directories.
 
-        Keyword arguments:
-        search_type -- valid strings; "files" or "directories"
-        working_dir -- path string; "current/working/directory"
-        desired_name -- string or list of strings;
-                        strings for "file.name" or "a_directory_name";
-                        list of strings for ["a_dir_name", "its_subdir"]
+        **Keyword arguments:**
 
-        Returned value:
-        full path (os specific) to the directory/subdirectory/file
+        +------------------+----------------------------------------------------+
+        | Key              | Value                                              |
+        +==================+====================================================+
+        | ``search_type``  | valid strings; "files" or "directories"            |
+        +------------------+----------------------------------------------------+
+        | ``working_dir``  | path string; "current/working/directory"           |
+        +------------------+----------------------------------------------------+
+        | ``desired_name`` | - string or list of strings;                       |
+        |                  | - strings for "file.name" or "a_directory_name";   |
+        |                  | - list of strings for ["a_dir_name", "its_subdir"] |
+        +------------------+----------------------------------------------------+
 
-        Raised Exceptions:
-        ValueError if search_type is anything else other than "files" or "directories"
-        ValueError if directory or file does not exist.
+        **Returned value:** full path (os specific) to the directory/subdirectory/file
 
-        Use case:
-        present_dirpath = "/path/to/current/working/directory"
-        ###### To search for a subdirectory ######
-        search_for = ["a_dir_name", "its_subdir"]
-        search_and_find(search_type="directories",
-                        working_dir=present_dirpath,
-                        desired_name=search_for)
-        ###### To search for a directory ######
-        search_for = "a_dir_name"
-        search_and_find(search_type="directories",
-                        working_dir=present_dirpath,
-                        desired_name=search_for)
-        ###### To search for a file ####
-        search_for = "filename.ext"
-        search_and_find(search_type="files",
-                        working_dir=present_dirpath,
-                        desired_name=search_for)
+        **Raised Exceptions:**
+
+        * ``ValueError`` if search_type is anything else other than "files" or "directories"
+        * ``ValueError`` if directory or file does not exist.
+
+        **Use case:**
+
+        Assuming ``present_dirpath = "/path/to/current/working/directory"`` then
+
+        * To search for a subdirectory
+
+        ``>> search_for = ["a_dir_name", "its_subdir"]``
+
+        ``>> search_and_find(search_type="directories", working_dir=present_dirpath, desired_name=search_for)``
+
+        * To search for a directory
+
+        ``>> search_for = "a_dir_name"``
+
+        ``>> search_and_find(search_type="directories", working_dir=present_dirpath, desired_name=search_for)``
+
+        * To search for a file
+
+        ``>> search_for = "filename.ext"``
+
+        ``>> search_and_find(search_type="files", working_dir=present_dirpath, desired_name=search_for)``
 
         """
         for (dirpath, dirnames, filenames) in os.walk(working_dir):

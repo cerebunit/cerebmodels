@@ -6,6 +6,8 @@ import importlib
 
 from executive import ExecutiveControl
 
+from pdb import set_trace as breakpoint
+
 class ExecutiveControlTest(unittest.TestCase):
 
     def setUp(self):
@@ -45,9 +47,9 @@ class ExecutiveControlTest(unittest.TestCase):
         self.assertEqual( self.ec.launch_model (
                               parameters = parameters,
                               onmodel = pickedmodel,
-                              capabilities = {'model': 'produce_spike_train',
+                              capabilities = {'model': None,
                                               'vtest': None} ),
-                         "model was successfully simulated")
+                          pickedmodel )
 
     #@unittest.skip("reason for skipping")
     def test_5_launch_model_NEURON_nostimulus_raw(self):
@@ -57,9 +59,31 @@ class ExecutiveControlTest(unittest.TestCase):
         self.assertEqual( self.ec.launch_model (
                               parameters = parameters,
                               onmodel = pickedmodel),
-                         "model was successfully simulated")
+                          pickedmodel )
 
     #@unittest.skip("reason for skipping")
+    def test_6_save_response(self):
+        pickedmodel = self.ec.choose_model( modelscale="cells",
+                                            modelname="PC2015Masoli" )
+        parameters = {"dt": 0.1, "celsius": 30, "tstop": 10, "v_init": 65}
+        stimparameters = {"type": ["current", "IClamp"],
+                          "stimlist": [ {"amp": 0.5, "dur": 5.0, "delay": 1.0},
+                                        {"amp": 1.0, "dur": 5.0, "delay": 0.0+5.0} ],
+                          "tstop": parameters["tstop"]}
+        model = self.ec.launch_model( parameters = parameters, onmodel = pickedmodel,
+                                      stimparameters = stimparameters, stimloc = pickedmodel.cell.soma )
+        fullname = self.ec.save_response()
+        #
+        sesstime = str(self.ec.tm.nwbfile.session_start_time).replace(" ", "_")[0:-6]
+        filename_shouldbe = self.ec.tm.nwbfile.session_id + "_" + sesstime.replace(":", "-") + ".h5"
+        #
+        path = os.getcwd() + os.sep + "responses" + os.sep + model.modelscale + os.sep + model.modelname
+        shutil.rmtree( path )
+        #
+        fullname_shouldbe = path + os.sep + filename_shouldbe
+        #
+        self.assertEqual( fullname, fullname_shouldbe )
+        
 
 if __name__ == '__main__':
     unittest.main()

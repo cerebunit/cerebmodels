@@ -4,14 +4,18 @@ import multiprocessing
 from neuron import h
 
 class HardwareConfigurator(object):
-    """Operator working under SimulationManager.
+    """
+    **Available methods:**
 
-    This manager must be instantiated by passing neuron.h
-    Eg: from neuron import h
-        hc = HardwareConfigurator(h)
+    +------------------------------+----------------------+
+    | Method name                  | Method type          |
+    +==============================+======================+
+    | :py:meth:`.activate_cores`   | static method        |
+    +------------------------------+----------------------+
 
-    Available methods:
-    activate_cores -- Nothing is returned
+    *NOTE:*
+
+    * ``activate_cores``-  Nothing is returned
 
     """
 
@@ -21,13 +25,11 @@ class HardwareConfigurator(object):
 
     @staticmethod
     def activate_cores():
-        """
+        """Activates cores
 
-        Arguments:
-        Nothing
+        **Arguments:** Nothing is passed.
 
-        Returned values:
-        Nothing
+        **Returned values:** Nothing is returned.
 
         """
         cores = multiprocessing.cpu_count()

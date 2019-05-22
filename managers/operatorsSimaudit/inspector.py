@@ -16,13 +16,21 @@ from managers.operatorsFiling.pathspawner import PathSpawner as ps
 # from local import Local
 
 class SimInspector(object):
-    """Operator working under SimulationManager.
+    """
+    **Available methods:**
 
-    Available methods:
-    inspect_compiled_nmodl -- prints "compiled files already exists" or else
-                                     Nil, it just generates the libnrnmech.so.0
-    check_compatibility -- return AttributeError if capabilities (model vs vtest) are not compatible
-                           else Nothing is returned
+    +---------------------------------+---------------------+
+    | Method name                     | Method type         |
+    +=================================+=====================|
+    | :py:meth:`.lock_and_load_nmodl` | static method       |
+    +---------------------------------+---------------------+
+    | :py:meth:`.check_compatibility` | static method       |
+    +---------------------------------+---------------------+
+
+    *NOTE:*
+
+    * ``inspect_compiled_nmodl`` prints "compiled files already exists" or Nil
+    * ``check_compatibility`` return ``AttributeError`` if capabilities (``model`` vs ``vtest``) are not compatible otherwise nothing is returned.
 
     """
 
@@ -32,15 +40,22 @@ class SimInspector(object):
 
     @staticmethod
     def lock_and_load_nmodl(modelscale=None, modelname=None):
-        """static method that checks for the compiled libnrnmech.so.0 file or else generates it.
+        """Checks for the compiled ``libnrnmech.so.0`` file or else generates it.
 
-        Keyword arguments:
-        modelscale -- string; egs. "cells", "microcircuits", "networks"
-        modelname -- string; "XY2000Author"
+        **Keyword arguments:**
 
-        Returned value:
-        prints "compiled files already exists" or else
-        Nil, it just generates the libnrnmech.so.0
+        +----------------+---------------------------------------------------+
+        | Keys           | Value type                                        |
+        +================+===================================================+
+        | ``modelscale`` | string; egs. "cells", "microcircuits", "networks" |
+        +----------------+---------------------------------------------------+
+        | ``modelname``  | string; "XY2000Author"                            |
+        +----------------+---------------------------------------------------+
+
+        **Returned value:**
+
+        * prints ``"compiled files already exists"`` or else
+        * ``Nil``, it just generates the libnrnmech.so.0
 
         """
         # generate the 'standard' path to mod and lib files
@@ -61,14 +76,19 @@ class SimInspector(object):
 
     @staticmethod
     def check_compatibility(capability_name=None, CerebUnit_capability=None):
-        """if model capability is known to be consistent with cerebunit module this module is not necessary to run.
+        """If model capability is known to be consistent with cerebunit module this module is not necessary to run.
 
-        Keyword arguments:
-        capability_name -- string; eg., "produce_spike_train"
-        CerebUnit_capability -- imported class; eg., ProducesSpikeTrain
+        **Keyword arguments:**
 
-        Returned values:
-        Nothing is returned
+        +--------------------------+-----------------------------------------+
+        | Keys                     | Value type                              |
+        +==========================+=========================================+
+        | ``capability_name``      | string; eg., "produce_spike_train"      |
+        +--------------------------+-----------------------------------------+
+        | ``CerebUnit_capability`` | imported class; eg., ProducesSpikeTrain |
+        +--------------------------+-----------------------------------------+
+
+        **Returned values:** Nothing is returned
 
         """
 

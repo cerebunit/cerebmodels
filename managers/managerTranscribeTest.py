@@ -1,6 +1,8 @@
 # ~#/managers/managerTranscribeTest.py
 import unittest
 
+import platform
+import datetime
 import shutil
 import os
 import sys
@@ -17,14 +19,18 @@ os.chdir(pwd)
 from managerTranscribe import TranscribeManager
 
 import numpy
+from managers.operatorsTranscribe.fabricator import Fabricator as fab
 from managers.operatorsFiling.crawler import Crawler as cr
 from pynwb import NWBHDF5IO
+
+from pdb import set_trace as breakpoint
 
 class TranscribeManagerTest(unittest.TestCase):
 
     def setUp(self):
         os.chdir(rootwd)
         self.chosenmodel = DummyCell()
+        self.simtime = datetime.datetime.now()
         os.chdir(pwd)
         # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
         self.runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 200, "v_init": 65}
@@ -33,7 +39,7 @@ class TranscribeManagerTest(unittest.TestCase):
                                              {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
                                "tstop": self.runtimeparam["tstop"]}
         rec_t = [ t*self.runtimeparam["dt"]
-                  for t in range( int( self.runtimeparam["tstop"]/self.runtimeparam["dt"] ) ) ]
+                  for t in range( 1 + int( self.runtimeparam["tstop"]/self.runtimeparam["dt"] ) ) ]
         rec_i = numpy.random.rand(1,len(rec_t))[0]
         rec_v = numpy.random.rand(2,len(rec_t))
         self.recordings_stimulus = {"time": rec_t,
@@ -46,7 +52,7 @@ class TranscribeManagerTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_1_load_metadata_nostimulus(self):
         tm = TranscribeManager()
-        tm.load_metadata( chosenmodel = self.chosenmodel,
+        tm.load_metadata( chosenmodel = self.chosenmodel, simtime = self.simtime,
                           recordings = self.recordings_nostimulus,
                           runtimeparameters = self.runtimeparam )
         compare1 = [ tm.filemd["identifier"], tm.filemd["experimenter"],
@@ -60,73 +66,84 @@ class TranscribeManagerTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_2_compile_nwbfile_stimulus(self):
         tm = TranscribeManager()
-        tm.load_metadata( chosenmodel = self.chosenmodel,
+        tm.load_metadata( chosenmodel = self.chosenmodel, simtime = self.simtime,
                           recordings = self.recordings_nostimulus,
                           runtimeparameters = self.runtimeparam,
                           stimparameters = self.stimparameters )
         tm.compile_nwbfile()
-        compare1 = [ tm.nwbfile.epochs.epochs.data[0][3].data.data[0][2].data,
-                     tm.nwbfile.epochs.epochs.data[1][3].data.data[1][2].timestamps,
-                     tm.nwbfile.epochs.epochs.data[2][3].data.data[2][2].unit,
-                     tm.nwbfile.epochs.epochs.data[3][3].data.data[3][2].description ]
-
-        compare2 = [ tm.respmd[ tm.nwbfile.epochs.epochs.data[0][2][-4:] ]["data"],
-                     tm.respmd[ tm.nwbfile.epochs.epochs.data[1][2][-4:] ]["timestamps"],
-                     tm.respmd[ tm.nwbfile.epochs.epochs.data[2][2][-4:] ]["unit"],
-                     tm.respmd[ tm.nwbfile.epochs.epochs.data[3][2][-4:] ]["description"] ]
+        #
+        region_0 = tm.nwbfile.epochs[0][3][2]
+        region_1 = tm.nwbfile.epochs[1][3][2]
+        region_2 = tm.nwbfile.epochs[2][3][2]
+        region_3 = tm.nwbfile.epochs[3][3][2]
+        #
+        a = all( boolean == True for boolean in
+                 tm.nwbfile.epochs[0][4][0][2].data #== ts_md_0 )
+                 == tm.respmd[region_0]["data"] )
+        b = all( boolean == True for boolean in
+                 tm.nwbfile.epochs[1][4][0][2].timestamps #== ts_md_1 )
+                 == tm.respmd[region_0]["timestamps"] )
+        c = all( boolean == True for boolean in
+                 tm.nwbfile.epochs[2][4][0][2].timestamps #== ts_md_2 )
+                 == tm.respmd[region_0]["timestamps"] )
+        d = all( boolean == True for boolean in
+                 tm.nwbfile.epochs[3][4][0][2].data #== ts_md_3 )
+                 == tm.respmd[region_0]["data"] )
+        compare1 = [ a, b, c, d,
+                     tm.nwbfile.epochs[0][4][0][2].unit,
+                     tm.nwbfile.epochs[3][4][0][2].description ]
+        compare2 = [ True, True, True, True,
+                     tm.respmd[region_0]["unit"], tm.respmd[region_3]["description"] ]
         self.assertEqual( compare1, compare2 )
 
     #@unittest.skip("reason for skipping")
     def test_3_save_nwbfile_nostimulus(self):
         os.chdir("..") # move up to ~/cerebmodels
         tm = TranscribeManager()
-        tm.load_metadata( chosenmodel = self.chosenmodel,
+        tm.load_metadata( chosenmodel = self.chosenmodel, simtime = self.simtime,
                           recordings = self.recordings_nostimulus,
                           runtimeparameters = self.runtimeparam )
         tm.compile_nwbfile()
-        tm.save_nwbfile()
-        #
-        x = cr.show_files(dir_names=['responses', self.chosenmodel.modelscale,
-                                    self.chosenmodel.modelname])
-        #print x
-        for key in x.keys():
-            compare1 = key
-        #print compare1
+        fullname = tm.save_nwbfile()
         #
         sesstime = str(tm.nwbfile.session_start_time).replace(" ", "_")[0:-6]
-        compare2 = tm.nwbfile.session_id + "_" + sesstime.replace(":", "-") + ".h5"
-        #print compare2
+        filename_shouldbe = tm.nwbfile.session_id + "_" + sesstime.replace(":", "-") + ".h5"
         #
         path = os.getcwd() + os.sep + "responses" + os.sep + self.chosenmodel.modelscale + os.sep + self.chosenmodel.modelname
         shutil.rmtree( path )
         os.chdir(pwd) # reset to the location of this managerTranscriberTest.py
-        self.assertEqual( compare1, compare2 )
+        #
+        fullname_shouldbe = path + os.sep + filename_shouldbe
+        #print(fullname_shouldbe)
+        #breakpoint()
+        self.assertEqual( fullname, fullname_shouldbe )
 
     #@unittest.skip("reason for skipping")
     def test_4_save_nwbfile_stimulus(self):
         os.chdir("..") # move up to ~/cerebmodels
         tm = TranscribeManager()
-        tm.load_metadata( chosenmodel = self.chosenmodel,
+        tm.load_metadata( chosenmodel = self.chosenmodel, simtime = self.simtime,
                           recordings = self.recordings_stimulus,
                           runtimeparameters = self.runtimeparam,
                           stimparameters = self.stimparameters )
         tm.compile_nwbfile()
-        tm.save_nwbfile()
+        fullname = tm.save_nwbfile()
         #
-        x = cr.show_files(dir_names=['responses', self.chosenmodel.modelscale,
-                                     self.chosenmodel.modelname])
-        #
-        for key in x.keys():
-            k = key
-        #
-        io = NWBHDF5IO(x[k])
+        io = NWBHDF5IO(fullname, mode="r")
         nwbfile = io.read()
         stimulus = nwbfile.get_stimulus(self.chosenmodel.modelname+"_stimulus")
+        #
+        #print(type(stimulus.data))                        # <class 'h5py._hl.dataset.Dataset'>
+        #print(type(self.recordings_stimulus['stimulus'])) # <type 'numpy.ndarray'>
+        #print(len(stimulus.data))
+        #print(len(numpy.array(stimulus.data)))
+        #breakpoint()
+        #
         a = all(boolean == True for boolean in
-                                (stimulus.data.value == self.recordings_stimulus['stimulus']))
+                                numpy.array(stimulus.data) == self.recordings_stimulus['stimulus'])
         b = all(boolean == False for boolean in
-                                (stimulus.timestamps.value == self.recordings_stimulus['stimulus']))
-        self.assertTrue( a and b is True)
+                                numpy.array(stimulus.timestamps) == self.recordings_stimulus['time'])
+        self.assertTrue( a is True and b is False)
         io.close()
         #
         path = os.getcwd() + os.sep + "responses" + os.sep + self.chosenmodel.modelscale + os.sep + self.chosenmodel.modelname

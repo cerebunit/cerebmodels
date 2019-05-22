@@ -6,19 +6,19 @@ from managers.operatorsFiling.pathspawner import PathSpawner as ps
 
 class FilingManager(object):
     """
-    Available methods:
-    available_modelscales -- returns list of model scales (directory names)
-    modelscale_inventory -- returns list of model names (model directory names)
-    get_responsepath_check_create -- returns path (string) NOTE: this is called by responsepath_check_create
-    responsepath_check_create -- returns path (string) eg, ~/cerebmodel/responses/cells/DummyTest
+    **Available methods:**
 
-    Class methods:
-    responsepath_check_create
-
-    Static methods:
-    available_modelscales
-    modelscale_inventory
-    get_responsepath_check_create
+    +------------------------------------------+----------------------+
+    | Method name                              | Method type          |
+    +==========================================+======================+
+    | :py:meth:`available_modelscales`         | static method        |
+    +------------------------------------------+----------------------+
+    | :py:meth:`modelscale_inventory`          | static method        |
+    +------------------------------------------+----------------------+
+    | :py:meth:`get_responsepath_check_create` | static method        |
+    +------------------------------------------+----------------------+
+    | :py:meth:`responsepath_check_create`     | class method         |
+    +------------------------------------------+----------------------+
 
     """
 
@@ -29,20 +29,19 @@ class FilingManager(object):
 
     @staticmethod
     def available_modelscales():
-        """static method that returns a list of available model_scale.
+        """Returns a list of available model_scale.
 
-        Arguments:
-        No arguments
+        **Arguments:** No arguments
 
-        Returned value:
-        list of model scales (directory names)
+        **Returned value:** list of model scales (directory names)
 
-        Raised Exceptions:
-        ValueError if there are no model_scale
+        **Raised Exceptions:** ``ValueError`` if there are no ``model_scale``
 
-        Use case:
-        fm = FilingManager()
-        fm.available_modelscales()
+        **Use case:**
+
+        ``>> fm = FilingManager()``
+
+        ``>> fm.available_modelscales()``
 
         """
 
@@ -55,21 +54,28 @@ class FilingManager(object):
 
     @staticmethod
     def modelscale_inventory(model_scale=None):
-        """static method that returns a list of available model for given model_scale.
+        """Returns a list of available model for given ``model_scale``.
 
-        Keyword arguments:
-        model_scale -- string; egs. "cells", "microcircuits", "networks"
+        **Keyword argument:**
 
-        Returned value:
-        list of model names (model directory names)
+        +-------------+--------------------------------------------------+
+        | Key         | Value type                                       |
+        +=============+==================================================+
+        | model_scale | string; egs. "cells", "microcircuits", "networks"|
+        +-------------+--------------------------------------------------+
 
-        Raised exceptions:
-        ValueError if the given model_scale is not listed
-        ValueError if the model_scale has no models.
+        **Returned value:** list of model names (model directory names)
 
-        Use case:
-        fm = FilingManager()
-        fm.modelscale_inventory(model_scale="cells")
+        **Raised exceptions:**
+
+        * ``ValueError`` if the given ``model_scale`` is not listed
+        * ``ValueError`` if the ``model_scale`` has no models.
+
+        **Use case:**
+
+        ``>> fm = FilingManager()``
+
+        ``>> fm.modelscale_inventory(model_scale="cells")``
 
         """
 
@@ -85,7 +91,13 @@ class FilingManager(object):
 
     @staticmethod
     def get_responsepath_check_create(list_dir_names):
-        """this static method is called by responsepath_check_create() below.
+        """:ref:`Crawler` operator checks for the response path (if it already exists). Otherwise a reponse path is created by the :ref:`PathSpawner` operator. Regardless, the response is returned. The path is of the form ``~/cerebmodels/responses/<model_scale>/<model_name>/``.
+
+        **Argument:** list of string elements of the form ``["responses", "<model_scale>", "<model_name>"]``.
+
+        *NOTE:* ``['responses', chosenmodel.modelscale, chosenmodel.modelname]`` is equivalent to ``['responses', 'cells', 'DummyModel']``.
+
+        This is called by :py:meth: ``.responsepath_check_create()``.
         """
         try:
             path = cr.path_to_dir(dir_names = list_dir_names)
@@ -98,26 +110,33 @@ class FilingManager(object):
 
     @classmethod
     def responsepath_check_create(cls, list_dir_names=None, chosenmodel=None):
-        """class method that returns path to the reponse.
+        """Returns path to the reponse.
 
-        Keyword argument: list_dir_names OR chosenmodel
-        list_dir_names -- list of three string;
-                          Eg. ['responses', chosenmodel.modelscale, chosenmodel.modelname]
-                          this is equivalent to
-                              ['responses', 'cells', 'DummyTest']
-        chosenmodel -- instantiated model
+        **Keyword argument:**
 
-        Returned value:
-        path (string) -- ~/cerebmodel/responses/cells/DummyTest
+        +--------------------+----------------------------+
+        | Key                | Value type                 |
+        +====================+============================+
+        | ``list_dir_names`` | list of three strings      |
+        | **or**             |                            |
+        | ``chosenmodel``    | instantiated model         |
+        +--------------------+----------------------------+
 
-        Raised exceptions:
-        ValueError if the argument list_dir_names is not of the form ['responses', 'cells', 'DummyTest']
+        **Returned value:** path (string) `` ~/cerebmodel/responses/<model_scale>/<model_name>``
 
-        Use case:
-        fm = FilingManager()
-        fm.responsepath_check_create(list_dir_names=['responses', 'cells', 'DummyTest'])
+        **Raised exceptions:** ``ValueError`` if the argument ``list_dir_names`` is not of the form ``["responses", "<model_scale>", "<model_name>"]``
+
+        **Use case:**
+
+        ``>> fm = FilingManager()``
+
+        Then,
+
+        ``>> fm.responsepath_check_create(list_dir_names=["responses", "cells", "DummyModel"])``
+
         OR
-        fm.responsepath_check_create( chosenmodel = DummyTest() )
+
+        ``>> fm.responsepath_check_create( chosenmodel = DummyModel() )``
 
         """
 
@@ -131,9 +150,8 @@ class FilingManager(object):
 
     @staticmethod
     def show_filenames_with_path(dir_names):
-        """static method that is identical to Crawler.show_files
+        """This is identical to ``show_files`` method of :ref:`Crawler`
 
-        Returned Value:
-        dictionary with key => filename & value => filepath
+        **Returned Value:** dictionary whose *key* is the filename and its filepath is the *value*.
         """
         return cr.show_files(dir_names=dir_names)

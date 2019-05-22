@@ -1,6 +1,8 @@
 #/managers/operatorsTranscribe/fabricatorTest.py
 import unittest
 
+from datetime import datetime
+from dateutil.tz import tzlocal
 import uuid
 import collections # for comparing unordered lists
 import os
@@ -22,6 +24,8 @@ import numpy
 
 from pynwb import NWBHDF5IO
 
+from pdb import set_trace as breakpoint
+
 class FabricatorTest(unittest.TestCase):
 
     def setUp(self):
@@ -29,11 +33,13 @@ class FabricatorTest(unittest.TestCase):
         self.chosenmodel = DummyCell()
         os.chdir(pwd)
         # parameters for generating NWBFile
+        now = datetime.now()
         self.file_metadata = {
                 "source": "Where is the data from?, i.e, platform",
                 "session_description": "How was the data generated?, i.e, simulation of __",
                 "identifier": "a unique modelID, uuid",
-                "session_start_time": '01-12-2017 00:00:00', #"when simulation starts"
+                "session_start_time": datetime(now.year, now.month, now.day, now.hour, now.minute,
+                                               now.second, now.microsecond, tzinfo=tzlocal()),
                 "experimenter": "name of the experimenter/username",
                 "experiment_description": "described experiment/test description",
                 "session_id": str(hash(str(uuid.uuid1()))).replace('-',''),
@@ -62,13 +68,13 @@ class FabricatorTest(unittest.TestCase):
                   for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
         rec_v_soma = numpy.random.rand(1,len(rec_t))[0]
         ts_metadata = \
-              {"name": "DummyTest_soma", "source": "soma",
+              {"name": "DummyTest_soma", #"source": "soma",
                "data": rec_v_soma, "unit": "mV",
                "resolution": runtimeparam["dt"],
                "conversion": 1000.0,
                "timestamps": rec_t, "starting_time": 0.0,
                "rate": 1/runtimeparam["dt"],
-               "comment": "voltage response without stimulation",
+               "comments": "voltage response without stimulation",
                "description": "whole single array of voltage response from soma of DummyTest"}
         nwbts = fab.generic_timeseries(ts_metadata)
         # Bug with pynwb (reported by me on 1/7/2018)
@@ -103,19 +109,19 @@ class FabricatorTest(unittest.TestCase):
         recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1]},
                       "stimulus": "Model is not stimulated"}
         ts_metadata = \
-              {"soma": {"name": "DummyTest_soma", "source": "soma",
+              {"soma": {"name": "DummyTest_soma", #"source": "soma",
                         "data": recordings["response"]["soma"], "unit": "mV",
                         "resolution": runtimeparam["dt"],
                         "conversion": 1000.0,
                         "timestamps": recordings["time"],
-                        "comment": "voltage response without stimulation",
+                        "comments": "voltage response without stimulation",
                         "description": "whole single array of voltage response from soma of DummyTest"},
-               "axon": {"name": "DummyTest_axon", "source": "axon",
+               "axon": {"name": "DummyTest_axon", #"source": "axon",
                         "data": recordings["response"]["axon"], "unit": "mV",
                         "resolution": runtimeparam["dt"],
                         "conversion": 1000.0,
                         "timestamps": recordings["time"],
-                        "comment": "voltage response without stimulation",
+                        "comments": "voltage response without stimulation",
                         "description": "whole single array of voltage response from axon of DummyTest"} }
         nwbts = fab.construct_nwbseries_nostimulus(self.chosenmodel,
                                                         ts_metadata)
@@ -140,19 +146,19 @@ class FabricatorTest(unittest.TestCase):
         recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1]},
                       "stimulus": "Model is not stimulated"}
         ts_metadata = \
-              {"soma": {"name": "DummyTest_soma", "source": "soma",
+              {"soma": {"name": "DummyTest_soma",
                         "data": recordings["response"]["soma"], "unit": "mV",
                         "resolution": runtimeparam["dt"],
                         "conversion": 1000.0,
                         "timestamps": recordings["time"],
-                        "comment": "voltage response without stimulation",
+                        "comments": "voltage response without stimulation",
                         "description": "whole single array of voltage response from soma of DummyTest"},
-               "axon": {"name": "DummyTest_axon", "source": "axon",
+               "axon": {"name": "DummyTest_axon",
                         "data": recordings["response"]["axon"], "unit": "mV",
                         "resolution": runtimeparam["dt"],
                         "conversion": 1000.0,
                         "timestamps": recordings["time"],
-                        "comment": "voltage response without stimulation",
+                        "comments": "voltage response without stimulation",
                         "description": "whole single array of voltage response from axon of DummyTest"} }
         nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
                                     tsmd = ts_metadata)
@@ -181,26 +187,26 @@ class FabricatorTest(unittest.TestCase):
         recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1]},
                       "stimulus": rec_i}
         ts_metadata = \
-              {"soma": {"name": "DummyTest_soma", "source": "soma",
+              {"soma": {"name": "DummyTest_soma",
                         "data": recordings["response"]["soma"], "unit": "mV",
                         "resolution": runtimeparam["dt"],
                         "conversion": 1000.0,
                         "timestamps": recordings["time"],
-                        "comment": "voltage response without stimulation",
+                        "comments": "voltage response without stimulation",
                         "description": "whole single array of voltage response from soma of DummyTest"},
-               "axon": {"name": "DummyTest_axon", "source": "axon",
+               "axon": {"name": "DummyTest_axon",
                         "data": recordings["response"]["axon"], "unit": "mV",
                         "resolution": runtimeparam["dt"],
                         "conversion": 1000.0,
                         "timestamps": recordings["time"],
-                        "comment": "voltage response without stimulation",
+                        "comments": "voltage response without stimulation",
                         "description": "whole single array of voltage response from axon of DummyTest"},
-               "stimulus": {"name": "DummyTest_stimulus", "source": stimparameters["type"][1],
+               "stimulus": {"name": "DummyTest_stimulus",
                             "data": recordings["stimulus"], "unit": "nA",
                             "resolution": runtimeparam["dt"],
                             "conversion": 1000.0,
                             "timestamps": recordings["time"],
-                            "comment": "current injection, "+stimparameters["type"][1],
+                            "comments": "current injection, "+stimparameters["type"][1],
                             "description": "whole single array of stimulus"} }
         nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
                                     tsmd = ts_metadata)
@@ -228,19 +234,19 @@ class FabricatorTest(unittest.TestCase):
                       "stimulus": "Model is not stimulated"}
         # create TimeSeries nwb object
         ts_metadata = \
-              {"soma": {"name": "DummyTest_soma", "source": "soma",
+              {"soma": {"name": "DummyTest_soma",
                         "data": recordings["response"]["soma"], "unit": "mV",
                         "resolution": runtimeparam["dt"],
                         "conversion": 1000.0,
                         "timestamps": recordings["time"],
-                        "comment": "voltage response without stimulation",
+                        "comments": "voltage response without stimulation",
                         "description": "whole single array of voltage response from soma of DummyTest"},
-               "axon": {"name": "DummyTest_axon", "source": "axon",
+               "axon": {"name": "DummyTest_axon",
                         "data": recordings["response"]["axon"], "unit": "mV",
                         "resolution": runtimeparam["dt"],
                         "conversion": 1000.0,
                         "timestamps": recordings["time"],
-                        "comment": "voltage response without stimulation",
+                        "comments": "voltage response without stimulation",
                         "description": "whole single array of voltage response from axon of DummyTest"} }
         nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
                                     tsmd = ts_metadata)
@@ -275,26 +281,26 @@ class FabricatorTest(unittest.TestCase):
         recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1]},
                       "stimulus": rec_i}
         ts_metadata = \
-              {"soma": {"name": "DummyTest_soma", "source": "soma",
+              {"soma": {"name": "DummyTest_soma",
                         "data": recordings["response"]["soma"], "unit": "mV",
                         "resolution": runtimeparam["dt"],
                         "conversion": 1000.0,
                         "timestamps": recordings["time"],
-                        "comment": "voltage response without stimulation",
+                        "comments": "voltage response without stimulation",
                         "description": "whole single array of voltage response from soma of DummyTest"},
-               "axon": {"name": "DummyTest_axon", "source": "axon",
+               "axon": {"name": "DummyTest_axon",
                         "data": recordings["response"]["axon"], "unit": "mV",
                         "resolution": runtimeparam["dt"],
                         "conversion": 1000.0,
                         "timestamps": recordings["time"],
-                        "comment": "voltage response without stimulation",
+                        "comments": "voltage response without stimulation",
                         "description": "whole single array of voltage response from axon of DummyTest"},
-               "stimulus": {"name": "DummyTest_stimulus", "source": stimparameters["type"][1],
+               "stimulus": {"name": "DummyTest_stimulus",
                             "data": recordings["stimulus"], "unit": "nA",
                             "resolution": runtimeparam["dt"],
                             "conversion": 1000.0,
                             "timestamps": recordings["time"],
-                            "comment": "current injection, "+stimparameters["type"][1],
+                            "comments": "current injection, "+stimparameters["type"][1],
                             "description": "whole single array of stimulus"} }
         nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
                                     tsmd = ts_metadata)
@@ -337,19 +343,19 @@ class FabricatorTest(unittest.TestCase):
                       "stimulus": "Model is not stimulated"}
         # create TimeSeries nwb object
         ts_metadata = \
-              {"soma": {"name": "DummyTest_soma", "source": "soma",
+              {"soma": {"name": "DummyTest_soma",
                         "data": recordings["response"]["soma"], "unit": "mV",
                         "resolution": runtimeparam["dt"],
                         "conversion": 1000.0,
                         "timestamps": recordings["time"],
-                        "comment": "voltage response without stimulation",
+                        "comments": "voltage response without stimulation",
                         "description": "whole single array of voltage response from soma of DummyTest"},
-               "axon": {"name": "DummyTest_axon", "source": "axon",
+               "axon": {"name": "DummyTest_axon",
                         "data": recordings["response"]["axon"], "unit": "mV",
                         "resolution": runtimeparam["dt"],
                         "conversion": 1000.0,
                         "timestamps": recordings["time"],
-                        "comment": "voltage response without stimulation",
+                        "comments": "voltage response without stimulation",
                         "description": "whole single array of voltage response from axon of DummyTest"} }
         nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
                                              tsmd = ts_metadata)
@@ -388,26 +394,26 @@ class FabricatorTest(unittest.TestCase):
                       "stimulus": rec_i}
         # create TimeSeries nwb object
         ts_metadata = \
-              {"soma": {"name": "DummyTest_soma", "source": "soma",
+              {"soma": {"name": "DummyTest_soma",
                         "data": recordings["response"]["soma"], "unit": "mV",
                         "resolution": runtimeparam["dt"],
                         "conversion": 1000.0,
                         "timestamps": recordings["time"],
-                        "comment": "voltage response without stimulation",
+                        "comments": "voltage response without stimulation",
                         "description": "whole single array of voltage response from soma of DummyTest"},
-               "axon": {"name": "DummyTest_axon", "source": "axon",
+               "axon": {"name": "DummyTest_axon",
                         "data": recordings["response"]["axon"], "unit": "mV",
                         "resolution": runtimeparam["dt"],
                         "conversion": 1000.0,
                         "timestamps": recordings["time"],
-                        "comment": "voltage response without stimulation",
+                        "comments": "voltage response without stimulation",
                         "description": "whole single array of voltage response from axon of DummyTest"},
-               "stimulus": {"name": "DummyTest_stimulus", "source": stimparameters["type"][1],
+               "stimulus": {"name": "DummyTest_stimulus",
                             "data": recordings["stimulus"], "unit": "nA",
                             "resolution": runtimeparam["dt"],
                             "conversion": 1000.0,
                             "timestamps": recordings["time"],
-                            "comment": "current injection, "+stimparameters["type"][1],
+                            "comments": "current injection, "+stimparameters["type"][1],
                             "description": "whole single array of stimulus"} }
         nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
                                     tsmd = ts_metadata)
@@ -418,8 +424,10 @@ class FabricatorTest(unittest.TestCase):
         #io = NWBHDF5IO('updated_mynwbfile.nwb', mode='w')
         #io.write(updated_mynwbfile)
         #io.close()
-        #io = NWBHDF5IO('updated_mynwbfile.nwb')
+        #io = NWBHDF5IO('updated_mynwbfile.nwb', mode='r')
         #nwbfile = io.read()
+        #print("breakpoint")
+        #breakpoint()
         #
         # what does the insertion lead to?
         extracted_nwbts_soma =  updated_mynwbfile.get_acquisition(nwbts["soma"].name)
@@ -440,37 +448,39 @@ class FabricatorTest(unittest.TestCase):
         # Build NWBFile
         mynwbfile = fab.build_nwbfile(self.file_metadata)
         # since self.chosenmodel.regions = {'soma': 0.0, 'axon': 0.0}
-        runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
+        runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10.0, "v_init": 65}
         rec_t = [ t*runtimeparam["dt"]
-                  for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
+                  for t in range( 1 + int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
         rec_v = numpy.random.rand(2,len(rec_t))
         # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
         recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1]},
                       "stimulus": "Model is not stimulated"}
         ts_metadata = \
-              {"soma": {"name": "DummyTest_soma", "source": "soma",
+              {"soma": {"name": "DummyTest_soma", #"source": "soma",
                         "data": recordings["response"]["soma"], "unit": "mV",
                         "resolution": runtimeparam["dt"],
                         "conversion": 1000.0,
                         "timestamps": recordings["time"],
-                        "comment": "voltage response without stimulation",
+                        "comments": "voltage response without stimulation",
                         "description": "whole single array of voltage response from soma of DummyTest"},
-               "axon": {"name": "DummyTest_axon", "source": "axon",
+               "axon": {"name": "DummyTest_axon", #"source": "axon",
                         "data": recordings["response"]["axon"], "unit": "mV",
                         "resolution": runtimeparam["dt"],
                         "conversion": 1000.0,
                         "timestamps": recordings["time"],
-                        "comment": "voltage response without stimulation",
+                        "comments": "voltage response without stimulation",
                         "description": "whole single array of voltage response from axon of DummyTest"} }
         nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
                                     tsmd = ts_metadata)
         epoch_metadata_nostimulus = \
-              {"epoch0soma": {"source": "soma", "start_time": 0.0, "stop_time": 10.0,
+              {"epoch0soma": {"source": "soma", "start_time": 0.0, "stop_time": 10.0, "source":"soma", 
                       "description": "first epoch",
-                      "tags": ('1_epoch_responses', '0', 'soma', 'DummyTest', 'cells', "epoch0soma")},
-               "epoch0axon": {"source": "axon", "start_time": 0.0, "stop_time": 10.0,
+                      "tags": ('1_epoch_responses', '0', 'soma', 'DummyTest', 'cells', "epoch0soma",
+                               "soma axon")},
+               "epoch0axon": {"start_time": 0.0, "stop_time": 10.0, "source":"axon", 
                       "description": "first epoch",
-                      "tags": ('1_epoch_responses', '0', 'axon', 'DummyTest', 'cells' "epoch0axon")}}
+                      "tags": ('1_epoch_responses', '0', 'axon', 'DummyTest', 'cells' "epoch0axon",
+                               "soma axon")}}
         pickedepoch = "epoch0axon" # choose just one
         updated_mynwbfile = fab.insert_a_nwbepoch(pickedepoch,
                                                   epoch_metadata_nostimulus,
@@ -479,6 +489,24 @@ class FabricatorTest(unittest.TestCase):
         #updated_mynwbfile = Fabricator.insert_a_nwbepoch("epoch0soma",
         #                                        epoch_metadata_nostimulus,
         #                                        mynwbfile, nwbts["soma"])
+        #print(dir(updated_mynwbfile.epochs)) # all the epochs
+        #print(updated_mynwbfile.epochs.colnames)
+        #print(updated_mynwbfile.epochs)
+        #print(len(updated_mynwbfile.epochs))
+        #print(updated_mynwbfile.epochs[0])
+        #print(len(updated_mynwbfile.epochs[0]))
+        #print(updated_mynwbfile.epochs[0][0])
+        #print(updated_mynwbfile.epochs[0][1])
+        #print(updated_mynwbfile.epochs[0][2])
+        #print(updated_mynwbfile.epochs[0][3])
+	#print(updated_mynwbfile.epochs[0][4])
+	#print(updated_mynwbfile.epochs[0][4][0])
+        #print(updated_mynwbfile.epochs[0][4][0][2])
+        #print(updated_mynwbfile.epochs[0][4][0][2].timestamps)
+        #print(type(updated_mynwbfile.epochs[0][4][0][2].timestamps))
+        #print([ i for i in range(updated_mynwbfile.epochs[0][4][0][2].num_samples)
+        #        if updated_mynwbfile.epochs[0][4][0][2].timestamps[i]==0.0])
+        #breakpoint()
         #print updated_mynwbfile.epochs.epochs.data # all the epochs
         #print updated_mynwbfile.epochs.epochs.data[0] # first epoch
         #print updated_mynwbfile.epochs.epochs.data[0][3].data # class
@@ -493,25 +521,135 @@ class FabricatorTest(unittest.TestCase):
         #print updated_mynwbfile.epochs.epochs.data[1][3].data.data[1][2].description
         #print nwbts["soma"].description
         #print nwbts["axon"].description
+        # write test
+        # Insert
+        #updated_mynwbfile = fab.affix_nwbseries_to_nwbfile(nwbts=nwbts,
+        #                                                   nwbfile=mynwbfile)
+        #io = NWBHDF5IO('updated_mynwbfile.nwb', mode='w')
+        #io.write(updated_mynwbfile)
+        #io.close()
+        #io = NWBHDF5IO('updated_mynwbfile.nwb', mode='r')
+        #nwbfile = io.read()
+        #print("breakpoint")
+        #breakpoint()
         # "<class '__main__.ClassA'>" 1st"_"is 8 & last"'"is -2
         a = all( boolean == True for boolean in
-                 updated_mynwbfile.epochs.epochs.data[0][3].data.data[0][2].timestamps
+                 updated_mynwbfile.epochs[0][4][0][2].timestamps
                  == ts_metadata[pickedepoch[-4:]]["timestamps"] )
         b = all( boolean == True for boolean in
-                 updated_mynwbfile.epochs.epochs.data[0][3].data.data[0][2].data
+                 updated_mynwbfile.epochs[0][4][0][2].data
                  == ts_metadata[pickedepoch[-4:]]["data"] )
         c = ( str(type(updated_mynwbfile))[8:-2] == "pynwb.file.NWBFile" )
         self.assertTrue( a and b and c is True )
         #compare1 = [str(type(updated_mynwbfile))[8:-2], #"<class '__main__.ClassA'>" 1st"_"is 8 & last"'"is -2
-        #            updated_mynwbfile.epochs.epochs.data[0][3].data.data[0][2].timestamps,
-        #            updated_mynwbfile.epochs.epochs.data[0][3].data.data[0][2].data]
-        #compare2 = ["pynwb.file.NWBFile",
-        #            ts_metadata[pickedepoch[-4:]]["timestamps"],
-        #            ts_metadata[pickedepoch[-4:]]["data"]]
+        #            updated_mynwbfile.epochs[0][4][0][2].timestamps,
+        #            updated_mynwbfile.epochs[0][4][0][2].data]
+        #indices = fab.indices_tseries_for_epoch(epoch_metadata_nostimulus[pickedepoch], nwbts["axon"])
+        #compare2 = [ "pynwb.file.NWBFile",
+        #             numpy.array([ts_metadata[pickedepoch[-4:]]["timestamps"] for i in indices]),
+        #             numpy.array([ts_metadata[pickedepoch[-4:]]["data"] for i in indices]) ]
+        #print(type(updated_mynwbfile.epochs[0][4][0][2].timestamps))
+        #print(type([ts_metadata[pickedepoch[-4:]]["timestamps"] for i in indices]))
+        #breakpoint()
         #self.assertEqual( compare1, compare2 )
 
     #@unittest.skip("reason for skipping")
-    def test_11_build_nwbepoch(self):
+    def test_11_insert_a_nwbepoch_twice(self):
+        # Build NWBFile
+        mynwbfile = fab.build_nwbfile(self.file_metadata)
+        # since self.chosenmodel.regions = {'soma': 0.0, 'axon': 0.0}
+        runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10.0, "v_init": 65}
+        rec_t = [ t*runtimeparam["dt"]
+                  for t in range( 1 + int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
+        rec_v = numpy.random.rand(2,len(rec_t))
+        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
+        recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1]},
+                      "stimulus": "Model is not stimulated"}
+        ts_metadata = \
+              {"soma": {"name": "DummyTest_soma", "source": "soma",
+                        "data": recordings["response"]["soma"], "unit": "mV",
+                        "resolution": runtimeparam["dt"],
+                        "conversion": 1000.0,
+                        "timestamps": recordings["time"],
+                        "comments": "voltage response without stimulation",
+                        "description": "whole single array of voltage response from soma of DummyTest"},
+               "axon": {"name": "DummyTest_axon", "source": "axon",
+                        "data": recordings["response"]["axon"], "unit": "mV",
+                        "resolution": runtimeparam["dt"],
+                        "conversion": 1000.0,
+                        "timestamps": recordings["time"],
+                        "comments": "voltage response without stimulation",
+                        "description": "whole single array of voltage response from axon of DummyTest"} }
+        nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
+                                    tsmd = ts_metadata)
+        epoch_metadata_nostimulus = \
+              {"epoch0soma": {"start_time": 0.0, "stop_time": 5.0, "source": "soma",
+                      "description": "first epoch",
+                      "tags": ('1_epoch_responses', '0', 'soma', 'DummyTest', 'cells', "epoch0soma",
+                               "soma axon")},
+               "epoch0axon": {"start_time": 5.0, "stop_time": 10.0, "source": "axon",
+                      "description": "first epoch",
+                      "tags": ('1_epoch_responses', '0', 'axon', 'DummyTest', 'cells' "epoch0axon",
+                               "soma axon")}}
+        pickedepoch1 = "epoch0soma"
+        pickedepoch2 = "epoch0axon"
+        updated_mynwbfile = fab.insert_a_nwbepoch(pickedepoch1,
+                                                  epoch_metadata_nostimulus,
+                                                  mynwbfile, nwbts["soma"])
+        updated_mynwbfile = fab.insert_a_nwbepoch(pickedepoch2,
+                                                  epoch_metadata_nostimulus,
+                                                  mynwbfile, nwbts["axon"])
+        # Insert
+        #updated_mynwbfile = fab.affix_nwbseries_to_nwbfile(nwbts=nwbts,
+        #                                                   nwbfile=mynwbfile)
+        #io = NWBHDF5IO('updated_mynwbfile.h5', mode='w')
+        #io.write(updated_mynwbfile)
+        #io.close()
+        #io = NWBHDF5IO('updated_mynwbfile.h5', mode='r')
+        #nwbfile = io.read()
+        #print("breakpoint")
+        #breakpoint()
+        # what does the output look like?
+        #updated_mynwbfile = Fabricator.insert_a_nwbepoch("epoch0soma",
+        #                                        epoch_metadata_nostimulus,
+        #                                        mynwbfile, nwbts["soma"])
+        #print(dir(updated_mynwbfile.epochs)) # all the epochs
+        #print(updated_mynwbfile.epochs.colnames)
+        #print(updated_mynwbfile.epochs)
+        #print(len(updated_mynwbfile.epochs))
+        #print(len(updated_mynwbfile.epochs[0][4]))
+        #print(updated_mynwbfile.epochs[0])
+        #print(updated_mynwbfile.epochs[1])
+        #print(len(updated_mynwbfile.epochs[0][4]))
+        #print(updated_mynwbfile.epochs[0][4])
+        #print(updated_mynwbfile.epochs[1][4])
+        #print(updated_mynwbfile.epochs[0][4][0])
+        #print(updated_mynwbfile.epochs[0][4][0][2])
+        #print(updated_mynwbfile.epochs[0][4][0][2].timestamps)
+        #print(updated_mynwbfile.epochs[0][4][0][2].data)
+        #other attributes: comments, conversion, resolution, interval, unit, description, num_samples
+        # "<class '__main__.ClassA'>" 1st"_"is 8 & last"'"is -2
+        #indices1=fab.indices_tseries_for_epoch(epoch_metadata_nostimulus[pickedepoch1], nwbts["soma"])
+        #indices2=fab.indices_tseries_for_epoch(epoch_metadata_nostimulus[pickedepoch2], nwbts["axon"])
+        #ts_md1 = [ ts_metadata[pickedepoch1[-4:]]["timestamps"][i] for i in indices1 ]
+        #ts_md2 = [ ts_metadata[pickedepoch2[-4:]]["timestamps"][i] for i in indices2 ]
+        #print(type(ts_metadata[pickedepoch1[-4:]]["timestamps"]))
+        #print(type(ts_md1))
+        #print(type(updated_mynwbfile.epochs[0][4][0][2].timestamps))
+        a = all( boolean == True for boolean in
+                 updated_mynwbfile.epochs[0][4][0][2].timestamps #== ts_md1 )
+                 == ts_metadata[pickedepoch1[-4:]]["timestamps"] )
+        b = all( boolean == True for boolean in
+                 updated_mynwbfile.epochs[1][4][0][2].data #== ts_md2 )
+                 == ts_metadata[pickedepoch2[-4:]]["data"] )
+        ab = ( #all( boolean == True for boolean in
+                 updated_mynwbfile.epochs[0][1]      # start_time
+                 != updated_mynwbfile.epochs[1][1] ) # start_time
+        c = ( str(type(updated_mynwbfile))[8:-2] == "pynwb.file.NWBFile" )
+        self.assertTrue( a and b and ab and c is True )
+
+    #@unittest.skip("reason for skipping")
+    def test_12_build_nwbepoch(self):
         # Build NWBFile
         mynwbfile = fab.build_nwbfile(self.file_metadata)
         # generate data
@@ -529,26 +667,26 @@ class FabricatorTest(unittest.TestCase):
                       "stimulus": rec_i}
         # create TimeSeries nwb object
         ts_metadata = \
-              {"soma": {"name": "DummyTest_soma", "source": "soma",
+              {"soma": {"name": "DummyTest_soma", 
                         "data": recordings["response"]["soma"], "unit": "mV",
                         "resolution": runtimeparam["dt"],
                         "conversion": 1000.0,
                         "timestamps": recordings["time"],
-                        "comment": "voltage response with stimulation",
+                        "comments": "voltage response with stimulation",
                         "description": "whole single array of voltage response from soma of DummyTest"},
-               "axon": {"name": "DummyTest_axon", "source": "axon",
+               "axon": {"name": "DummyTest_axon",
                         "data": recordings["response"]["axon"], "unit": "mV",
                         "resolution": runtimeparam["dt"],
                         "conversion": 1000.0,
                         "timestamps": recordings["time"],
-                        "comment": "voltage response with stimulation",
+                        "comments": "voltage response with stimulation",
                         "description": "whole single array of voltage response from axon of DummyTest"},
-               "stimulus": {"name": "DummyTest_stimulus", "source": stimparameters["type"][1],
+               "stimulus": {"name": "DummyTest_stimulus", #"source": stimparameters["type"][1],
                             "data": recordings["stimulus"], "unit": "nA",
                             "resolution": runtimeparam["dt"],
                             "conversion": 1000.0,
                             "timestamps": recordings["time"],
-                            "comment": "current injection, "+stimparameters["type"][1],
+                            "comments": "current injection, "+stimparameters["type"][1],
                             "description": "whole single array of stimulus"} }
         nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
                                     tsmd = ts_metadata)
@@ -557,60 +695,99 @@ class FabricatorTest(unittest.TestCase):
         #                                                        nwbfile=mynwbfile)
         # Now Epocs
         epoch_metadata_stimulus = \
-              {"epoch0soma": {"source": "soma", "start_time": 0.0, "stop_time": 10.0,
+              {"epoch0soma": {"start_time": 0.0, "stop_time": 10.0, "source": "soma",
                      "description": "first epoch",
-                     "tags": ('2_epoch_responses', '0', 'soma', 'DummyTest', 'cells', "epoch0soma")},
-               "epoch1soma": {"source": "soma", "start_time": 10.0, "stop_time": 20.0,
+                     "tags": ('2_epoch_responses', '0', 'soma', 'DummyTest', 'cells', "epoch0soma",
+                              "soma axon")},
+               "epoch1soma": {"start_time": 10.0, "stop_time": 20.0, "source": "soma",
                      "description": "second epoch",
-                     "tags": ('2_epoch_responses', '1', 'soma', 'DummyTest', 'cells', "epoch1soma")},
-               "epoch0axon": {"source": "axon", "start_time": 0.0, "stop_time": 10.0,
+                     "tags": ('2_epoch_responses', '1', 'soma', 'DummyTest', 'cells', "epoch1soma",
+                              "soma axon")},
+               "epoch0axon": {"start_time": 0.0, "stop_time": 10.0, "source": "axon",
                      "description": "first epoch",
-                     "tags": ('2_epoch_responses', '0', 'axon', 'DummyTest', 'cells', "epoch0axon")},
-               "epoch1axon": {"source": "axon", "start_time": 10.0, "stop_time": 20.0,
+                     "tags": ('2_epoch_responses', '0', 'axon', 'DummyTest', 'cells', "epoch0axon",
+                              "soma axon")},
+               "epoch1axon": {"start_time": 10.0, "stop_time": 20.0, "source": "axon",
                      "description": "second epoch",
-                     "tags": ('2_epoch_responses', '1', 'axon', 'DummyTest', 'cells', "epoch1axon")}}
-        updated_mynwbfile = fab.build_nwbepochs(
-                                                nwbfile=mynwbfile,
+                     "tags": ('2_epoch_responses', '1', 'axon', 'DummyTest', 'cells', "epoch1axon",
+                              "soma axon")}}
+        updated_mynwbfile = fab.build_nwbepochs(nwbfile=mynwbfile,
                                                 epochmd=epoch_metadata_stimulus,
                                                 nwbts=nwbts)
-        # Write Test
+        #
+        #print("start_time")
+        #print(updated_mynwbfile.epochs[0][1], updated_mynwbfile.epochs[0][4][0][0])
+        #print(updated_mynwbfile.epochs[1][1], updated_mynwbfile.epochs[1][4][0][0])
+        #print(updated_mynwbfile.epochs[2][1], updated_mynwbfile.epochs[2][4][0][0])
+        #print(updated_mynwbfile.epochs[3][1], updated_mynwbfile.epochs[3][4][0][0])
+        #print("stop_time")
+        #print(updated_mynwbfile.epochs[0][2], updated_mynwbfile.epochs[0][4][0][1])
+        #print(updated_mynwbfile.epochs[1][2], updated_mynwbfile.epochs[1][4][0][1])
+        #print(updated_mynwbfile.epochs[2][2], updated_mynwbfile.epochs[2][4][0][1])
+        #print(updated_mynwbfile.epochs[3][2], updated_mynwbfile.epochs[3][4][0][1])
+        #print(updated_mynwbfile.epochs[0][4][0])
+        #breakpoint()
+        # Insert
+        #updated_mynwbfile = fab.affix_nwbseries_to_nwbfile(nwbts=nwbts,
+        #                                                   nwbfile=mynwbfile)
         #io = NWBHDF5IO('updated_mynwbfile.h5', mode='w')
         #io.write(updated_mynwbfile)
         #io.close()
-        #io = NWBHDF5IO('updated_mynwbfile.h5')
+        #io = NWBHDF5IO('updated_mynwbfile.h5', mode='r')
         #nwbfile = io.read()
+        #print("breakpoint")
+        #breakpoint()
         # what does the output look like?
         #print updated_mynwbfile.epochs.epochs.data # all the epochs
-        #print updated_mynwbfile.epochs.epochs.data[0][3] # 1st epoch
-        #print updated_mynwbfile.epochs.epochs.data[0][3].data.data[0][2].description # its data
-        #print updated_mynwbfile.epochs.epochs.data[1][3] # 2nd epoch
-        #print updated_mynwbfile.epochs.epochs.data[1][3].data.data[1][2].description # its data
-        #print updated_mynwbfile.epochs.epochs.data[2][3] # 3rd epoch
-        #print updated_mynwbfile.epochs.epochs.data[2][3].data.data[2][2].description # its data
-        #print updated_mynwbfile.epochs.epochs.data[3][3] # 4th epoch
-        #print updated_mynwbfile.epochs.epochs.data[3][3].data.data[3][2].description # its data
+        #emd_key_0 = updated_mynwbfile.epochs[0][3][5]
+        region_0 = updated_mynwbfile.epochs[0][3][2]
+        #indices_0 = fab.indices_tseries_for_epoch(epoch_metadata_stimulus[emd_key_0],nwbts[region_0])
         #
-        # Here because all the tags have the form
-        # 2_epoch_responses,1,soma,DummyTest,epoch1soma extract the last 4 characters
-        # the last 4 characters corresponds to source of TimeSeries object
-        #print updated_mynwbfile.epochs.epochs.data[0][2]#[-4:]
+        #emd_key_1 = updated_mynwbfile.epochs[1][3][5]
+        region_1 = updated_mynwbfile.epochs[1][3][2]
+        #indices_1 = fab.indices_tseries_for_epoch(epoch_metadata_stimulus[emd_key_1],nwbts[region_1])
+        #
+        #emd_key_2 = updated_mynwbfile.epochs[2][3][5]
+        region_2 = updated_mynwbfile.epochs[2][3][2]
+        #indices_2 = fab.indices_tseries_for_epoch(epoch_metadata_stimulus[emd_key_2],nwbts[region_2])
+        #
+        #emd_key_3 = updated_mynwbfile.epochs[3][3][5]
+        region_3 = updated_mynwbfile.epochs[3][3][2]
+        #indices_3 = fab.indices_tseries_for_epoch(epoch_metadata_stimulus[emd_key_3],nwbts[region_3])
+        #
+        #ts_md_0 = [ ts_metadata[region_0]["data"][i] for i in indices_0 ]
+        #ts_md_1 = [ ts_metadata[region_1]["timestamps"][i] for i in indices_1 ]
+        #ts_md_2 = [ ts_metadata[region_2]["timestamps"][i] for i in indices_2 ]
+        #ts_md_3 = [ ts_metadata[region_3]["data"][i] for i in indices_3 ]
+        #print(len(ts_md_0s))
+        #print(len(updated_mynwbfile.epochs[0][4][0][2].data))
+        #print(updated_mynwbfile.epochs[0][1], updated_mynwbfile.epochs[0][2])
+        #print(updated_mynwbfile.epochs[0][3])
+        #breakpoint()
         a = all( boolean == True for boolean in
-                 updated_mynwbfile.epochs.epochs.data[0][3].data.data[0][2].data
-                 == ts_metadata[ updated_mynwbfile.epochs.epochs.data[0][2][-4:] ]["data"] )
+                 updated_mynwbfile.epochs[0][4][0][2].data #== ts_md_0 )
+                 == ts_metadata[region_0]["data"] )
         b = all( boolean == True for boolean in
-                 updated_mynwbfile.epochs.epochs.data[1][3].data.data[1][2].timestamps
-                 == ts_metadata[ updated_mynwbfile.epochs.epochs.data[1][2][-4:] ]["timestamps"] )
-        compare1 = [ a, b,
-                    updated_mynwbfile.epochs.epochs.data[2][3].data.data[2][2].unit,
-                    updated_mynwbfile.epochs.epochs.data[3][3].data.data[3][2].description]
-        compare2 = \
-           [ True, True,
-            ts_metadata[ updated_mynwbfile.epochs.epochs.data[2][2][-4:] ]["unit"],
-            ts_metadata[ updated_mynwbfile.epochs.epochs.data[3][2][-4:] ]["description"]]
-        self.assertEqual( compare1, compare2 )
+                 updated_mynwbfile.epochs[1][4][0][2].timestamps #== ts_md_1 )
+                 == ts_metadata[region_1]["timestamps"] )
+        #compare1 = [ a, b,
+        #            updated_mynwbfile.epochs[2][4][0][2].unit,
+        #            updated_mynwbfile.epochs[3][4][0][2].description]
+        #compare2 = \
+        #   [ True, True,
+        #    ts_metadata[ updated_mynwbfile.epochs[2][3][2] ]["unit"],
+        #    ts_metadata[ updated_mynwbfile.epochs[3][3][2] ]["description"]]
+        #self.assertEqual( compare1, compare2 )
+        c = all( boolean == True for boolean in
+                 updated_mynwbfile.epochs[2][4][0][2].timestamps #== ts_md_2 )
+                 == ts_metadata[region_2]["timestamps"] )
+        d = all( boolean == True for boolean in
+                 updated_mynwbfile.epochs[3][4][0][2].data #== ts_md_3 )
+                 == ts_metadata[region_3]["data"] )
+        self.assertTrue( a and b and c and d is True )
 
     #@unittest.skip("reason for skipping")
-    def test_12_write_nwbfile(self):
+    def test_13_write_nwbfile(self):
         # Build NWBFile
         mynwbfile = fab.build_nwbfile(self.file_metadata)
         # generate data
@@ -628,26 +805,26 @@ class FabricatorTest(unittest.TestCase):
                       "stimulus": rec_i}
         # create TimeSeries nwb object
         ts_metadata = \
-              {"soma": {"name": "DummyTest_soma", "source": "soma",
+              {"soma": {"name": "DummyTest_soma",
                         "data": recordings["response"]["soma"], "unit": "mV",
                         "resolution": runtimeparam["dt"],
                         "conversion": 1000.0,
                         "timestamps": recordings["time"],
-                        "comment": "voltage response with stimulation",
+                        "comments": "voltage response with stimulation",
                         "description": "whole single array of voltage response from soma of DummyTest"},
-               "axon": {"name": "DummyTest_axon", "source": "axon",
+               "axon": {"name": "DummyTest_axon",
                         "data": recordings["response"]["axon"], "unit": "mV",
                         "resolution": runtimeparam["dt"],
                         "conversion": 1000.0,
                         "timestamps": recordings["time"],
-                        "comment": "voltage response with stimulation",
+                        "comments": "voltage response with stimulation",
                         "description": "whole single array of voltage response from axon of DummyTest"},
-               "stimulus": {"name": "DummyTest_stimulus", "source": stimparameters["type"][1],
+               "stimulus": {"name": "DummyTest_stimulus",
                             "data": recordings["stimulus"], "unit": "nA",
                             "resolution": runtimeparam["dt"],
                             "conversion": 1000.0,
                             "timestamps": recordings["time"],
-                            "comment": "current injection, "+stimparameters["type"][1],
+                            "comments": "current injection, "+stimparameters["type"][1],
                             "description": "whole single array of stimulus"} }
         nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
                                     tsmd = ts_metadata)
@@ -658,109 +835,65 @@ class FabricatorTest(unittest.TestCase):
         epoch_metadata_stimulus = \
               {"epoch0soma": {"source": "soma", "start_time": 0.0, "stop_time": 10.0,
                      "description": "first epoch",
-                     "tags": ('2_epoch_responses', '0', 'soma', 'DummyTest', 'cells', "epoch0soma")},
+                     "tags": ('2_epoch_responses', '0', 'soma', 'DummyTest', 'cells', "epoch0soma",
+                              "soma axon")},
                "epoch1soma": {"source": "soma", "start_time": 10.0, "stop_time": 20.0,
                      "description": "second epoch",
-                     "tags": ('2_epoch_responses', '1', 'soma', 'DummyTest', 'cells', "epoch1soma")},
+                     "tags": ('2_epoch_responses', '1', 'soma', 'DummyTest', 'cells', "epoch1soma",
+                              "soma axon")},
                "epoch0axon": {"source": "axon", "start_time": 0.0, "stop_time": 10.0,
                      "description": "first epoch",
-                     "tags": ('2_epoch_responses', '0', 'axon', 'DummyTest', 'cells', "epoch0axon")},
+                     "tags": ('2_epoch_responses', '0', 'axon', 'DummyTest', 'cells', "epoch0axon",
+                              "soma axon")},
                "epoch1axon": {"source": "axon", "start_time": 10.0, "stop_time": 20.0,
                      "description": "second epoch",
-                     "tags": ('2_epoch_responses', '1', 'axon', 'DummyTest', 'cells', "epoch1axon")}}
+                     "tags": ('2_epoch_responses', '1', 'axon', 'DummyTest', 'cells', "epoch1axon",
+                              "soma axon")}}
         updated_mynwbfile = fab.build_nwbepochs(
                                                 nwbfile=updated_mynwbfile,
                                                 epochmd=epoch_metadata_stimulus,
                                                 nwbts=nwbts)
         # Write Test
-        filename = fab.write_nwbfile(nwbfile=updated_mynwbfile)
-        #io = NWBHDF5IO('updated_mynwbfile.h5', mode='w')
-        #io.write(updated_mynwbfile)
-        #io.close()
-        # Read File
-        io = NWBHDF5IO(filename)
+        fullname = fab.write_nwbfile(nwbfile=updated_mynwbfile)
+        # Read
+        io = NWBHDF5IO(fullname, mode="r")
         nwbfile = io.read()
         # what does the output look like?
-        #print nwbfile.source
-        #print nwbfile.session_description
-        #print nwbfile.session_start_time
-        #print nwbfile.session_id
-        #print updated_mynwbfile.epochs.epochs.data # all the epochs
-        #print nwbfile.epochs.epochs.data
-        #print len(updated_mynwbfile.epochs.epochs.data) # total number of epochs
-        #print len(nwbfile.epochs.epochs.data)
-        #print updated_mynwbfile.epochs.epochs.data[0] # an epoch
-        #print nwbfile.epochs.epochs.data[0]
-        #print updated_mynwbfile.epochs.epochs.data[0][4] # label of an epoch
-        #print nwbfile.epochs.epochs.data[0][4]
-        #print updated_mynwbfile.epochs.epochs.data[0][3] # 1 epoch
-        #print updated_mynwbfile.epochs.epochs.data[0][4] # label
-        #print nwbfile.epochs.epochs.data[0][3]
-        #print nwbfile.epochs.epochs.data[0][4]
-        #print updated_mynwbfile.epochs.epochs.data[0][3].data.data[0][2].description # its data
-        #print nwbfile.epochs.epochs.data[0][3][0][2].description
-        #print updated_mynwbfile.epochs.epochs.data[1][3] # 2 epoch
-        #print updated_mynwbfile.epochs.epochs.data[1][4] # label
-        #print nwbfile.epochs.epochs.data[1][3]
-        #print nwbfile.epochs.epochs.data[1][4]
-        #print updated_mynwbfile.epochs.epochs.data[1][3].data.data[1][2].description # its data
-        #print nwbfile.epochs.epochs.data[1][3][0][2].description
-        #print updated_mynwbfile.epochs.epochs.data[2][3] # 3 epoch
-        #print updated_mynwbfile.epochs.epochs.data[2][4] # label
-        #print nwbfile.epochs.epochs.data[2][3]
-        #print nwbfile.epochs.epochs.data[2][4]
-        #print updated_mynwbfile.epochs.epochs.data[2][3].data.data[2][2].description # its data
-        #print nwbfile.epochs.epochs.data[2][3][0][2].description
-        #print updated_mynwbfile.epochs.epochs.data[3][3] # 4 epoch
-        #print updated_mynwbfile.epochs.epochs.data[3][4] # label
-        #print nwbfile.epochs.epochs.data[3][3]
-        #print nwbfile.epochs.epochs.data[3][4]
-        #print updated_mynwbfile.epochs.epochs.data[3][3].data.data[3][2].description # its data
-        #print nwbfile.epochs.epochs.data[3][3][0][2].description
+        #print(dir(nwbfile.epochs)) # all the epochs
+        #print(nwbfile.epochs.colnames)
+        #print(updated_mynwbfile.epochs)
+        #print(len(updated_mynwbfile.epochs))
+        #print(len(updated_mynwbfile.epochs[0][4]))
+        #print(updated_mynwbfile.epochs[0])
+        #print(updated_mynwbfile.epochs[1])
+        #print(len(updated_mynwbfile.epochs[0][4]))
+        #print(updated_mynwbfile.epochs[0][4])
+        #print(updated_mynwbfile.epochs[1][4])
+        #print(updated_mynwbfile.epochs[0][4][0])
+        #print(updated_mynwbfile.epochs[0][4][0][2])
+        #print(updated_mynwbfile.epochs[0][4][0][2].timestamps)
+        #print(updated_mynwbfile.epochs[0][4][0][2].data)
+        #other attributes: comments, conversion, resolution, interval, unit, description, num_samples
+        # "<class '__main__.ClassA'>" 1st"_"is 8 & last"'"is -2
+        region_0 = updated_mynwbfile.epochs[0][3][2]
+        region_1 = updated_mynwbfile.epochs[1][3][2]
+        region_2 = updated_mynwbfile.epochs[2][3][2]
+        region_3 = updated_mynwbfile.epochs[3][3][2]
         #
-        # Here because all the tags have the form
-        # 2_epoch_responses,1,soma,DummyTest,epoch1soma extract the last 4 characters
-        # the last four corresponds to source of TimeSeries object
-        #print updated_mynwbfile.epochs.epochs.data[0][2]#[-4:]
-        #print nwbfile.epochs.epochs.data[0][2]
-        #
-        #print updated_mynwbfile.epochs.epochs.data[0][3].data.data
-        #print nwbfile.epochs.epochs.data[0][3]
-        #print updated_mynwbfile.epochs.epochs.data[1][3].data.data[1] # tuple of an epoch
-        #print nwbfile.epochs.epochs.data[1][3][0]
-        #print updated_mynwbfile.epochs.epochs.data[1][3].data.data[1][2] # TS object from tuple
-        #print nwbfile.epochs.epochs.data[1][3][0][2]
-        #print updated_mynwbfile.epochs.epochs.data[1][3].data.data[1][2].data # data from TS object
-        #print nwbfile.epochs.epochs.data[1][3][0][2].data.value
-        #print updated_mynwbfile.epochs.epochs.data[1][3]
-        #print updated_mynwbfile.epochs.epochs.data[1][3][-4:]
-        #print ts_metadata[ updated_mynwbfile.epochs.epochs.data[1][2][-4:] ]["data"]
-        a1 = all( boolean == True for boolean in
-                  updated_mynwbfile.epochs.epochs.data[1][3].data.data[1][2].data
-                  == nwbfile.epochs.epochs.data[1][3][0][2].data.value )
-        a2 = all( boolean == True for boolean in
-                  ts_metadata[ updated_mynwbfile.epochs.epochs.data[1][2][-4:] ]["data"]
-                  == nwbfile.epochs.epochs.data[1][3][0][2].data.value )
-        #print updated_mynwbfile.epochs.epochs.data[0][3].data.data[0][2].timestamps
-        #print nwbfile.epochs.epochs.data[0][3][0][2].timestamps.value
-        b1 = all( boolean == True for boolean in
-                  updated_mynwbfile.epochs.epochs.data[0][3].data.data[0][2].timestamps
-                  == nwbfile.epochs.epochs.data[0][3][0][2].timestamps.value )
-        b2 = all( boolean == True for boolean in
-                  ts_metadata[ updated_mynwbfile.epochs.epochs.data[1][2][-4:] ]["timestamps"]
-                  == nwbfile.epochs.epochs.data[0][3][0][2].timestamps.value )
-        # replace .description with .unit and vice-versa
-        #print updated_mynwbfile.epochs.epochs.data[2][3].data.data[2][2].description
-        #print nwbfile.epochs.epochs.data[2][3][0][2].description
-        compare1 = [ a1, a2, b1, b2,
-                     nwbfile.epochs.epochs.data[2][3][0][2].unit,
-                     nwbfile.epochs.epochs.data[3][3][0][2].description ]
-        compare2 = \
-           [ True, True, True, True,
-             updated_mynwbfile.epochs.epochs.data[2][3].data.data[2][2].unit,
-             ts_metadata[ updated_mynwbfile.epochs.epochs.data[3][2][-4:] ]["description"]]
-        self.assertEqual( compare1, compare2 )
-        os.remove(filename)
+        a = all( boolean == True for boolean in
+                 updated_mynwbfile.epochs[0][4][0][2].data #== ts_md_0 )
+                 == ts_metadata[region_0]["data"] )
+        b = all( boolean == True for boolean in
+                 updated_mynwbfile.epochs[1][4][0][2].timestamps #== ts_md_1 )
+                 == ts_metadata[region_1]["timestamps"] )
+        c = all( boolean == True for boolean in
+                 updated_mynwbfile.epochs[2][4][0][2].timestamps #== ts_md_2 )
+                 == ts_metadata[region_2]["timestamps"] )
+        d = all( boolean == True for boolean in
+                 updated_mynwbfile.epochs[3][4][0][2].data #== ts_md_3 )
+                 == ts_metadata[region_3]["data"] )
+        self.assertTrue( a and b and c and d is True )
+        os.remove(fullname)
 
 if __name__ == '__main__':
     unittest.main()

@@ -2,29 +2,44 @@
 import os
 
 class PathSpawner(object):
-    """Operator.
+    """
+    **Available methods:**
 
-    Available methods:
-    hatch_path_to_nmodl -- returns path/to/the/directory/mod_files
-                           and     path/to/the/file/libnrnmech.so.0
-    hatch_path_to_response -- returns path/to/the/directory/responses/<modelscale>/<modelname>
+    +-----------------------------------+----------------------+
+    | Method name                       | Method type          |
+    +-----------------------------------+----------------------+
+    | :py:meth:`hatch_path_to_nmodl`    | static method        |
+    +-----------------------------------+----------------------+
+    | :py:meth:`hatch_path_to_response` | static method        |
+    +-----------------------------------+----------------------+
+
+    *NOTE*:
+
+    * ``hatch_path_to_nmodl`` returns path/to/the/directory/mod_files and path/to/the/file/libnrnmech.so.0
+    * ``hatch_path_to_response`` returns path/to/the/directory/responses/<modelscale>/<modelname>
 
     """
 
     @staticmethod
     def hatch_path_to_nmodl(modelscale=None, modelname=None):
-        """hatches path to directory "mod_files" and file "libnrnmech.so.0"
+        """Hatches path to directory "mod_files" and file ``libnrnmech.so.0``
 
-        Keyword Arguments:
-        model_scale -- string; egs. "cells", "microcircuits", "networks"
-        model_name -- string; "XY2000Author"
+        **Keyword Arguments:**
 
-        Returned values:
-        path/to/the/directory/mod_files
-        path/to/the/file/libnrnmech.so.0
+        +------------------+---------------------------------------------------+
+        | Key              | Value type                                        |
+        +------------------+---------------------------------------------------+
+        | ``model_scale``  | string; egs. "cells", "microcircuits", "networks" |
+        +------------------+---------------------------------------------------+
+        | ``model_name``   | string; "XY2000Author"                            |
+        +------------------+---------------------------------------------------+
 
-        Raised Exceptions:
-        ValueError if modelscale and modelname is empty.
+        **Returned values:**
+
+        * ``path/to/the/directory/mod_files``
+        * ``path/to/the/file/libnrnmech.so.0``
+
+        **Raised Exceptions:** ``ValueError`` if modelscale and modelname is empty.
 
         """
 
@@ -38,17 +53,21 @@ class PathSpawner(object):
 
     @staticmethod
     def hatch_path_to_response(modelscale=None, modelname=None):
-        """hatches path to directory ~/responses/<modelscale>/<modelname>"
+        """Hatches path to directory ~/responses/<modelscale>/<modelname>"
 
-        Keyword Arguments:
-        model_scale -- string; egs. "cells", "microcircuits", "networks"
-        model_name -- string; "XY2000Author"
+        **Keyword Arguments:**
 
-        Returned values:
-        path/to/the/directory/responses/<modelscale>/<modelname>
+        +------------------+---------------------------------------------------+
+        | Key              | Value type                                        |
+        +------------------+---------------------------------------------------+
+        | ``model_scale``  | string; egs. "cells", "microcircuits", "networks" |
+        +------------------+---------------------------------------------------+
+        | ``model_name``   | string; "XY2000Author"                            |
+        +------------------+---------------------------------------------------+
 
-        Raised Exceptions:
-        ValueError if modelscale and modelname is empty.
+        **Returned values:** ``path/to/the/directory/responses/<modelscale>/<modelname>``
+
+        **Raised Exceptions:** ``ValueError`` if modelscale and modelname is empty.
 
         """
 

@@ -11,11 +11,21 @@ from neuron import h
 from utilities import UsefulUtils as uu
 
 class SimAssembler(object):
-    """Operator working under SimulationManager.
+    """
+    **Available methods:**
 
-    Available methods:
-    set_fixed_timesteps -- Nothing is returned
-    set_runtime_NEURON -- Nothing is returned 
+    +----------------------------------+--------------------+
+    | Method name                      | Method type        |
+    +==================================+====================+
+    | :py:meth:`.set_fixed_timesteps`` | static method      |
+    +----------------------------------+--------------------+
+    | :py:meth:`.set_runtime_NEURON``  | class method       |
+    +----------------------------------+--------------------+
+
+    *NOTE:*
+
+    * ``set_fixed_timesteps``- Nothing is returned
+    * ``set_runtime_NEURON``- Nothing is returned 
 
     """
 
@@ -25,10 +35,13 @@ class SimAssembler(object):
 
     @staticmethod
     def set_fixed_timesteps():
-        """static method that makes time steps fixed
+        """Makes time steps fixed
 
-        Return values:
-        Nothing. It sets the neuron.h for fixed time-step.
+        **Arguments:** nothing is passed
+
+        **Returned values:** Nothing.
+
+        *NOTE:* As of now it sets the neuron.h for fixed time-step. Hence `NEURON <https://neuron.yale.edu/neuron/>`_ based.
 
         """
         Fixed_step = h.CVode()
@@ -37,15 +50,20 @@ class SimAssembler(object):
 
     @classmethod
     def set_runtime_NEURON(cls, parameters=None):
-        """sets runtime parameters to neuron.h
+        """Sets runtime parameters to neuron.h
 
-        Keyword Arguments:
-        parameters -- dictionary with keys: dt, celsius, tstop & v_init
+        **Keyword Arguments:**
 
-        Returned values:
-        Nothing is returned
+        +--------------------+-----------------------------------------------+
+        | Key                | Value type                                    |
+        +====================+===============================================+
+        | ``parameters``     | - dictionary with keys:                       |
+        |                    | - ``dt``, ``celsius``, ``tstop`` & ``v_init`` |
+        +--------------------+-----------------------------------------------+
 
-        PS: set_fixed_timesteps(h) is called here.
+        **Returned values:** Nothing is returned
+
+        *NOTE:* :py:meth:`.set_fixed_timesteps` is called here.
 
         """
 

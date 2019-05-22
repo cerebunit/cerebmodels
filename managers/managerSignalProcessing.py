@@ -4,11 +4,13 @@ from managers.operatorsSignaling.converter import Converter as co
 
 class SignalProcessingManager(object):
     """
-    Available methods:
-    transform_signal
+    **Available methods:**
 
-    Static methods:
-    transform_signal
+    +------------------------------+-----------------+
+    | Method name                  |                 |
+    +==============================+=================+
+    | :py:meth:`.transform_signal` | static method   |
+    +------------------------------+-----------------+
 
     """
 
@@ -17,31 +19,48 @@ class SignalProcessingManager(object):
 
     @staticmethod
     def transform_signal(tosignal=None, chosenmodel=None, recordings=None):
-        """method that transforms the recorded 'response' signal.
+        """Transforms the recorded 'response' signal.
 
-        Keyword Arguments:
-        chosenmodel -- instantiated NEURON based model
-        recordings -- dictionary of the form
-                      {"time": [list], "response": [list], "stimulus": [list]}
-        tosignal -- string; 'spikes'
+        **Keyword Arguments:**
 
-        Returned value:
-        dictionary; region-name for key whose value is the transformed signal
+        +---------------------+----------------------------------------------------------------+
+        | Key                 | Value type                                                     |
+        +=====================+================================================================+
+        | ``chosenmodel``     | instantiated NEURON based model                                |
+        +---------------------+----------------------------------------------------------------+
+        | ``recordings``      | - dictionary of the form                                       |
+        |                     | - ``{"time": [list], "response": [list], "stimulus": [list]}`` |
+        +---------------------+----------------------------------------------------------------+
+        | ``tosignal``        | string; "spikes"                                               |
+        +---------------------+----------------------------------------------------------------+
 
-        Use case:
-        sm = SimulationManager()
-        rm = RecordManager()
-        sp = SignalProcessingManager()
-        rec = {"time": None, "response": None, "stimulus": None}
-        sm.prepare_model_NEURON (parameters, modelX)
-        stimuli_list = sm.stimulate_model_NEURON (stimparameters = currparam,
-                                                  modelsite = modelX.cell.soma)
-        rec["time"], rec["response"], rec["stimulus"] = \
-                       rm.prepare_recording_NEURON(modelX)
-        sm.engage_NEURON()
-        spikes = sp.transform_signal( chosenmodel = modelX,
-                                      recordings = rec,
-                                      tosignal = 'spikes' )
+        **Returned value:** dictionary; region-name for key whose value is the transformed signal
+
+        **Use case:**
+
+        Let's first set up as follows
+
+        ``>> sm = SimulationManager()``
+
+        ``>> rm = RecordManager()``
+
+        ``>> sp = SignalProcessingManager()``
+
+        ``>> rec = {"time": None, "response": None, "stimulus": None}``
+
+        ``>> sm.prepare_model_NEURON (parameters, modelX)``
+
+        ``>> stimuli_list = sm.stimulate_model_NEURON (stimparameters = currparam, modelsite = modelX.cell.soma)``
+
+        ``>> rec["time"], rec["response"], rec["stimulus"] = rm.prepare_recording_NEURON(modelX)``
+
+        ``>> sm.engage_NEURON()``
+
+        Then to transform the analog signals into spike, do
+
+        ``>> spikes = sp.transform_signal( chosenmodel = modelX, recordings = rec, tosignal = 'spikes' )``
+
+        *NOTE:* Currently only ``tosignal="spikes"`` is supported.
 
         """
         if (chosenmodel is None) or (recordings is None) or (tosignal is None):

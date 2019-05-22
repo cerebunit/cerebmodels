@@ -1,6 +1,7 @@
 # ~/executive.py
 import importlib
 import time
+import datetime
 
 from neuron import h
 
@@ -9,40 +10,57 @@ from managers.managerFiling import FilingManager as fm
 from managers.managerSimulation import SimulationManager as sm
 from managers.managerRecord import RecordManager as rm
 from managers.managerTranscribe import TranscribeManager
-from managers.operatorsVisualize.reader import Reader
+#from managers.operatorsVisualize.reader import Reader
 
 class ExecutiveControl(object):
     """
-    Main Use Methods:
-    list_modelscales
-    list_models
-    choose_model
-    launch_model
-    save_response
-    load_response
+    **Available Methods:**
 
-    Instance methods:
-    launch_model
-    save_response (call must be after launch_model)
-
-    Static methods:
-    list_modelscale
-    list_models
-    choose_model
-
+    +------------------------------+---------------------+
+    | Method name                  | Method type         |
+    +==============================+=====================+
+    | :py:meth:`.list_modelscales` | static method       |
+    +------------------------------+---------------------+
+    | :py:meth:`.list_models`      | static method       |
+    +------------------------------+---------------------+
+    | :py:meth:`.choose_model`     | static method       |
+    +------------------------------+---------------------+
+    | :py:meth:`.launch_model`     | instance method     |
+    +------------------------------+---------------------+
+    | :py:meth:`.save_response`    | instance method     |
+    +------------------------------+---------------------+
+    | :py:meth:`.load_response`    | instance method     |
+    +------------------------------+---------------------+
     """
 
     def __init__(self):
         self.recordings = {"time": None, "response": None, "stimulus": None}
+        self.simtime = None
         self.tm = TranscribeManager()
-        self.filename = ""
+        self.fullname = ""
 
     @staticmethod
     def list_modelscales():
+        """Directs :ref:`FilingManager` to return available model scales.
+
+        **Arguments:** no argument is passed to get the list of model scales.
+        """
         return fm.available_modelscales()
 
     @staticmethod
     def list_models(modelscale=None):
+        """Directs :ref:`FilingManager` to return available model names for a given model scale.
+
+        **Keyword Argument:**
+
+        +----------------+---------------------------------------------------+
+        | Key            | Value type                                        |
+        +================+===================================================+
+        | ``modelscale`` | string; egs. "cells", "microcircuits", "networks" |
+        +----------------+---------------------------------------------------+
+
+        *NOTE:* The string value will depend on the availability of model scales which can be checked using :py:meth:`.list_modelscales()`.
+        """
         x =  fm.modelscale_inventory(model_scale=modelscale)
         #if "DummyTest" in x: # DummyTest is the Dummy model for running test
         #    x.remove("DummyTest")
@@ -50,6 +68,20 @@ class ExecutiveControl(object):
 
     @staticmethod
     def choose_model(modelscale=None, modelname=None):
+        """Returns instantiated model for a desired model name available in the specified model scale.
+
+        **Keyword Arguments:**
+
+        +----------------+-------------+
+        | Key            | Value type  |
+        +================+=============+
+        | ``modelscale`` | string      |
+        +----------------+-------------+
+        | ``modelname``  | string      |
+        +----------------+-------------+
+
+        *NOTE*: Currently only ``modelscale="cells"`` are supported. Future releases will include other model scales.
+        """
         sm.lock_and_load_model_libraries(modelscale=modelscale, modelname=modelname)
         modelmodule = importlib.import_module("models."+modelscale+".model"+modelname)
         chosenmodel = getattr(modelmodule, uu.classesinmodule(modelmodule)[0].__name__)
@@ -61,9 +93,36 @@ class ExecutiveControl(object):
     def launch_model( self, parameters = None, onmodel = None,
                       stimparameters = None, stimloc = None,
                       capabilities = {'model':None, 'vtest':None} ):
+        """Directs the ``SimulationManager`` to launch the simulation on an instantiated model.
+
+        **Keyword Arguments:**
+
+        +-------------------------------+---------------------------------+
+        | Key                           | Value type                      |
+        +===============================+=================================+
+        | ``parameters``                | dictionary                      |
+        +-------------------------------+---------------------------------+
+        |  ``onmodel``                  | instantiated model              |
+        +-------------------------------+---------------------------------+
+        | ``stimparameters`` (optional) | dictionary                      |
+        +-------------------------------+---------------------------------+
+        | ``stimloc`` (optional)        | attribute of instantiated model |
+        +-------------------------------+---------------------------------+
+        | ``capabilities`` (optional)   | dictionary                      |
+        +-------------------------------+---------------------------------+
+
+        * ``parameters``- *mandatory* whose value is a dictionary. For example, ``parameters = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}``
+        * ``onmodel``- *mandatory* whose value is the instantiated model using :py:meth:`.choose_model()`. For example, ``onmodel = <instance>.choose_model(modelscale="a_chosen_scale", modelname="a_chosen_name")``.
+        * ``stimparameters``- optional whose value is a dictionary. For example, ``{"type": ["current", "IClamp"], "stimlist": [ {'amp': 0.5, 'dur': 100.0, 'delay': 10.0}, {'amp': 1.0, 'dur': 50.0, 'delay': 10.0+100.0} ] }``.
+        * ``stimloc``- optional (mandatory only if ``stimparameters`` argument is provided). Its value is an attribute of the instantiated model. Note that this instantiated model is the value for the mandatory keyword argument ``onmodel``.
+        * ``capabilties``- optional whose value is a dictionary. The dictionary **must** have the keys ``model`` and ``vtest``. The value for ``model`` key is a string representing the models method. For example, ``model: "produce_voltage_response"``. The value for ``vtest`` key is a class imported from the installed ``CerebUnit``.
+
+        *NOTE*: Calling this function returns the model as the attribute ``ExecutiveControl.chosenmodel``.
+        """
         # NOTE: although it is convenient to use self.chosenmodel
         # to the user having explicitly choose onmodel as an argument is clearer
         uu.check_not_None_in_arg({'parameters': parameters, 'onmodel': onmodel})
+        self.simtime = datetime.datetime.now()
         if onmodel.modelscale is "cells":
             sm.prepare_model_NEURON( parameters=parameters, chosenmodel=onmodel,
                                      modelcapability = capabilities['model'],
@@ -74,29 +133,43 @@ class ExecutiveControl(object):
             self.recordings["time"], self.recordings["response"], rec_i_indivs = \
                     rm.prepare_recording_NEURON( onmodel,
                                                       stimuli = stimuli_list )
-            sm.trigger_NEURON( onmodel, modelcapability = capabilities['model'] )
+            sm.trigger_NEURON( onmodel, modelcapability = capabilities['model'],
+                               parameters=parameters, stimparameters=stimparameters,
+                               stimloc=stimloc, onmodel=onmodel )
             self.recordings["stimulus"] = \
                     rm.postrun_record_NEURON( injectedcurrents = rec_i_indivs )
         # save the parameters as attributes
         self.chosenmodel = onmodel
         self.parameters = parameters
         self.stimparameters = stimparameters
-        return "model was successfully simulated" # for executiveTest.py
+        return self.chosenmodel
+        #return "model was successfully simulated" # for executiveTest.py
 
     def save_response( self ):
+        """Returns filename after saving the model response into a `NWB <https://www.nwb.org/>`_ formated ``.h5`` file located in ``~/response/<modelscale>/<modelname>/`` in root directory of ``cerebmodels``.
+
+        **Arguments:** no argument is passed.
+        """
         self.tm.load_metadata( chosenmodel = self.chosenmodel,
+                               simtime = self.simtime,
                                recordings = self.recordings,
                                runtimeparameters = self.parameters,
                                stimparameters = self.stimparameters )
         self.tm.compile_nwbfile()
-        self.filename = self.tm.save_nwbfile() # saves and returns filename
-        return self.filename
+        self.fullname = self.tm.save_nwbfile() # saves and returns fullname (filepath+filename)
+        return self.fullname
 
-    def load_response( self ):
-        allfiles_paths = fm.show_filenames_with_path( [ "responses",
-                                                        self.chosenmodel.modelscale,
-                                                        self.chosenmodel.modelname ] )
+#    def load_response( self ):
+#        """Returns file (`NWB <https://www.nwb.org/>`_ formated``.h5`` file) by directing the :ref:`FilingManager` and the ``Reader`` in ``:ref:YieldManager`` operator to load the response following an earlier simulation run.
+
+#        **Arguments:** no argument is passed.
+
+#        *NOTE:* for now its ability is limited to loading (immediately) preceeding simulation response.
+#        """
+#        allfiles_paths = fm.show_filenames_with_path( [ "responses",
+#                                                        self.chosenmodel.modelscale,
+#                                                        self.chosenmodel.modelname ] )
         # extract filepath of current filename and load it using Reader()
-        loadedfile = Reader(allfiles_paths[self.filename])
-        loadedfile.chosenmodel = self.chosenmodel
-        return loadedfile
+#        loadedfile = Reader(allfiles_paths[self.filename])
+#        loadedfile.chosenmodel = self.chosenmodel
+#        return loadedfile

@@ -37,7 +37,7 @@ class TimeseriesGeneratorTest(unittest.TestCase):
         # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
         ts_response = tg.cellrecordings_response(self.chosenmodel,
                               "axon", rec_t, specific_rec_i, rec_v_axon, runtimeparam)
-        self.assertEqual( [ts_response["name"], ts_response["data"], ts_response["comment"]],
+        self.assertEqual( [ts_response["name"], ts_response["data"], ts_response["comments"]],
                           ["DummyTest_axon", rec_v_axon, "voltage response without stimulation"] )
 
     #@unittest.skip("reason for skipping")
@@ -50,7 +50,7 @@ class TimeseriesGeneratorTest(unittest.TestCase):
         # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
         ts_response = tg.cellrecordings_response(self.chosenmodel,
                               "soma", rec_t, rec_i, rec_v_soma, runtimeparam)
-        self.assertNotEqual( [ts_response["name"], ts_response["data"], ts_response["comment"]],
+        self.assertNotEqual( [ts_response["name"], ts_response["data"], ts_response["comments"]],
                              ["DummyTest_soma", rec_v_soma, "voltage response without stimulation"] )
 
     #@unittest.skip("reason for skipping")
@@ -66,7 +66,7 @@ class TimeseriesGeneratorTest(unittest.TestCase):
         # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
         ts_stimulus = tg.recordings_cell_currentstimulus(self.chosenmodel,
                                        rec_t, rec_i, runtimeparam, stimparameters)
-        self.assertEqual( [ts_stimulus["name"], ts_stimulus["comment"]],
+        self.assertEqual( [ts_stimulus["name"], ts_stimulus["comments"]],
                           ["DummyTest_stimulus", "current injection, IClamp"] )
 
     #@unittest.skip("reason for skipping")
@@ -83,7 +83,7 @@ class TimeseriesGeneratorTest(unittest.TestCase):
         # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
         ts_stimulus = tg.recordings_cellstimulus(self.chosenmodel,
                                        rec_t, rec_i, runtimeparam, stimparameters)
-        self.assertEqual( [ts_stimulus["name"], ts_stimulus["comment"]],
+        self.assertEqual( [ts_stimulus["name"], ts_stimulus["comments"]],
                           ["DummyTest_stimulus", "current injection, IClamp"] )
 
     #@unittest.skip("reason for skipping")
@@ -98,7 +98,7 @@ class TimeseriesGeneratorTest(unittest.TestCase):
         response = tg.forcellrecordings_nostimulus(self.chosenmodel,
                                                          recordings, runtimeparam)
         self.assertEqual( [response["soma"]["name"], response["axon"]["name"],
-                           response["soma"]["comment"]],
+                           response["soma"]["comments"]],
                           ["DummyTest_soma", "DummyTest_axon",
                            "voltage response without stimulation"] )
 
@@ -119,7 +119,7 @@ class TimeseriesGeneratorTest(unittest.TestCase):
         response = tg.forcellrecordings_stimulus(self.chosenmodel, recordings,
                                                        runtimeparam, stimparameters)
         self.assertEqual( [response["soma"]["name"], response["axon"]["data"],
-                           response["soma"]["comment"]],
+                           response["soma"]["comments"]],
                           ["DummyTest_soma", recordings["response"]["axon"],
                            "voltage response with stimulation"] )
 
@@ -154,7 +154,7 @@ class TimeseriesGeneratorTest(unittest.TestCase):
                                            recordings=recordings,
                                            runtimeparameters=runtimeparam)
         self.assertEqual( [respmd["soma"]["name"], respmd["axon"]["name"],
-                           respmd["soma"]["comment"]],
+                           respmd["soma"]["comments"]],
                           ["DummyTest_soma", "DummyTest_axon",
                            "voltage response without stimulation"] )
 
@@ -177,7 +177,7 @@ class TimeseriesGeneratorTest(unittest.TestCase):
                                            runtimeparameters=runtimeparam,
                                            stimparameters=stimparameters)
         self.assertEqual( [respmd["soma"]["name"], respmd["axon"]["data"],
-                           respmd["axon"]["comment"]],
+                           respmd["axon"]["comments"]],
                           ["DummyTest_soma", recordings["response"]["axon"],
                            "voltage response with stimulation"] )
 

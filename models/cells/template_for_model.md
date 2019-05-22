@@ -1,6 +1,6 @@
 # Template for adding cellular models here in cerebmodels
 
-For uploading models in `~/cerebmodels/models/cells/` follow the manadatory steps instructed below.
+**For uploading models in `~/cerebmodels/models/cells/` follow the manadatory steps instructed below.**
 
 ## The Model Directory (NEURON)
 
@@ -12,19 +12,19 @@ model-directory/
     mod_files/
         contains .mod files
 ```
+The main `model-directory/` should have the `__init__.py` file and the `Cellname.py` file which is where the code for the template of the cell is located. This main `model-directory/` may also have other associated files need for constructing the cell. This will depend on the model.
 
-Note:
+Recommendations:
 
-* usually, the filename <Cellname> is as suggested the name of the cell. For instance, `Purkinje.py` for Purkinje cell.
-* the class name of `Cellname.py` is `Cellname`
-* the main `model-directory/` should have the `__init__.py` file and the `Cellname.py` file which is where the code for the template of the cell is located. Generally, the file name corresponds with the cell name. For instance, for Purkinje cell the file would be `Purkinje.py`. 
-* this main `model-directory/` may also have other associated files need for constructing the cell. This will depend on the model.
 * the naming of the main `model-directory/` is of the form
   ```<UpperCaseLetters><Year><FirstAuthor>```
-such that `<UpperCaseLetters>` are PC for Purkinje Cell, GoC for Golgi Cell and GrC for Granular Cell.
+such that `<UpperCaseLetters>` are **PC** for Purkinje Cell, **GoC** for Golgi Cell and **GrC** for Granular Cell.'
+* it is recommended that the filename `Cellname.py` be the name of the cell. For instance, `Purkinje.py` for Purkinje cell.
+* the class name of `Cellname.py` is `Cellname`
+
 ---
 
-## Cell Template
+## 1. Cell Template
 
 The `Cellname.py` will contain a class whose name is `Cellname`. For instance, 'Purkinje.py` contains `class Purkinje`. The idea of having both cell template and model template is that the original model is undisturbed or minimaly edited in the 'cell template'.
 
@@ -32,20 +32,18 @@ Note:
 
 * no setup for recording should be made here
 * comment out, if the source file have lines for recording (say time and voltages). Hint: this usually takes place under `__init__` method.
+
 ---
 
-## Model Template
+## 2. Model Template
 
 The model directory will be in `~/cerebmodels/models/cells/ABYearXYZ`. In the directory above the model directory, you must have a python script (the model template). The naming structure is
 ```
 model<UpperCaseLetters>< Year><FirstAuthor>.py;
 ```
-Also, in the "`__init__.py`" located in "`~/cerebmodels/models/cells/__init__.py`" make sure to add
-```
-import model<UpperCaseLetters><Year><FirstAuthor> as <UpperCaseLetters><Year><FirstAuthor>
-```
-
 The `modelABYearXYZ.py` will contain a class whose name is `<Cellname>Cell`. That is, the word 'Cell' appended at the end of the <Cellname> of the cell-template. For instance, 'modelPC2015Masoli.py` contains `class PurkinjeCell`. At the start of this template first setup the path for loading the libraries of the model.
+
+### 2.1
 ```
 import os
 pwd = os.getcwd()

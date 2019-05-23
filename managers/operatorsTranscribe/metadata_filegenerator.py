@@ -111,7 +111,7 @@ class FileGenerator(object):
 
         **Returned value:** It is a dictionary of the form
 
-        .. code-block:: python
+        ::
 
            { "session_description":    string;
              "identifier":             string,

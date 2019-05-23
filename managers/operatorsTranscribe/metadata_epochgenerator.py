@@ -118,29 +118,29 @@ class EpochGenerator(object):
 
         **Returned Value:** Assuming ``chosenmodel.regions = {'soma': 0.0, 'axon': 0.0}`` and the number of epochs per region = 3 (i.e initial state regardless of stimulus is epoch0), then the returned value is a dictionary of the form
 
-        .. code-block:: python
+        ::
 
-           { "epoch0soma":
-                {'tags': ('3_epoch_responses', "0", "soma", modelname, modelscale, "epoch0soma", "soma axon")},
-             "epoch1soma":
-                {'tags': ('3_epoch_responses', "1", "soma", modelname, modelscale, "epoch1soma", "soma axon")},
-             "epoch2soma":
-                {'tags': ('3_epoch_responses', "2", "soma", modelname, modelscale, "epoch2soma", "soma axon"])},
-             "epoch0axon":
-                {'tags': ('3_epoch_responses', "0", "axon", modelname, modelscale, "epoch0axon", "soma axon"])},
-             "epoch1axon":
-                {'tags': ('3_epoch_responses', "1", "soma", modelname, modelscale, "epoch1axon", "soma axon")},
-             "epoch2axon":
-                {'tags': ('3_epoch_responses', "2", "soma", modelname, modelscale, "epoch2axon", "soma axon")} }
+           { "epoch0soma": {"tags": ("3_epoch_responses", "0", "soma", modelname, modelscale,
+                                     "epoch0soma", "soma axon") },
+             "epoch1soma": {"tags": ("3_epoch_responses", "1", "soma", modelname, modelscale,
+                                     "epoch1soma", "soma axon") },
+             "epoch2soma": {"tags": ("3_epoch_responses", "2", "soma", modelname, modelscale,
+                                     "epoch2soma", "soma axon") },
+             "epoch0axon": {"tags": ("3_epoch_responses", "0", "axon", modelname, modelscale,
+                                     "epoch0axon", "soma axon")},
+             "epoch1axon": {"tags": ("3_epoch_responses", "1", "soma", modelname, modelscale,
+                                     "epoch1axon", "soma axon")},
+             "epoch2axon": {"tags": ("3_epoch_responses", "2", "soma", modelname, modelscale,
+                                     "epoch2axon", "soma axon")} }
 
         However without stimulation, number of epochs per region = 1 (i.e, only epoch0) and the dictionary will look like
 
-        .. code-block:: python
+        ::
 
-           { "epoch0soma":
-                {'tags': ('1_epoch_responses', "0", "soma", modelname, modelscale, "epoch0soma", "soma axon")},
-             "epoch0axon":
-                {'tags': ('1_epoch_responses', "0", "soma", modelname, modelscale, "epoch0axon", "soma axon")} }
+           { "epoch0soma": {"tags": ("1_epoch_responses", "0", "soma", modelname, modelscale,
+                                     "epoch0soma", "soma axon") },
+             "epoch0axon": {"tags": ("1_epoch_responses", "0", "soma", modelname, modelscale,
+                                     "epoch0axon", "soma axon") } }
 
         *NOTE:*
 
@@ -337,16 +337,40 @@ class EpochGenerator(object):
 
         **Returned Value:** Assuming ``chosenmodel.regions = {'soma': 0.0, 'axon': 0.0}`` and number of epochs per region = 2 (i.e initial state regardless of stimulus is epoch0), the returned value is a dictionary of the form
 
-        | ``{"epoch0soma": {"source": "soma", "start_time": float, "stop_time": float, "description": string, "tags": ( No_epoch_responses, epochID, this_region, modelname, modelscale, epochs<index>region, all_regions ) },``
-        |  ``"epoch1soma": {"source": "soma", "start_time": float, "stop_time": float, "description": string}, "tags": ( string, string, string, string, string, string, space separated string ) }``
-        |  ``"epoch0axon": {"source": "axon", "start_time": float, "stop_time": float, "description": string, "tags": ( string, string, string, string, string, string, space separated string ) },``
-        |  ``"epoch1axon": {"source": "axon", "start_time": float, "stop_time": float, "description": string, "tags": ( string, string, string, string, string, string, space separated string ) },``
-        | ``"epoch_tags": ('2_epoch_responses',)}``
+        ::
+
+           { 
+             "epoch0soma": {"source": "soma", "start_time": float, "stop_time": float,
+                            "description": string,
+                            "tags": ( No_epoch_responses, epochID, this_region, modelname,
+                                      modelscale, epochs<index>region, all_regions ) },
+             "epoch1soma": {"source": "soma", "start_time": float, "stop_time": float,
+                            "description": string,
+                            "tags": ( string, string, string, string, string, string,
+                                      space separated string ) }
+             "epoch0axon": {"source": "axon", "start_time": float, "stop_time": float,
+                            "description": string,
+                            "tags": ( string, string, string, string, string, string,
+                                      space separated string ) },
+             "epoch1axon": {"source": "axon", "start_time": float, "stop_time": float,
+                            "description": string,
+                            "tags": ( string, string, string, string, string, string,
+                                      space separated string ) },
+             "epoch_tags": ('2_epoch_responses',) }
 
         However without stimulation, number of epochs per region = 1 (i.e, only epoch0) resulting in
-        | ``{"epoch0soma": {"source": "soma", "start_time": float, "stop_time": float, "description": string, "tags": ( No_epoch_responses, epochID, this_region, modelname, modelscale, epochs<index>retion, all_regions ) },``
-        |  ``"epoch0axon": {"source": "axon", "start_time": float, "stop_time": float, "description": string, "tags": ( string, string, string, string, string, string, space separated string )},``
-        |  ``"epoch_tags": ('1_epoch_responses',)}``
+
+        ::
+
+           { "epoch0soma": {"source": "soma", "start_time": float, "stop_time": float,
+                            "description": string,
+                            "tags": ( No_epoch_responses, epochID, this_region, modelname,
+                                      modelscale, epochs<index>retion, all_regions ) },
+             "epoch0axon": {"source": "axon", "start_time": float, "stop_time": float,
+                            "description": string,
+                            "tags": ( string, string, string, string, string, string,
+                                      space separated string ) },
+             "epoch_tags": ('1_epoch_responses',) }
 
         *NOTE:*
 

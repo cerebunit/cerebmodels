@@ -75,4 +75,3 @@ class PathSpawner(object):
             return os.getcwd() + os.sep + "responses" + os.sep + modelscale + os.sep + modelname
         else:
             raise ValueError("Give a modelscale and modelname.")
-

@@ -6,7 +6,7 @@ from neuron import h
 
 # import modules from other directories
 # set to ~/cerebmodels
-#sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
+sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 #
 from utilities import UsefulUtils as uu
 
@@ -65,7 +65,7 @@ class Stimulator(object):
         list_of_currents = []
         for i in range(no_of_currents):
             list_of_currents.append( h.IClamp(0.5, sec=injectsite) )
-            for key, value in parameters[i].iteritems():
+            for key, value in parameters[i].items():
                 if key in list_of_currents[i].__dict__:
                     setattr(list_of_currents[i], key, value)
                 else:
@@ -99,15 +99,15 @@ class Stimulator(object):
         list_of_currents = []
         for i in range(no_of_currents):
             list_of_currents.append( h.IRamp(0.5, sec=injectsite) )
-            for key, value in parameters[i].iteritems():
+            for key, value in parameters[i].items():
                 if key not in list_of_currents[i].__dict__:
                     raise AttributeError( key + " is not an attribute in h.IRamp." )
                 else:
-                    if i == 0 or ( i > 0 and key is not "amp_final"):
-                        setattr(list_of_currents[i], key, value)
-                    else: # for amp_final
-                        adjusted_value = value - list_of_currents[i].amp_initial
+                    if key=="amp_final":
+                        adjusted_value = value - parameters[i]["amp_initial"]
                         setattr(list_of_currents[i], key, adjusted_value)
+                    else:
+                        setattr(list_of_currents[i], key, value)
         return list_of_currents
 
     @staticmethod

@@ -20,7 +20,6 @@ class HardwareConfigurator(object):
     """
 
     def __init__(self):
-        #self.h = neuron_dot_h
         pass
 
     @staticmethod

@@ -52,7 +52,8 @@ class TimeseriesGenerator(object):
 
         **Returned value:** Is is a dictionary of the form
 
-        .. code-block:: python
+        ::
+
            { "name":         string,
              "data":         array,
              "unit":         string,
@@ -123,7 +124,7 @@ class TimeseriesGenerator(object):
 
         **Returned value:** Is is a dictionary of the form
 
-        .. code-block:: python
+        ::
 
            { "name":         string,
              "data":         array,
@@ -309,42 +310,42 @@ class TimeseriesGenerator(object):
 
         **Keyword Arguments:**
 
-        +-----------------------+----------------------------------------------------------------+
-        | Key                   | Value type                                                     |
-        +=======================+================================================================+
-        | ``chosenmodel``       | instantiated model                                             |
-        +-----------------------+----------------------------------------------------------------+
-        | ``recordings``        | - dictionary with keys: ``"time"``, ``"response"`` and         |
-        |                       |                                             ``"stimulus"``     |
-        |                       | - Eg: {"time": array, "response": {cellregion_a: array,        |
-        |                       |                                      cellregion_b: array},     |
-        |                       |       "stimulus": str("Model is not stimulated") or array}     |
-        +-----------------------+----------------------------------------------------------------+
-        | ``runtimeparameters`` | - dictionary with keys ``"dt"``, ``"celsius"``, ``"tstop"`` and|
-        |                       |                                                   ``"v_init"`` |
-        |                       | - - Eg: {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}|
-        +-----------------------+----------------------------------------------------------------+
-        | ``stimparameters``    | - dictionary with keys ``"type"``, ``"stimlist"`` and          |
-        |                       |                                                ``"tstop"``     |
-        |                       | - value for ``"type"`` is a two element list of strings of     |
-        |                       |the form <stimulus category> <specific type of that category>   |
-        |                       | - the first element is ALWAYS ``<stimulus category>``          |
-        |                       | -  Eg: current inject on a cell ``["current", "IClamp"]``      |
-        |                       | - value for ``"stimlist"`` is list with elements as dictionary |
-        |                       |of the form [ {}, {}, ... ]                                     |
-        |                       | - Eg1: [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},            |
-        |                       |          {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]      |
-        |                       | - Eg2: [ {"amp_initial": 0.0, "amp_final": 0.5, "dur": 5.0,    |
-        |                       |                                                 "delay": 5.0}, |
-        |                       |          {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0,    |
-        |                       |                                                 "delay": 10.0},|
-        |                       |          {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0,    |
-        |                       |                                                 "delay": 15.0},|
-        |                       |          {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0,    |
-        |                       |                                                 "delay": 20.0}]|
-        |                       | - value for ``"tstop"`` is a number, time for generating the   |
-        |                       |last epoch. Therefore, ``"tstop": parameters["tstop"]``.        |
-        +-----------------------+----------------------------------------------------------------+
+        +---------------------+----------------------------------------------------------------+
+        | Key                 | Value type                                                     |
+        +=====================+================================================================+
+        |``chosenmodel``      | instantiated model                                             |
+        +---------------------+----------------------------------------------------------------+
+        |``recordings``       | - dictionary with keys: ``"time"``, ``"response"`` and         |
+        |                     |                                             ``"stimulus"``     |
+        |                     | - Eg: {"time": array, "response": {cellregion_a: array,        |
+        |                     |                                      cellregion_b: array},     |
+        |                     |       "stimulus": str("Model is not stimulated") or array}     |
+        +---------------------+----------------------------------------------------------------+
+        |``runtimeparameters``| - dictionary with keys ``"dt"``, ``"celsius"``, ``"tstop"`` and|
+        |                     |                                                   ``"v_init"`` |
+        |                     | - - Eg: {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}|
+        +---------------------+----------------------------------------------------------------+
+        |``stimparameters``   | - dictionary with keys ``"type"``, ``"stimlist"`` and          |
+        |                     |                                                ``"tstop"``     |
+        |                     | - value for ``"type"`` is a two element list of strings of     |
+        |                     |the form <stimulus category> <specific type of that category>   |
+        |                     | - the first element is ALWAYS ``<stimulus category>``          |
+        |                     | -  Eg: current inject on a cell ``["current", "IClamp"]``      |
+        |                     | - value for ``"stimlist"`` is list with elements as dictionary |
+        |                     |of the form [ {}, {}, ... ]                                     |
+        |                     | - Eg1: [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},            |
+        |                     |          {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]      |
+        |                     | - Eg2: [ {"amp_initial": 0.0, "amp_final": 0.5, "dur": 5.0,    |
+        |                     |                                                 "delay": 5.0}, |
+        |                     |          {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0,    |
+        |                     |                                                 "delay": 10.0},|
+        |                     |          {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0,    |
+        |                     |                                                 "delay": 15.0},|
+        |                     |          {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0,    |
+        |                     |                                                 "delay": 20.0}]|
+        |                     | - value for ``"tstop"`` is a number, time for generating the   |
+        |                     |last epoch. Therefore, ``"tstop": parameters["tstop"]``.        |
+        +---------------------+----------------------------------------------------------------+
 
         **Returned value:** Dictionary whose elements themselves are dictionaries. If there was not stimulus the length of the root dictionary is qual tot he number of cell regions, say, a soma and a dendrite. Their key values are themselves dictionaries, see :py:meth:`.forcellrecordings_nostimulus`. On the other hand if there was a stimulus the length of the root dictionary is equal to 1 + the number of cell regions, say, a soma and an axon. Their key values are also dictionaries, see :py:meth:`.forcellrecordings_stimulus`.
 
@@ -414,42 +415,42 @@ class TimeseriesGenerator(object):
 
         **Keyword Arguments:**
 
-        +-----------------------+----------------------------------------------------------------+
-        | Key                   | Value type                                                     |
-        +=======================+================================================================+
-        | ``chosenmodel``       | instantiated model                                             |
-        +-----------------------+----------------------------------------------------------------+
-        | ``recordings``        | - dictionary with keys: ``"time"``, ``"response"`` and         |
-        |                       |                                             ``"stimulus"``     |
-        |                       | - Eg: {"time": array, "response": {cellregion_a: array,        |
-        |                       |                                      cellregion_b: array},     |
-        |                       |       "stimulus": str("Model is not stimulated") or array}     |
-        +-----------------------+----------------------------------------------------------------+
-        | ``runtimeparameters`` | - dictionary with keys ``"dt"``, ``"celsius"``, ``"tstop"`` and|
-        |                       |                                                   ``"v_init"`` |
-        |                       | - Eg: {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}  |
-        +-----------------------+----------------------------------------------------------------+
-        |     (optional)        | - dictionary with keys ``"type"``, ``"stimlist"`` and          |
-        | ``stimparameters``    |                                                ``"tstop"``     |
-        |                       | - value for ``"type"`` is a two element list of strings of     |
-        |                       |the form <stimulus category> <specific type of that category>   |
-        |                       | - the first element is ALWAYS ``<stimulus category>``          |
-        |                       | -  Eg: current inject on a cell ``["current", "IClamp"]``      |
-        |                       | - value for ``"stimlist"`` is list with elements as dictionary |
-        |                       |of the form [ {}, {}, ... ]                                     |
-        |                       | - Eg1: [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},            |
-        |                       |          {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]      |
-        |                       | - Eg2: [ {"amp_initial": 0.0, "amp_final": 0.5, "dur": 5.0,    |
-        |                       |                                                 "delay": 5.0}, |
-        |                       |          {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0,    |
-        |                       |                                                 "delay": 10.0},|
-        |                       |          {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0,    |
-        |                       |                                                 "delay": 15.0},|
-        |                       |          {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0,    |
-        |                       |                                                 "delay": 20.0}]|
-        |                       | - value for ``"tstop"`` is a number, time for generating the   |
-        |                       |last epoch. Therefore, ``"tstop": parameters["tstop"]``.        |
-        +-----------------------+----------------------------------------------------------------+
+        +---------------------+----------------------------------------------------------------+
+        | Key                 | Value type                                                     |
+        +=====================+================================================================+
+        |``chosenmodel``      | instantiated model                                             |
+        +---------------------+----------------------------------------------------------------+
+        |``recordings``       | - dictionary with keys: ``"time"``, ``"response"`` and         |
+        |                     |                                             ``"stimulus"``     |
+        |                     | - Eg: {"time": array, "response": {cellregion_a: array,        |
+        |                     |                                      cellregion_b: array},     |
+        |                     |       "stimulus": str("Model is not stimulated") or array}     |
+        +---------------------+----------------------------------------------------------------+
+        |``runtimeparameters``| - dictionary with keys ``"dt"``, ``"celsius"``, ``"tstop"`` and|
+        |                     |                                                   ``"v_init"`` |
+        |                     | - Eg: {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}  |
+        +---------------------+----------------------------------------------------------------+
+        |    (optional)       | - dictionary with keys ``"type"``, ``"stimlist"`` and          |
+        |``stimparameters``   |                                                ``"tstop"``     |
+        |                     | - value for ``"type"`` is a two element list of strings of     |
+        |                     |the form <stimulus category> <specific type of that category>   |
+        |                     | - the first element is ALWAYS ``<stimulus category>``          |
+        |                     | -  Eg: current inject on a cell ``["current", "IClamp"]``      |
+        |                     | - value for ``"stimlist"`` is list with elements as dictionary |
+        |                     |of the form [ {}, {}, ... ]                                     |
+        |                     | - Eg1: [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},            |
+        |                     |          {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]      |
+        |                     | - Eg2: [ {"amp_initial": 0.0, "amp_final": 0.5, "dur": 5.0,    |
+        |                     |                                                 "delay": 5.0}, |
+        |                     |          {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0,    |
+        |                     |                                                 "delay": 10.0},|
+        |                     |          {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0,    |
+        |                     |                                                 "delay": 15.0},|
+        |                     |          {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0,    |
+        |                     |                                                 "delay": 20.0}]|
+        |                     | - value for ``"tstop"`` is a number, time for generating the   |
+        |                     |last epoch. Therefore, ``"tstop": parameters["tstop"]``.        |
+        +---------------------+----------------------------------------------------------------+
 
         **Returned value:** Dictionary whose elements themselves are dictionaries. If there was not stimulus the length of the root dictionary is qual tot he number of cell regions, say, a soma and a dendrite. On the other hand if there was a stimulus the length of the root dictionary is equal to 1 + the number of cell regions, say, a soma and an axon. The key values are themselves dictionaries, see :py:meth:`.forcellrecording`.
 

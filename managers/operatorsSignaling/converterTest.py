@@ -60,7 +60,7 @@ class ConverterTest(unittest.TestCase):
         self.assertEqual( ans, len(self.rec["time"]) )
         os.chdir(pwd) # reset to the location of this converterTest.py
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_4_voltage_to_spiketrain_with_stimulation(self):
         os.chdir("..") # this moves you up to ~/managers
         os.chdir("..") # you are now in parent /cerebmodels

@@ -71,7 +71,7 @@ class SimAssembler(object):
             raise ValueError("parameters must be a dictionary with keys: dt, celsius, tstop, and v_init")
         else:
             cls.set_fixed_timesteps()
-            for key, value in parameters.iteritems():
+            for key, value in parameters.items():
                 if key in h.__dict__:
                     if key is "dt":
                         # https://www.neuron.yale.edu/phpBB/viewtopic.php?t=12

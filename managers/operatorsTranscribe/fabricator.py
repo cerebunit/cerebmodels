@@ -435,8 +435,7 @@ class Fabricator(object):
         |          |                                                                  |
         |          |::                                                                |
         |          |                                                                  |
-        |          |   {                                                              |
-        |          |    "epoch0soma":                                                 |
+        |          |   {"epoch0soma":                                                 |
         |          |       {"source": "soma", "start_time": float, "stop_time": float,|
         |          |                  "description": string, "tags": tuple}           |
         |          |    "epoch1soma":                                                 |
@@ -453,8 +452,7 @@ class Fabricator(object):
         |          |                                                                  |
         |          |::                                                                |
         |          |                                                                  |
-        |          |   {                                                              |
-        |          |    "epoch0soma":                                                 |
+        |          |   {"epoch0soma":                                                 |
         |          |       {"source": "soma", "start_time": float, "stop_time": float,|
         |          |                  "description": string, "tags": tuple}           |
         |          |    "epoch0axon":                                                 |
@@ -504,8 +502,7 @@ class Fabricator(object):
         |          |                                                                  |
         |          |::                                                                |
         |          |                                                                  |
-        |          |   {                                                              |
-        |          |    "epoch0soma":                                                 |
+        |          |   {"epoch0soma":                                                 |
         |          |       {"source": "soma", "start_time": float, "stop_time": float,|
         |          |                  "description": string, "tags": tuple}           |
         |          |    "epoch1soma":                                                 |
@@ -522,8 +519,7 @@ class Fabricator(object):
         |          |                                                                  |
         |          |::                                                                |
         |          |                                                                  |
-        |          |   {                                                              |
-        |          |    "epoch0soma":                                                 |
+        |          |   {"epoch0soma":                                                 |
         |          |       {"source": "soma", "start_time": float, "stop_time": float,|
         |          |                  "description": string, "tags": tuple}           |
         |          |    "epoch0axon":                                                 |
@@ -573,8 +569,7 @@ class Fabricator(object):
         |          |                                                                  |
         |          |::                                                                |
         |          |                                                                  |
-        |          |   {                                                              |
-        |          |    "epoch0soma":                                                 |
+        |          |   {"epoch0soma":                                                 |
         |          |       {"source": "soma", "start_time": float, "stop_time": float,|
         |          |                  "description": string, "tags": tuple}           |
         |          |    "epoch1soma":                                                 |
@@ -591,8 +586,7 @@ class Fabricator(object):
         |          |                                                                  |
         |          |::                                                                |
         |          |                                                                  |
-        |          |   {                                                              |
-        |          |    "epoch0soma":                                                 |
+        |          |   {"epoch0soma":                                                 |
         |          |       {"source": "soma", "start_time": float, "stop_time": float,|
         |          |                  "description": string, "tags": tuple}           |
         |          |    "epoch0axon":                                                 |
@@ -763,17 +757,6 @@ class Fabricator(object):
          * https://pynwb.readthedocs.io/en/latest/pynwb.core.html#pynwb.core.DynamicTable
 
         """
-        # No longer available in NWB2.0
-        #nwbfile.create_epoch( epochmd[epoch_i_cellregion]["source"],
-        #                      start_time = epochmd[epoch_i_cellregion]["start_time"],
-        #                      stop_time = epochmd[epoch_i_cellregion]["stop_time"],
-        #                      timeseries = nwbts,
-        #                      tags = epochmd[epoch_i_cellregion]["tags"],
-        #                      description = epochmd[epoch_i_cellregion]["description"] )
-        #print(type(cls.tseries_for_epoch(epochmd[epoch_i_cellregion],nwbts)))
-        #print(cls.tseries_for_epoch(epochmd[epoch_i_cellregion],nwbts))
-        #print(nwbts)
-        #breakpoint()
         nwbfile.add_epoch(start_time = epochmd[epoch_i_cellregion]["start_time"],
                           stop_time = epochmd[epoch_i_cellregion]["stop_time"],
                           #timeseries = cls.tseries_for_epoch(epochmd[epoch_i_cellregion],nwbts),
@@ -798,8 +781,7 @@ class Fabricator(object):
         |             |                                                                  |
         |             |::                                                                |
         |             |                                                                  |
-        |             |   {                                                              |
-        |             |    "epoch0soma":                                                 |
+        |             |   {"epoch0soma":                                                 |
         |             |       {"source": "soma", "start_time": float, "stop_time": float,|
         |             |                  "description": string, "tags": tuple}           |
         |             |    "epoch1soma":                                                 |
@@ -816,8 +798,7 @@ class Fabricator(object):
         |             |                                                                  |
         |             |::                                                                |
         |             |                                                                  |
-        |             |   {                                                              |
-        |             |    "epoch0soma":                                                 |
+        |             |   {"epoch0soma":                                                 |
         |             |       {"source": "soma", "start_time": float, "stop_time": float,|
         |             |                  "description": string, "tags": tuple}           |
         |             |    "epoch0axon":                                                 |
@@ -974,13 +955,6 @@ class Fabricator(object):
             updated_nwbfile = cls.insert_a_nwbepoch( epoch_i_region, epochmd, nwbfile,
                                                       nwbts[region]  )
         return updated_nwbfile
-
-    @staticmethod
-    def less(other, lines):
-        s = str(other).split("\n")
-        for i in range(0, len(s), lines):
-            print "\n".join(s[i: i+lines])
-            raw_input("Press <Enter> for more")
 
     @classmethod
     def write_nwbfile(cls, nwbfile=None, filepath=None):

@@ -1,8 +1,16 @@
-Documentation for the  Codes
-****************************
+Code Documentation
+******************
 
-For the task of filing
-======================
+ExecutiveControl
+================
+.. automodule:: executive
+   :members:
+
+Code Documentation: Lower level functions
+*****************************************
+
+For filing tasks
+================
 
 Manager
 -------

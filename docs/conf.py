@@ -14,7 +14,8 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath("/home/main-dev/cerebmodels/"))
+#sys.path.insert(0, os.path.abspath("/home/main-dev/cerebmodels/"))
+sys.path.append(os.path.dirname(os.getcwd()))
 
 
 # -- Project information -----------------------------------------------------
@@ -26,7 +27,7 @@ author = u'Lungsi'
 # The short X.Y version
 version = u''
 # The full version, including alpha/beta/rc tags
-release = u'0.3.0-SNAPSHOT'
+release = u'1.0.0-SNAPSHOT'
 
 
 # -- General configuration ---------------------------------------------------
@@ -145,7 +146,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'cerebmodels-cerebunit', u'CerebModels-CerebUnit Documentation',
+    (master_doc, 'cerebmodels-cerebunit', u'CerebModels-CerebUnit Documentation (CerebModels component)',
      [author], 1)
 ]
 
@@ -156,7 +157,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'CerebModels-CerebUnit', u'CerebModels-CerebUnit Documentation',
+    (master_doc, 'CerebModels-CerebUnit', u'CerebModels-CerebUnit Documentation (CerebModels component)',
      author, 'CerebModels-CerebUnit', 'One line description of project.',
      'Miscellaneous'),
 ]

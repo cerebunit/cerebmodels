@@ -115,13 +115,13 @@ class EpochUnraveller(object):
 
         **Keyword Arguments:**
 
-        +-------------+------------------------------------------------------------------------------+
-        | Key         | Value type                                                                   |
-        +=============+==============================================================================+
-        | ``nwbfile`` | `NWBFile <https://nwb-schema.readthedocs.io/en/latest/format.html#nwbfile>`_ |
-        +-------------+------------------------------------------------------------------------------+
-        | ``region``  | string representing name of the regions from which response was recorded     |
-        +-------------+------------------------------------------------------------------------------+
+        +-----------+----------------------------------------------------------------------------+
+        | Key       | Value type                                                                 |
+        +===========+============================================================================+
+        |``nwbfile``|`NWBFile <https://nwb-schema.readthedocs.io/en/latest/format.html#nwbfile>`_|
+        +-----------+----------------------------------------------------------------------------+
+        |``region`` |string representing name of the regions from which response was recorded    |
+        +-----------+----------------------------------------------------------------------------+
 
         """
         if nwbfile is None:
@@ -145,16 +145,26 @@ class EpochUnraveller(object):
         start_time = cls.pluck_start_time(for_epoch)
         stop_time = cls.pluck_stop_time(for_epoch)
         nwbts = cls.pluck_timeseries_object(for_epoch)
+        #print(start_time, stop_time, nwbts.num_samples)
         #
-        start_up = start_time + nwbts.resolution
-        start_low = start_time - nwbts.resolution
-        stop_up = stop_time + nwbts.resolution
-        stop_low = stop_time - nwbts.resolution
+        start_up = (start_time/nwbts.resolution) + nwbts.resolution
+        start_low = (start_time/nwbts.resolution) - nwbts.resolution
+        stop_up = (stop_time/nwbts.resolution) + nwbts.resolution
+        stop_low = (stop_time/nwbts.resolution) - nwbts.resolution
         #
-        start_i = [indx for indx in range(nwbts.num_samples)
-                   if nwbts.timestamps[indx] > start_low and nwbts.timestamps[indx] < start_up][0]
-        stop_i = [indx for indx in range(nwbts.num_samples)
-                  if nwbts.timestamps[indx] > stop_low and nwbts.timestamps[indx] < stop_up][0]
+        #print(nwbts.timestamps.value)
+        #print(nwbts.timestamps[0], nwbts.timestamps[-1])
+        #print(start_up, start_low, stop_up, stop_low)
+        #
+        start_i = [ indx for indx in range(nwbts.num_samples)
+                              if nwbts.timestamps[indx] >= start_low and
+                                nwbts.timestamps[indx] <= start_up ][0]
+        stop_i = [ indx for indx in range(nwbts.num_samples)
+                              if nwbts.timestamps[indx] >= stop_low and
+                                 nwbts.timestamps[indx] <= stop_up ][0]
+        # because if start_i = 0 stop_i < stop_up but stop_i = stop_up is desired
+        stop_i = (lambda i0, i1: i1+1 if i0==0 else i1)(start_i, stop_i)
+        #print(start_i, stop_i)
         return range(start_i, stop_i+1) # add 1 to include stop_i
 
 #    @classmethod

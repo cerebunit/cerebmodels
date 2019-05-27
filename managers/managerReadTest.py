@@ -86,7 +86,7 @@ class ReadManagerTest(unittest.TestCase):
                    "description": "first epoch",
                    "tags": ('2_epoch_responses', '0', 'soma', 'DummyTest', 'cells', "epoch0soma",
                             "soma axon")},
-             "epoch1soma": {"source": "soma", "start_time": 10.0, "stop_time": 20.0,
+             "epoch1soma": {"source": "soma", "start_time": 10.0, "stop_time": 110.0,
                    "description": "second epoch",
                    "tags": ('2_epoch_responses', '1', 'soma', 'DummyTest', 'cells', "epoch1soma",
                             "soma axon")},
@@ -94,7 +94,7 @@ class ReadManagerTest(unittest.TestCase):
                    "description": "first epoch",
                    "tags": ('2_epoch_responses', '0', 'axon', 'DummyTest', 'cells', "epoch0axon",
                             "soma axon")},
-             "epoch1axon": {"source": "axon", "start_time": 10.0, "stop_time": 20.0,
+             "epoch1axon": {"source": "axon", "start_time": 10.0, "stop_time": 110.0,
                    "description": "second epoch",
                    "tags": ('2_epoch_responses', '1', 'axon', 'DummyTest', 'cells', "epoch1axon",
                             "soma axon")}}
@@ -117,13 +117,13 @@ class ReadManagerTest(unittest.TestCase):
         self.assertEqual( len(times), len(data) )
         os.remove( self.fullname )
 
-    @unittest.skip("reason for skipping")
+    #@unittest.skip("reason for skipping")
     def test_3_get_total_epochIDs(self):
         nwbfile = rm.load_nwbfile(self.fullname)
         self.assertEqual( rm.total_epochIDs( nwbfile ), 2 ) # two epochs per region
         os.remove( self.fullname )
 
-    @unittest.skip("reason for skipping")
+    #@unittest.skip("reason for skipping")
     def test_4_order_all_epocs_for_region(self):
         nwbfile = rm.load_nwbfile(self.fullname)
         chosenreg = "soma"

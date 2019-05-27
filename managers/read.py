@@ -1,4 +1,4 @@
-# ../managers/managerRead.py
+# ../managers/read.py
 from managers.operatorsReadNWB.epoch_unraveller import EpochUnraveller as eu
 
 from pynwb import NWBHDF5IO

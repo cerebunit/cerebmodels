@@ -2,7 +2,7 @@
 
 ReadManager
 ***********
-.. automodule:: managers.managerRead
+.. automodule:: managers.read
    :members:
 
 

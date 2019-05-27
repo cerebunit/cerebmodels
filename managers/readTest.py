@@ -1,4 +1,4 @@
-# ~/managers/managerReadTest.py
+# ~/managers/readTest.py
 import unittest
 from pdb import set_trace as breakpoint
 
@@ -17,7 +17,7 @@ from models.cells.modelDummyTest import DummyCell
 from managers.operatorsTranscribe.fabricator import Fabricator as fab
 os.chdir(pwd)
 
-from managerRead import ReadManager as rm
+from managers.read import ReadManager as rm
 
 import numpy
 

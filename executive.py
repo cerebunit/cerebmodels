@@ -6,10 +6,10 @@ import datetime
 from neuron import h
 
 from utilities import UsefulUtils as uu
-from managers.managerFiling import FilingManager as fm
-from managers.managerSimulation import SimulationManager as sm
-from managers.managerRecord import RecordManager as rm
-from managers.managerTranscribe import TranscribeManager
+from managers.filing import FilingManager as fm
+from managers.simulation import SimulationManager as sm
+from managers.record import RecordManager as rm
+from managers.transcribe import TranscribeManager
 #from managers.operatorsVisualize.reader import Reader
 
 class ExecutiveControl(object):

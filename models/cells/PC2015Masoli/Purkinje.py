@@ -10,8 +10,7 @@ from PC_param import pc_param
 
 class Purkinje:
     def __init__(self):
-
-#Soma        
+        #Soma        
 	self.soma = h.Section(name='soma')
 	self.soma.nseg = 1
 	self.soma.diam = 29.8
@@ -83,7 +82,7 @@ class Purkinje:
         self.soma.cao = h.cao0_ca_ion
         h.pop_section()
 	
-#Dend coordinate
+        #Dend coordinate
 	self.sectioncoordinate = np.genfromtxt("coordinate.csv")
 
 	fh = open("PC_dendnames.dlist")
@@ -109,10 +108,10 @@ class Purkinje:
 	    
 	    h.pop_section()
 
-#Connection between dend and soma  
+        #Connection between dend and soma  
 	self.dend[0].connect(self.soma,1,0)
 
-#Connection between each dend	
+        #Connection between each dend	
 	for c in np.genfromtxt("connections.csv"):
 	    self.dend[int(c[0])].connect(self.dend[int(c[2])],int(c[3]),int(c[1]))
 	   
@@ -204,7 +203,7 @@ class Purkinje:
 	self.dend[138].insert('Leak')
 	self.dend[138].gmax_Leak = 1.74451E-4 / 2
  	
-#Axon AIS. First section after the soma
+        #Axon AIS. First section after the soma
 	self.axonAIS = h.Section(name='axonAIS')
 	self.axonAIS.nseg = 1
 	self.axonAIS.diam = 0.97 
@@ -245,7 +244,7 @@ class Purkinje:
         self.axonAIS.cao = h.cao0_ca_ion
         h.pop_section()
 	
-#AISK	
+        #AISK	
 	self.axonAISK = h.Section(name='axonAISK')
 	self.axonAISK.nseg = 1
 	self.axonAISK.diam = 0.97 
@@ -261,7 +260,7 @@ class Purkinje:
 	self.axonAISK.gbar_Kv1_1 = pc_param['Kv1.1AisK']
 	self.axonAISK.ek = -88
 	
-#First Myelination
+        #First Myelination
 	self.axonmyelin = h.Section(name='axonmyelin')
 	self.axonmyelin.nseg = 1
 	self.axonmyelin.diam = 0.73
@@ -273,7 +272,7 @@ class Purkinje:
 	self.axonmyelin.cm = 1.87e-11
 	self.axonmyelin.Ra = 122	
 	
-#First Node of Ranvier
+        #First Node of Ranvier
 	self.axonNOR = h.Section(name='axonNOR')
 	self.axonNOR.nseg = 1
 	self.axonNOR.diam = 0.73 
@@ -307,7 +306,7 @@ class Purkinje:
 	
 	self.axonNOR.TotalPump_cdp5 = 5e-7
 	
-#second part of the axon
+        #second part of the axon
 	self.axonmyelin2 = h.Section(name='axonmyelin2')
 	self.axonmyelin2.nseg = 1
 	self.axonmyelin2.diam = 0.73
@@ -319,7 +318,7 @@ class Purkinje:
 	self.axonmyelin2.cm = 1.87e-11 
 	self.axonmyelin2.Ra = 122
 	
-#Second Node of Ranvier	
+        #Second Node of Ranvier	
 	self.axonNOR2 = h.Section(name='axonNOR2')
 	self.axonNOR2.nseg = 1
 	self.axonNOR2.diam = 0.73 
@@ -353,7 +352,7 @@ class Purkinje:
 	
 	self.axonNOR2.TotalPump_cdp5 = 5e-7
 	
-#Third part of the axon
+        #Third part of the axon
 	self.axonmyelin3 = h.Section(name='axonmyelin3')
 	self.axonmyelin3.nseg = 1
 	self.axonmyelin3.diam = 0.73
@@ -365,7 +364,7 @@ class Purkinje:
 	self.axonmyelin3.cm = 1.87e-11 
 	self.axonmyelin3.Ra = 122
 	
-#Third Node of Ranvier
+        #Third Node of Ranvier
 	self.axonNOR3 = h.Section(name='axonNOR3')
 	self.axonNOR3.nseg = 1
 	self.axonNOR3.diam = 0.73 
@@ -399,7 +398,7 @@ class Purkinje:
 	
 	self.axonNOR3.TotalPump_cdp5 = 5e-7
 	
-#Third part of the axon
+        #Third part of the axon
 	self.axonmyelin4 = h.Section(name='axonmyelin4')
 	self.axonmyelin4.nseg = 1
 	self.axonmyelin4.diam = 0.73
@@ -411,7 +410,7 @@ class Purkinje:
 	self.axonmyelin4.cm = 1.87e-11 
 	self.axonmyelin4.Ra = 122
 	  
-#Collateral.
+        #Collateral.
 	self.axoncoll = h.Section(name='axoncoll')
 	self.axoncoll.nseg = 1
 	self.axoncoll.diam = 0.6
@@ -451,7 +450,7 @@ class Purkinje:
         self.axoncoll.cao = h.cao0_ca_ion
         h.pop_section()
         
-#Collateral second part
+        #Collateral second part
 	self.axoncoll2 = h.Section(name='axoncoll2')
 	self.axoncoll2.nseg = 1
 	self.axoncoll2.diam = 0.6
@@ -492,7 +491,7 @@ class Purkinje:
         self.axoncoll2.cao = h.cao0_ca_ion
         h.pop_section()
 	  
-#Connections of the axon	  
+        #Connections of the axon	  
 	self.axonAIS.connect(self.soma,1,0)
 	self.axonAISK.connect(self.axonAIS,1,0)
 	self.axonmyelin.connect(self.axonAISK,1,0)		

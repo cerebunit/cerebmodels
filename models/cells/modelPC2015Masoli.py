@@ -4,7 +4,7 @@ pwd = os.getcwd()
 path_to_files = pwd + os.sep + "models" + os.sep + "cells" + os.sep + \
                 "PC2015Masoli" + os.sep
 
-from managers.managerSimulation import SimulationManager as sm
+from managers.simulation import SimulationManager as sm
 from models.cells.PC2015Masoli.Purkinje import Purkinje
 
 

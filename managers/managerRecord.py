@@ -3,18 +3,19 @@
 from managers.operatorsYield.recorder import Recorder as rc
 
 class RecordManager(object):
-    """Manager working under RecordManager.
+    """
+    **Available methods:**
 
-    Main Use methods:
-    prepare_recording_NEURON
-    postrun_record_NEURON
+    +----------------------------------------+-----------------------+
+    | Method name                            | Method type           |
+    +========================================+=======================+
+    | :py:meth:`.prepare_recording_NEURON`   | class method          |
+    +----------------------------------------+-----------------------+
+    | :py:meth:`.create_response_dictionary` | static method         |
+    +----------------------------------------+-----------------------+
+    | :py:meth:`.postrun_record_NEURON`      | static method         |
+    +----------------------------------------+-----------------------+
 
-    Class methods:
-    prepare_recording_NEURON
-
-    Static methods:
-    create_response_dictionary
-    postrun_record_NEURON
     """
 
     def __init__(self):
@@ -23,13 +24,19 @@ class RecordManager(object):
 
     @staticmethod
     def create_response_dictionary(regionslist_str, responselist_num):
-        """static method that creates a dictionary
+        """Returns a dictionary whose value represent model response
 
-        Arguments:
-        regionslist_str -- list of strings; names of the regions
-        responselist_num -- list of numbers; list of lists
+        **Arguments:**
 
-        NOTE: len(regionslist_str) == len(responselist_num)
+        +-----------------+-------------------------------------------------+
+        | Argument        | Value type                                      |
+        +=================+=================================================+
+        | first argument  | list of strings; names of the regions           |
+        +-----------------+-------------------------------------------------+
+        | second argument | list of numbers/array; list of lists            |
+        +-----------------+-------------------------------------------------+
+
+        *NOTE:* ``len(regionslist_str) == len(responselist_num)``
 
         """
         x = {}
@@ -39,50 +46,70 @@ class RecordManager(object):
 
     @classmethod
     def prepare_recording_NEURON(cls, chosenmodel, stimuli=None):
-        """method that prepares recording for time, voltage and stimulus (optional).
+        """Prepares recording for time, voltage and stimulus (optional).
 
-        Argument (mandatory):
-        chosenmodel -- instantiated NEURON based model, eg., cell = Purkinje()
-        NOTE: the function will take the sections which are entries in the list chosenmodel.regions
+        **Argument:** instantiated NEURON based model.
 
-        Keyword arguments (optional):
-        stimuli -- list, eg, [h.IClamp(0.5,sec=soma), h.IClamp(0.5,sec=soma)]
+        **Keyword argument** (optional): with key "stimuli" whose value is a list. For e.g. [h.IClamp(0.5,sec=soma), h.IClamp(0.5,sec=soma)]
 
-        Returned value:
-        three elements in the following order
-        recorded time -- list
-        recorded response -- dictionary; region-name for key whose value is
-                             response from the region as list
-        recorded injections -- 
-                 list of individual injections; if model was stimulated with currents
-                 string "Model is not stimulated"; if model was not stimulated
+        **Returned value:** Three elements in the following order
+
+        +--------+---------------------+----------------------------------------------+
+        | order  | content             | value type                                   |
+        +========+=====================+==============================================+
+        | first  | recorded time       | list                                         |
+        +--------+---------------------+----------------------------------------------+
+        | second | recorded response   |- dictionary                                  |
+        |        |                     |- region-name for key whose value is          |
+        |        |                     |- key value is list; response from the region |
+        +--------+---------------------+----------------------------------------------+
+        | third  | recorded injections |- list of individual injections if stimulated |
+        |        |                     |- else, string "Model is not stimulated"      |
+        +--------+---------------------+----------------------------------------------+
+
+        **Use case:**
 
         The voltage recordings will depend on the number of sections.
         For eg.,
-        rm = RecordManager()
-        rec_t, rec_v = rm.prepare_recording_NEURON(chosenmodel)
-        vm_soma = rec_v[0]
-        On the other hand, for chosenmodel.regions = {'soma': 0.0, 'axon': 0.0}
-        rec_t, rec_v = rm.prepare_recording_NEURON(chosenmodel)
-        vm_soma = rec_v['soma']
-        vm_NOR3 = rec_v['axon']
 
-        Another important consideration is the stimuli. If the model is stimulated
-        with multiple current injection zones like
-        currents = [h.IClamp(0.5, sec=soma), h.IClamp(0.5,sec=soma)] which you can get from
-        currents = SimulatorManager().stimulate_model_NEURON(stimparameters = currparameters,
+        ::
+
+            rm = RecordManager()
+            rec_t, rec_v = rm.prepare_recording_NEURON(chosenmodel)
+            vm_soma = rec_v[0]
+
+        On the other hand, for ``chosenmodel.regions = {'soma': 0.0, 'axon': 0.0}``
+
+        ::
+
+            rec_t, rec_v = rm.prepare_recording_NEURON(chosenmodel)
+            vm_soma = rec_v['soma']
+            vm_NOR3 = rec_v['axon']
+
+        Another important consideration is the stimuli. If the model is stimulated with multiple current injection zones like
+
+        ::
+
+            currents = [h.IClamp(0.5, sec=soma), h.IClamp(0.5,sec=soma)]
+
+        which you can get from
+
+        ::
+
+            currents = SimulatorManager().stimulate_model_NEURON(stimparameters = currparameters,
                                                                  modelsite = cell.soma)
         Then
-        rec_t, rec_v, rec_injs = rm.prepare_recording_NEURON(chosenmodel,
-                                                             stimuli=currents)
 
-        NOTE:
-            - rec_injs is a dictionary of individual injections
-            - it is not the final desired form
-            - the desired single array of current injection trace is achieved only
-              after putting the individual currents together
-            - the appending of individual currents is not done during the
-              preparatory stage; it is done after h.run() is called
+        ::
+
+            rec_t, rec_v, rec_injs = rm.prepare_recording_NEURON(chosenmodel, stimuli=currents)
+
+        *NOTE:*
+
+        * ``rec_injs`` is a dictionary of individual injections
+        * it is not the final desired form
+        * the desired single array of current injection trace is achieved only after putting the individual currents together
+        * the appending of individual currents is not done during the preparatory stage; it is done after ``h.run()`` is called
 
         """
 
@@ -102,29 +129,38 @@ class RecordManager(object):
 
     @staticmethod
     def postrun_record_NEURON(injectedcurrents=None):
-        """method that records variable after the simulator has been engaged.
+        """Records variable values after the simulator has been engaged.
 
-        Keyword arguments (optional):
-        injectedcurrents -- list; this is the list of hoc.objects of individual currents returned from prepare_recording_NEURON() 
+        **Keyword arguments (optional):** This method can run without any arguments but optionally one can pass an argument with key "injectedcurrents" whose value type is a list; this is the list of ``hoc.objects`` of individual currents returned from :py:meth`.prepare_recording_NEURON`.
 
-        Returned value:
-        if no argument is passed -- "Model is not stimulated"
-        if list of current is passed -- list whose elements are current magnitudes for the whole simulation.
+        **Returned value:**
 
-        NOTE:
-            - even if the stimulation does not involve stimulation it is recommended to evoke the postrun_record_NEURON
-            - in such case just evoke the function without arguments
-            - the returned value will be "Model is not stimulated"
+        * ``"Model is not stimulated"``; if no argument is passed
+        * list whose elements are current magnitudes for the whole simulation; if list of current is passed
 
-        Use case:
-        rm = RecordManager()
-        stimuli_list = SimulatorManager().stimulate_model_NEURON(stimparameters = currparameters,
-                                                                 modelsite = cell.soma)
-        rec_t, rec_v, rec_i_indivs = rm.prepare_recording_NEURON(chosenmodel,
-                                                                 stimuli = stimuli_list)
-        Then run the simulator, for e.g., SimulatorManager.engage_NEURON()
-        Now pass the list of hoc.objects of individual currents
-        rec_i = rm.postrun_record_NEURON( injectedcurrents = stimuli_list )
+        *NOTE:*
+
+        * even if the stimulation does not involve stimulation it is recommended to evoke the :py:meth:`.postrun_record_NEURON`
+
+          - in such case just evoke the function without arguments
+          - the returned value will be ``"Model is not stimulated"``
+
+        **Use case:**
+
+        ::
+
+            rm = RecordManager()
+            stimuli_list = SimulatorManager().stimulate_model_NEURON(stimparameters=currparameters,
+                                                                     modelsite = cell.soma)
+            rec_t, rec_v, rec_i_indivs = rm.prepare_recording_NEURON(chosenmodel,
+                                                                     stimuli = stimuli_list)
+
+        Then run the simulator, for e.g., ``SimulatorManager.engage_NEURON()``
+
+        Now pass the list of ``hoc.objects`` of individual currents
+
+        ::
+            rec_i = rm.postrun_record_NEURON( injectedcurrents = stimuli_list )
 
         """
 

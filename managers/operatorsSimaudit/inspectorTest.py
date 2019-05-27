@@ -13,7 +13,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 
 from inspector import SimInspector as si
 
-from cerebunit.capabilities.cells.response import ProducesSpikeTrain
+from cerebunit.capabilities.cells.response import ProducesElectricalResponse
 
 class SimInspectorTest(unittest.TestCase):
 
@@ -51,7 +51,7 @@ class SimInspectorTest(unittest.TestCase):
         os.chdir(self.pwd) # reset to the location of this inspectorTest.py
 
     #@unittest.skip("reason for skipping")
-    def test_3_check_compatibility_modelcapability_notin_cerbunit(self):
+    def test_3_check_compatibility_modelcapability_notin_cerebunit(self):
         modelscale = "cells"
         modelname = "DummyTest"
         os.chdir("..") # this moves you up to ~/managers
@@ -59,21 +59,21 @@ class SimInspectorTest(unittest.TestCase):
         compile_path = os.getcwd() + os.sep + "models" + os.sep + modelscale + os.sep + modelname
         self.assertRaises( AttributeError,
                            si.check_compatibility,
-                           capability_name = "produce_voltage_response",
-                           CerebUnit_capability = ProducesSpikeTrain )
+                           capability_name = "produce_bogus_response",
+                           CerebUnit_capability = ProducesElectricalResponse )
         os.chdir(self.pwd) # reset to the location of this inspectorTest.py
 
     #@unittest.skip("reason for skipping")
-    def test_4_check_compatibility_modelcapability_in_cerbunit(self):
+    def test_4_check_compatibility_modelcapability_in_cerebunit(self):
         modelscale = "cells"
         modelname = "DummyTest"
         os.chdir("..") # this moves you up to ~/managers
         os.chdir("..") # you are now in parent /cerebmodels
         compile_path = os.getcwd() + os.sep + "models" + os.sep + modelscale + os.sep + modelname
         self.assertEqual( si.check_compatibility(
-                                   capability_name = "produce_spike_train",
-                                   CerebUnit_capability = ProducesSpikeTrain ),
-                          "ProducesSpikeTrain has the method produce_spike_train" )
+                                   capability_name = "produce_voltage_response",
+                                   CerebUnit_capability = ProducesElectricalResponse ),
+                          "ProducesElectricalResponse has the method produce_voltage_response" )
         os.chdir(self.pwd) # reset to the location of this inspectorTest.py
 
 if __name__ == '__main__':

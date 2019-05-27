@@ -11,13 +11,13 @@ class FilingManager(object):
     +------------------------------------------+----------------------+
     | Method name                              | Method type          |
     +==========================================+======================+
-    | :py:meth:`available_modelscales`         | static method        |
+    | :py:meth:`.available_modelscales`         | static method        |
     +------------------------------------------+----------------------+
-    | :py:meth:`modelscale_inventory`          | static method        |
+    | :py:meth:`.modelscale_inventory`          | static method        |
     +------------------------------------------+----------------------+
-    | :py:meth:`get_responsepath_check_create` | static method        |
+    | :py:meth:`.get_responsepath_check_create` | static method        |
     +------------------------------------------+----------------------+
-    | :py:meth:`responsepath_check_create`     | class method         |
+    | :py:meth:`.responsepath_check_create`     | class method         |
     +------------------------------------------+----------------------+
 
     """

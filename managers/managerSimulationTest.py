@@ -27,7 +27,6 @@ class SimulationManagerTest(unittest.TestCase):
 
     def setUp(self):
         #self.sm = SimulationManager() #instance for non: static & class methods.
-        #self.uu = UsefulUtils() #for alternative approach see managerRecordTest.py
         pass
 
     #@unittest.skip("reason for skipping")

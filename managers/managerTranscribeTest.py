@@ -82,13 +82,13 @@ class TranscribeManagerTest(unittest.TestCase):
                  == tm.respmd[region_0]["data"] )
         b = all( boolean == True for boolean in
                  tm.nwbfile.epochs[1][4][0][2].timestamps #== ts_md_1 )
-                 == tm.respmd[region_0]["timestamps"] )
+                 == tm.respmd[region_1]["timestamps"] )
         c = all( boolean == True for boolean in
                  tm.nwbfile.epochs[2][4][0][2].timestamps #== ts_md_2 )
-                 == tm.respmd[region_0]["timestamps"] )
+                 == tm.respmd[region_2]["timestamps"] )
         d = all( boolean == True for boolean in
                  tm.nwbfile.epochs[3][4][0][2].data #== ts_md_3 )
-                 == tm.respmd[region_0]["data"] )
+                 == tm.respmd[region_3]["data"] )
         compare1 = [ a, b, c, d,
                      tm.nwbfile.epochs[0][4][0][2].unit,
                      tm.nwbfile.epochs[3][4][0][2].description ]

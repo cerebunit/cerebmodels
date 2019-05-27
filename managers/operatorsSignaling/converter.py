@@ -76,7 +76,7 @@ class Converter(object):
 
         """
         spikes = {}
-        for cell_region, with_thresh in model.regions.iteritems():
+        for cell_region, with_thresh in model.regions.items():
             # convert voltage recordings to an analog signal
             analog = iss( recordings["time"], recordings["response"][cell_region],
                           time_units='ms', units='mV' )

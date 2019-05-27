@@ -44,7 +44,7 @@ class EpochUnraveller(unittest.TestCase):
                  "institution": "name of the institution" }
         mynwbfile = fab.build_nwbfile(file_metadata)
         # generate data
-        self.runtimeparam = {"dt": 0.1, "celsius": 30, "tstop": 200, "v_init": 65}
+        self.runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 200, "v_init": 65}
         stimparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
                                         {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
@@ -85,20 +85,28 @@ class EpochUnraveller(unittest.TestCase):
         self.epoch_metadata = \
             {"epoch0soma": {"source": "soma", "start_time": 0.0, "stop_time": 10.0,
                    "description": "first epoch",
-                   "tags": ('2_epoch_responses', '0', 'soma', 'DummyTest', 'cells', "epoch0soma",
+                   "tags": ('4_epoch_responses', '0', 'soma', 'DummyTest', 'cells', "epoch0soma",
                             "soma axon")},
-             "epoch1soma": {"source": "soma", "start_time": 10.0, "stop_time": 20.0,
+             "epoch1soma": {"source": "soma", "start_time": 10.0, "stop_time": 110.0,
                    "description": "second epoch",
-                   "tags": ('2_epoch_responses', '1', 'soma', 'DummyTest', 'cells', "epoch1soma",
+                   "tags": ('4_epoch_responses', '1', 'soma', 'DummyTest', 'cells', "epoch1soma",
+                            "soma axon")},
+             "epoch2soma": {"source": "soma", "start_time": 110.0, "stop_time": 160.0,
+                   "description": "third epoch",
+                   "tags": ('4_epoch_responses', '2', 'soma', 'DummyTest', 'cells', "epoch2soma",
+                            "soma axon")},
+             "epoch3soma": {"source": "soma", "start_time": 160.0, "stop_time": 200.0,
+                   "description": "fourth epoch",
+                   "tags": ('4_epoch_responses', '3', 'soma', 'DummyTest', 'cells', "epoch3soma",
                             "soma axon")},
              "epoch0axon": {"source": "axon", "start_time": 0.0, "stop_time": 10.0,
                    "description": "first epoch",
                    "tags": ('2_epoch_responses', '0', 'axon', 'DummyTest', 'cells', "epoch0axon",
                             "soma axon")},
-             "epoch1axon": {"source": "axon", "start_time": 10.0, "stop_time": 20.0,
+             "epoch1axon": {"source": "axon", "start_time": 10.0, "stop_time": 110.0,
                    "description": "second epoch",
                    "tags": ('2_epoch_responses', '1', 'axon', 'DummyTest', 'cells', "epoch1axon",
-                            "soma axon")}}
+                            "soma axon")},}
         updated_mynwbfile = fab.build_nwbepochs(nwbfile=updated_mynwbfile, nwbts=nwbts,
                                                 epochmd=self.epoch_metadata)
         self.fullname = fab.write_nwbfile(nwbfile=updated_mynwbfile)
@@ -124,7 +132,12 @@ class EpochUnraveller(unittest.TestCase):
         nwbfile = io.read()
         row = 3
         an_epoch = eu.pluck_epoch_row( nwbfile, row )
-        self.assertEqual( eu.total_epochs_this_region(an_epoch), 2 ) # two epochs per region
+        if ( eu.total_epochs_this_region(an_epoch) == 4       # 4 for soma
+             or eu.total_epochs_this_region(an_epoch) == 2 ): # 2 for axon
+           say = True
+        else:
+           say = False
+        self.assertTrue( say )
         os.remove( self.fullname )
 
     #@unittest.skip("reason for skipping")
@@ -132,7 +145,7 @@ class EpochUnraveller(unittest.TestCase):
         io = NWBHDF5IO( self.fullname, mode="r")
         nwbfile = io.read()
         all_epochs_for_region = eu.pull_all_epochs_for_region( nwbfile=nwbfile, region="soma" )
-        self.assertEqual( len(all_epochs_for_region), 2 ) # two epochs per region
+        self.assertEqual( len(all_epochs_for_region), 4 ) # two epochs per region
         os.remove( self.fullname )
 
     #@unittest.skip("reason for skipping")
@@ -141,17 +154,15 @@ class EpochUnraveller(unittest.TestCase):
         nwbfile = io.read()
         row = 1
         an_epoch = eu.pluck_epoch_row( nwbfile, row )
-        indices = eu.pull_indices_tseries_for_epoch( for_epoch=an_epoch )
+        indices = eu.pull_indices_tseries_for_epoch( an_epoch )
         #
         # start_time to stop_time with dt resolution is t0 and t1 respectively
-        t0 = eu.pluck_start_time(an_epoch)/self.runtimeparam["dt"] # real time divided by resolution
-        t1 = eu.pluck_stop_time(an_epoch)/self.runtimeparam["dt"]
+        # thus, divide real time by its resolution
+        t0 = int(eu.pluck_start_time(an_epoch)/self.runtimeparam["dt"])
+        t1 = int(eu.pluck_stop_time(an_epoch)/self.runtimeparam["dt"])
         #print(indices, len(indices), indices[0], indices[-1])
-        #print(t0, t1)
-        #print(t0/self.runtimeparam["dt"], t1/self.runtimeparam["dt"])
-        # Furthermore,
-        # t goes from t0 to t1 with time-step dt, therefore for any t equals t/dt
-        times = range( int(t0/self.runtimeparam["dt"]), 1 + int( t1/self.runtimeparam["dt"] ) )
+        #print(t0, t1) # corresponds with start_time and stop_time but scaled with dt
+        times = range( t0, 1 + t1 )
         #print(len(times), times[0], times[-1])
         #
         self.assertEqual( len(indices), len(times) )

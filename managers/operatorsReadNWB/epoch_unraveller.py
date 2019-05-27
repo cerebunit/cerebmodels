@@ -137,34 +137,37 @@ class EpochUnraveller(object):
         return all_epochs_a_region
 
     @classmethod
-    def pull_indices_tseries_for_epoch( cls, for_epoch=None ):
+    def pull_indices_tseries_for_epoch( cls, an_epoch ):
         """Returns list of indices of the timestamps from the given time-series that is between ``start_time`` and ``stop_time`` in **an** epoch.
         """
-        if for_epoch is None:
-            raise ValueError("Must pass **an** epoch (in an nwbfile).")
-        start_time = cls.pluck_start_time(for_epoch)
-        stop_time = cls.pluck_stop_time(for_epoch)
-        nwbts = cls.pluck_timeseries_object(for_epoch)
-        #print(start_time, stop_time, nwbts.num_samples)
+        start_time = cls.pluck_start_time(an_epoch)
+        stop_time = cls.pluck_stop_time(an_epoch)
+        nwbts = cls.pluck_timeseries_object(an_epoch)
+        #print(start_time, stop_time, nwbts.num_samples, len(nwbts.timestamps))# num_sample = length
         #
-        start_up = (start_time/nwbts.resolution) + nwbts.resolution
-        start_low = (start_time/nwbts.resolution) - nwbts.resolution
-        stop_up = (stop_time/nwbts.resolution) + nwbts.resolution
-        stop_low = (stop_time/nwbts.resolution) - nwbts.resolution
+        # Using transformed start_time and stop_time
+        #start_up = (start_time/nwbts.resolution) + nwbts.resolution #can miss last few deci.points
+        start_up = (start_time + nwbts.resolution) / nwbts.resolution
+        start_low = (start_time - nwbts.resolution) / nwbts.resolution
+        stop_up = (stop_time + nwbts.resolution) / nwbts.resolution
+        stop_low = (stop_time - nwbts.resolution) / nwbts.resolution
+        # Transform timestamps
+        t_transformed = nwbts.timestamps/nwbts.resolution
         #
-        #print(nwbts.timestamps.value)
-        #print(nwbts.timestamps[0], nwbts.timestamps[-1])
+        #print(nwbts.timestamps[0], nwbts.timestamps[-1], len(nwbts.timestamps)) # should have
+        #print(t_transformed[0], t_transformed[-1], len(t_transformed)) # same lengths
         #print(start_up, start_low, stop_up, stop_low)
         #
         start_i = [ indx for indx in range(nwbts.num_samples)
-                              if nwbts.timestamps[indx] >= start_low and
-                                nwbts.timestamps[indx] <= start_up ][0]
+                              if t_transformed[indx] >= start_low and
+                                 t_transformed[indx] <= start_up ][0]
         stop_i = [ indx for indx in range(nwbts.num_samples)
-                              if nwbts.timestamps[indx] >= stop_low and
-                                 nwbts.timestamps[indx] <= stop_up ][0]
+                              if t_transformed[indx] >= stop_low and
+                                 t_transformed[indx] <= stop_up ][0]
         # because if start_i = 0 stop_i < stop_up but stop_i = stop_up is desired
         stop_i = (lambda i0, i1: i1+1 if i0==0 else i1)(start_i, stop_i)
         #print(start_i, stop_i)
+        #print("index length", len(range(start_i, stop_i+1)))
         return range(start_i, stop_i+1) # add 1 to include stop_i
 
 #    @classmethod

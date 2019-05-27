@@ -3,7 +3,7 @@ from managers.operatorsReadNWB.epoch_unraveller import EpochUnraveller as eu
 
 from pynwb import NWBHDF5IO
 
-#from pdb import set_trace as breakpoint
+from pdb import set_trace as breakpoint
 
 class ReadManager(object):
     """
@@ -41,7 +41,9 @@ class ReadManager(object):
 
         """
         nwbts = eu.pluck_timeseries_object( an_epoch )
-        indices = eu.pull_indices_tseries_for_epoch( an_epoch )
+        indices = eu.pull_indices_tseries_for_epoch( for_epoch=an_epoch )
+        print(indices)
+        breakpoint()
         return [ nwbts.timestamps[i] for i in indices ]
 
     @staticmethod

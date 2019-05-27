@@ -117,13 +117,13 @@ class ReadManagerTest(unittest.TestCase):
         self.assertEqual( len(times), len(data) )
         os.remove( self.fullname )
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_3_get_total_epochIDs(self):
         nwbfile = rm.load_nwbfile(self.fullname)
         self.assertEqual( rm.total_epochIDs( nwbfile ), 2 ) # two epochs per region
         os.remove( self.fullname )
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_4_order_all_epocs_for_region(self):
         nwbfile = rm.load_nwbfile(self.fullname)
         chosenreg = "soma"

@@ -1,4 +1,4 @@
-# ../managers/managerSignalProcessingTest.py
+# ../managers/signalprocessingTest.py
 import unittest
 import os
 import importlib
@@ -15,9 +15,9 @@ rootwd = os.getcwd()
 from models.cells.modelDummyTest import DummyCell
 os.chdir(pwd)
 
-from managerSimulation import SimulationManager as sm
-from managerRecord import RecordManager as rm
-from managerSignalProcessing import SignalProcessingManager as sp
+from managers.simulation import SimulationManager as sm
+from managers.record import RecordManager as rm
+from managers.signalprocessing import SignalProcessingManager as sp
 
 
 class SignalProcessingManagerTest(unittest.TestCase):

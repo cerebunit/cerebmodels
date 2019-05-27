@@ -1,4 +1,4 @@
-# ../managers/managerSignalProcessing.py
+# ../managers/signalprocessing.py
 
 from managers.operatorsSignaling.converter import Converter as co
 

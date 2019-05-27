@@ -1,11 +1,11 @@
-# ../managers/managerTranscribe.py
+# ../managers/transcribe.py
 
 from managers.operatorsTranscribe.metadata_filegenerator import FileGenerator as fg
 from managers.operatorsTranscribe.metadata_timeseriesgenerator import TimeseriesGenerator as tg
 from managers.operatorsTranscribe.metadata_epochgenerator import EpochGenerator as eg
 from managers.operatorsTranscribe.fabricator import Fabricator as fab
 
-from managers.managerFiling import FilingManager as fm
+from managers.filing import FilingManager as fm
 
 #from pdb import set_trace as breakpoint
 

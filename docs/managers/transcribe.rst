@@ -2,7 +2,7 @@
 
 TranscribeManager
 *****************
-.. automodule:: managers.managerTranscribe
+.. automodule:: managers.transcribe
    :members:
 
 

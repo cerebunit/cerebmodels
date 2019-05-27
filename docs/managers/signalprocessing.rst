@@ -2,7 +2,7 @@
 
 SignalProcessingManager
 ***********************
-.. automodule:: managers.managerSignalProcessing
+.. automodule:: managers.signalprocessing
    :members:
 
 

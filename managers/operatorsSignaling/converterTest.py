@@ -16,8 +16,8 @@ rootwd = os.getcwd()
 from models.cells.modelDummyTest import DummyCell
 os.chdir(pwd)
 
-from managers.managerSimulation import SimulationManager as sm
-from managers.managerRecord import RecordManager as rm
+from managers.simulation import SimulationManager as sm
+from managers.record import RecordManager as rm
 from converter import Converter as co
 
 

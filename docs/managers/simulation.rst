@@ -2,7 +2,7 @@
 
 SimulationManager
 *****************
-.. automodule:: managers.managerSimulator
+.. automodule:: managers.simulation
    :members:
 
 

@@ -1,4 +1,4 @@
-# ../managers/managerSimulationTest.py
+# ../managers/simulationTest.py
 import unittest
 import os
 import importlib
@@ -20,7 +20,7 @@ os.chdir("..") # this moves you up to ~/cerebmodels
 rootwd = os.getcwd()
 os.chdir(pwd)
 
-from managers.managerSimulation import SimulationManager as sm
+from managers.simulation import SimulationManager as sm
 
 
 class SimulationManagerTest(unittest.TestCase):

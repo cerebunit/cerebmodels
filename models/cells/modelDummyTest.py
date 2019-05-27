@@ -7,7 +7,7 @@ path_to_files = pwd + os.sep + "models" + os.sep + "cells" + os.sep + \
 #from managers.managerRecord import RecordManager
 #from managers.managerSimulation import SimulationManager
 
-from managers.managerSimulation import SimulationManager as sm
+from managers.simulation import SimulationManager as sm
 from models.cells.DummyTest.Dummy import Dummy
 
 class DummyCell(object):

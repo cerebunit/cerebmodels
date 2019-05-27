@@ -1,4 +1,4 @@
-# ../managers/managerSimulation.py
+# ../managers/simulation.py
 import os
 import time
 

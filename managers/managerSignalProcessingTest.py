@@ -61,9 +61,9 @@ class SignalProcessingManagerTest(unittest.TestCase):
                                       recordings = self.rec,
                                       tosignal = 'spikes')
         ans = \
-        len( range(
-             int(spikes[self.regionslist_str[0]].t_start.magnitude),
-             int(spikes[self.regionslist_str[0]].t_stop.magnitude/parameters["dt"])
+          len( range(
+               int(spikes[self.regionslist_str[0]].t_start.magnitude),
+               int(spikes[self.regionslist_str[0]].t_stop.magnitude/parameters["dt"])
               ) ) + 1 # for the additional dt step
         self.assertEqual( ans, len(self.rec["time"]) )
         os.chdir(pwd) # reset to the location of this managerSignalProcessingTest.py

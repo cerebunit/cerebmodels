@@ -16,7 +16,7 @@ rootwd = os.getcwd()
 from models.cells.modelDummyTest import DummyCell
 os.chdir(pwd)
 
-from managerTranscribe import TranscribeManager
+from managers.managerTranscribe import TranscribeManager
 
 import numpy
 from managers.operatorsTranscribe.fabricator import Fabricator as fab

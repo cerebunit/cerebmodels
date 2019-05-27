@@ -1,4 +1,4 @@
-# ../managers/managerFilingTest.py
+# ../managers/filingTest.py
 import unittest
 import os
 import shutil
@@ -16,7 +16,7 @@ rootwd = os.getcwd()
 from models.cells.modelDummyTest import DummyCell
 os.chdir(pwd)
 
-from managerFiling import FilingManager as fm
+from managers.filing import FilingManager as fm
 
 class FilingManagerTest(unittest.TestCase):
 

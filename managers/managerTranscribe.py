@@ -5,7 +5,7 @@ from managers.operatorsTranscribe.metadata_timeseriesgenerator import Timeseries
 from managers.operatorsTranscribe.metadata_epochgenerator import EpochGenerator as eg
 from managers.operatorsTranscribe.fabricator import Fabricator as fab
 
-from managerFiling import FilingManager as fm
+from managers.managerFiling import FilingManager as fm
 
 #from pdb import set_trace as breakpoint
 

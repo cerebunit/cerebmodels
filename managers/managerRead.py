@@ -3,7 +3,7 @@ from managers.operatorsReadNWB.epoch_unraveller import EpochUnraveller as eu
 
 from pynwb import NWBHDF5IO
 
-from pdb import set_trace as breakpoint
+#from pdb import set_trace as breakpoint
 
 class ReadManager(object):
     """

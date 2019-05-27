@@ -20,7 +20,7 @@ os.chdir("..") # this moves you up to ~/cerebmodels
 rootwd = os.getcwd()
 os.chdir(pwd)
 
-from managerSimulation import SimulationManager as sm
+from managers.managerSimulation import SimulationManager as sm
 
 
 class SimulationManagerTest(unittest.TestCase):

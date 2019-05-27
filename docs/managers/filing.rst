@@ -2,7 +2,7 @@
 
 FilingManager
 *************
-.. automodule:: managers.managerFiling
+.. automodule:: managers.filing
    :members:
 
 

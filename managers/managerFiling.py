@@ -23,8 +23,6 @@ class FilingManager(object):
     """
 
     def __init__(self):
-        #self.cr = Crawler()
-        #self.ps = PathSpawner()
         pass
 
     @staticmethod

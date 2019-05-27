@@ -15,7 +15,7 @@ from models.cells.modelDummyTest import DummyCell
 os.chdir(pwd)
 
 #from utilities import UsefulUtils as uu
-from managers.managerSimulation import SimulationManager as sm
+from managers.simulation import SimulationManager as sm
 
 from recorder import Recorder as rc
 

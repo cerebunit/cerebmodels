@@ -2,7 +2,7 @@
 
 RecordManager
 *************
-.. automodule:: managers.managerRecord
+.. automodule:: managers.record
    :members:
 
 

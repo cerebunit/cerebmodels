@@ -1,4 +1,4 @@
-# ../managers/managerRecord.py
+# ../managers/record.py
 
 from managers.operatorsYield.recorder import Recorder as rc
 

@@ -29,25 +29,6 @@ Operators
    managers/operatorsFiling/crawler.rst
    managers/operatorsFiling/pathspawner.rst
 
-For signal processing
-=====================
-
-Manager
--------
-.. toctree::
-   :maxdepth: 1
-   :caption: Contents:
-
-   managers/managerSignalProcessing.rst
-
-Operators
----------
-.. toctree::
-   :maxdepth: 1
-   :caption: Contents:
-
-   managers/operatorsSignaling/converter.rst
-
 For simulation
 ==============
 
@@ -69,6 +50,44 @@ Operators
    managers/operatorsSimaudit/hardware.rst
    managers/operatorsSimaudit/inspector.rst
    managers/operatorsSimaudit/stimulator.rst
+
+For recording
+=============
+
+Manager
+-------
+.. toctree::
+   :maxdepth: 1
+   :caption: Contents:
+
+   managers/managerRecord.rst
+
+Operators
+---------
+.. toctree::
+   :maxdepth: 1
+   :caption: Contents:
+
+   managers/operatorsYield/recorder.rst
+
+For signal processing
+=====================
+
+Manager
+-------
+.. toctree::
+   :maxdepth: 1
+   :caption: Contents:
+
+   managers/managerSignalProcessing.rst
+
+Operators
+---------
+.. toctree::
+   :maxdepth: 1
+   :caption: Contents:
+
+   managers/operatorsSignaling/converter.rst
 
 For transcribing
 ================
@@ -120,12 +139,14 @@ Quick reference
 | :ref:`FilingManager`                       | - :ref:`Crawler`                        |
 |                                            | - :ref:`PathSpawner`                    |
 +--------------------------------------------+-----------------------------------------+
-| :ref:`SignalProcessingManager`             | - :ref:`Converter`                      |
-+--------------------------------------------+-----------------------------------------+
 | :ref:`SimulationManager`                   | - :ref:`SimAssembler`                   |
 |                                            | - :ref:`HardwareConfigurator`           |
 |                                            | - :ref:`SimInspector`                   |
 |                                            | - :ref:`Stimulator`                     |
++--------------------------------------------+-----------------------------------------+
+| :ref:`RecordManager`                       | - :ref:`Recorder`                       |
++--------------------------------------------+-----------------------------------------+
+| :ref:`SignalProcessingManager`             | - :ref:`Converter`                      |
 +--------------------------------------------+-----------------------------------------+
 | :ref:`TranscribeManager`                   | - :ref:`FileGenerator`                  |
 |                                            | - :ref:`TimeseriesGenerator`            |

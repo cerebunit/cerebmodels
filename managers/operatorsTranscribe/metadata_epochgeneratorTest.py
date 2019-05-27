@@ -14,7 +14,7 @@ rootwd = os.getcwd()
 from models.cells.modelDummyTest import DummyCell
 os.chdir(pwd)
 
-from managers.operatorsTranscribe.metadata_epochgenerator import EpochGenerator as eg
+from metadata_epochgenerator import EpochGenerator as eg
 
 class EpochGeneratorTest(unittest.TestCase):
 

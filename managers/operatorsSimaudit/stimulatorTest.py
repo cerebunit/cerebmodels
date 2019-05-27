@@ -11,7 +11,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 
 # because IRamp is not by default its nmodl files need to be loaded
 # testing for inject_IRamp requires SimInspector
-from managers.operatorsSimaudit.inspector import SimInspector as si
+#from managers.operatorsSimaudit.inspector import SimInspector as si
+from inspector import SimInspector as si
 #from managers.managerSimulation import SimulationManager
 
 pwd = os.getcwd()

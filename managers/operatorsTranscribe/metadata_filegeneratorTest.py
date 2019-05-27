@@ -16,7 +16,7 @@ rootwd = os.getcwd()
 from models.cells.modelDummyTest import DummyCell
 os.chdir(pwd)
 
-from managers.operatorsTranscribe.metadata_filegenerator import FileGenerator as fg
+from metadata_filegenerator import FileGenerator as fg
 
 class FileGeneratoryTest(unittest.TestCase):
 

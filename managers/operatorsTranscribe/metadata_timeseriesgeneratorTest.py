@@ -14,7 +14,7 @@ rootwd = os.getcwd()
 from models.cells.modelDummyTest import DummyCell
 os.chdir(pwd)
 
-from managers.operatorsTranscribe.metadata_timeseriesgenerator import TimeseriesGenerator as tg
+from metadata_timeseriesgenerator import TimeseriesGenerator as tg
 
 import numpy
 

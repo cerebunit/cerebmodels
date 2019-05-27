@@ -18,7 +18,7 @@ from models.cells.modelDummyTest import DummyCell
 from managers.operatorsTranscribe.fabricator import Fabricator as fab
 os.chdir(pwd)
 
-from managers.operatorsReadNWB.epoch_unraveller import EpochUnraveller as eu
+from epoch_unraveller import EpochUnraveller as eu
 
 import numpy
 

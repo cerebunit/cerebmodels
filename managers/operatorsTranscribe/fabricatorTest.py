@@ -18,7 +18,7 @@ rootwd = os.getcwd()
 from models.cells.modelDummyTest import DummyCell
 os.chdir(pwd)
 
-from managers.operatorsTranscribe.fabricator import Fabricator as fab
+from fabricator import Fabricator as fab
 
 import numpy
 

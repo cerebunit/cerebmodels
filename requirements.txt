@@ -35,7 +35,6 @@ ipykernel==4.10.0
 ipython==5.8.0
 ipython-genutils==0.2.0
 ipywidgets==7.4.2
-Jinja2==2.10
 jsonschema==3.0.0
 lxml==4.3.1
 MarkupSafe==1.1.1
@@ -43,7 +42,6 @@ mistune==0.8.4
 nbconvert==5.4.1
 nbformat==4.4.0
 nbsphinx==0.4.2
-notebook==5.7.4
 numpy==1.16.2
 packaging==19.0
 pandas==0.24.1
@@ -61,7 +59,6 @@ pyparsing==2.3.1
 pyrsistent==0.14.11
 python-dateutil==2.8.0
 pytz==2018.9
-PyYAML==3.13
 pyzmq==18.0.0
 qtconsole==4.4.3
 quantities==0.12.1
@@ -87,7 +84,6 @@ testpath==0.4.2
 tornado==5.1.1
 traitlets==4.3.2
 typing==3.6.6
-urllib3==1.24.1
 wcwidth==0.1.7
 webencodings==0.5.1
 widgetsnbextension==3.4.2

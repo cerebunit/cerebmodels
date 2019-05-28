@@ -66,7 +66,7 @@ class SimulationManager(object):
     @staticmethod
     def prepare_model_NEURON( parameters=None, chosenmodel=None,
                               modelcapability = None, cerebunitcapability = None):
-        """Directs :ref:`SimInspector` to check for compiled ``nmodl`` files (library) and optionally for capability, followd by directing the :ref:`HardwareConfigurator`. Then, the :ref:`SimAssembler`` is directed to set the run time parameters.
+        """Directs :ref:`SimInspector` to check for compiled ``nmodl`` files (library) and optionally for capability, followd by directing the :ref:`HardwareConfigurator`. Then, the :ref:`SimAssembler` is directed to set the run time parameters.
 
         **Keyword Arguments:**
 

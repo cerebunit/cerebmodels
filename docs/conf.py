@@ -27,7 +27,7 @@ author = u'Lungsi'
 # The short X.Y version
 version = u''
 # The full version, including alpha/beta/rc tags
-release = u'1.0.0-SNAPSHOT'
+release = u'0.3.0-SNAPSHOT'
 
 
 # -- General configuration ---------------------------------------------------

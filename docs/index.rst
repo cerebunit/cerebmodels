@@ -18,7 +18,7 @@ Contents
    :maxdepth: 2
    :caption: Contents:
 
-   index_for_codes.rst
+   contents.rst
 
 Indices and tables
 ==================

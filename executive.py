@@ -31,6 +31,7 @@ class ExecutiveControl(object):
     +------------------------------+---------------------+
     | :py:meth:`.load_response`    | instance method     |
     +------------------------------+---------------------+
+
     """
 
     def __init__(self):
@@ -93,7 +94,7 @@ class ExecutiveControl(object):
     def launch_model( self, parameters = None, onmodel = None,
                       stimparameters = None, stimloc = None,
                       capabilities = {'model':None, 'vtest':None} ):
-        """Directs the ``SimulationManager`` to launch the simulation on an instantiated model.
+        """Directs the :ref:`SimulationManager` to launch the simulation on an instantiated model.
 
         **Keyword Arguments:**
 
@@ -160,7 +161,7 @@ class ExecutiveControl(object):
         return self.fullname
 
 #    def load_response( self ):
-#        """Returns file (`NWB <https://www.nwb.org/>`_ formated``.h5`` file) by directing the :ref:`FilingManager` and the ``Reader`` in ``:ref:YieldManager`` operator to load the response following an earlier simulation run.
+#        """Returns file (`NWB <https://www.nwb.org/>`_ formated``.h5`` file) by directing the :ref:`FilingManager` and the ``Reader`` in :ref:`RecordManager` operator to load the response following an earlier simulation run.
 
 #        **Arguments:** no argument is passed.
 

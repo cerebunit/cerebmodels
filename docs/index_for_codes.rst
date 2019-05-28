@@ -18,7 +18,7 @@ Manager
    :maxdepth: 1
    :caption: Contents:
 
-   managers/managerFiling.rst
+   managers/filing.rst
 
 Operators
 ---------
@@ -38,7 +38,7 @@ Manager
    :maxdepth: 1
    :caption: Contents:
 
-   managers/managerSimulation.rst
+   managers/simulation.rst
 
 Operators
 ---------
@@ -60,7 +60,7 @@ Manager
    :maxdepth: 1
    :caption: Contents:
 
-   managers/managerRecord.rst
+   managers/record.rst
 
 Operators
 ---------
@@ -79,7 +79,7 @@ Manager
    :maxdepth: 1
    :caption: Contents:
 
-   managers/managerSignalProcessing.rst
+   managers/signalprocessing.rst
 
 Operators
 ---------
@@ -98,7 +98,7 @@ Manager
    :maxdepth: 1
    :caption: Contents:
 
-   managers/managerTranscribe.rst
+   managers/transcribe.rst
 
 Operators
 ---------
@@ -120,7 +120,7 @@ Manager
    :maxdepth: 1
    :caption: Contents:
 
-   managers/managerRead.rst
+   managers/read.rst
 
 Operators
 ---------

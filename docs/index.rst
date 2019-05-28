@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to CerebModels-CerebUnit's documentation (CerebModels component)!
+Welcome to CerebModels component documentation (a CerebUnit component)!
 =========================================================================
 
 Models of cerebellum covers various modeling scales; cells to network level. Validation of each models is based on the `SciUnit <https://github.com/scidash/sciunit>`_ framework. This is the basis for `CerebUnit <https://github.com/myHBPwork/cerebunit>`_.

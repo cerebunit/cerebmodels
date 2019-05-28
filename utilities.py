@@ -25,7 +25,7 @@ class UsefulUtils(object):
 
     @classmethod
     def check_not_None_in_arg(cls,args):
-        for argname, argvalue in args.iteritems():
+        for argname, argvalue in args.items():
             if argvalue is None:
                 raise ValueError( ", ".join(list(args.keys())) + " must be given.")
 

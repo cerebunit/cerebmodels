@@ -24,8 +24,10 @@ class ExecutiveControl(object):
     | :py:meth:`.list_models`      | static method       |
     +------------------------------+---------------------+
     | :py:meth:`.choose_model`     | static method       |
-    +------------------------------+---------------------+
+    +------------------------------+---------------------+      
     | :py:meth:`.launch_model`     | instance method     |
+    +------------------------------+---------------------+      
+    | :py:meth:`.launch_model_raw` | static method       |
     +------------------------------+---------------------+
     | :py:meth:`.save_response`    | instance method     |
     +------------------------------+---------------------+
@@ -145,6 +147,27 @@ class ExecutiveControl(object):
         self.stimparameters = stimparameters
         return self.chosenmodel
         #return "model was successfully simulated" # for executiveTest.py
+
+    @staticmethod
+    def launch_model_raw(modelscale):
+        """
+        **Argument:** string; "cells", "circuits" or "networks"
+
+        *NOTE:*
+
+        * For "cells" calling this method is the same as calling `SimulationManager.engage_NEURON()`
+        * This function is useful in the special use case when a model capability method is dependent on another of its (same model but different) capability method. This means:
+
+          - the first capability method invokes :py:meth:`.launch_model`, meaning that the model has been set up.
+          - the depending capability method invokes :py:meth:`.launch_model_raw`
+          - since, the model was already set up, invoking the first capability method results in simulating the model with stimulation (if any) and the outputs are recorded.
+
+        * This function is called inside capability method, a method defined in the model template.
+        * It is recommended that this method be **NOT** used for running the model outside the model capability methods.
+
+        """
+        if modelscale is "cells":
+            sm.engage_NEURON()
 
     def save_response( self ):
         """Returns filename after saving the model response into a `NWB <https://www.nwb.org/>`_ formated ``.h5`` file located in ``~/response/<modelscale>/<modelname>/`` in root directory of ``cerebmodels``.

@@ -8,6 +8,7 @@ from models.cells.GrC2001DAngelo.Granule import Granule
 from executive import ExecutiveControl
 from managers.simulation import SimulationManager as sm
 from managers.read import ReadManager as rm
+from managers.signalprocessing import SignalProcessingManager as spm
 from managers.interpret import InterpretManager as im
 
 import sciunit
@@ -40,7 +41,7 @@ class GranuleCell( sciunit.Model,
         self.cell = Granule()
         os.chdir(pwd)
         ### ===============================================================
-        self.prediction = "Nil"
+        self.prediction = "nil"
         #
 
     # =======================================================================
@@ -86,29 +87,18 @@ class GranuleCell( sciunit.Model,
                                          "vtest": ProducesElectricalResponse},
                          mode="capability")
         #self.fullfilename
-        print("Interpreting ...")
-        im = InterpretManager()
-        timestamps, datavalues = \
-            im.get_data_and_time_values( loadednwbfile=ec.load_response(),                                                                    modelregion="soma")
-        restingVm = \
-           im.gather_efel_values( im.get_efel_results(timestamps, datavalues,
-                                                      feature_name_list=["voltage_base"]),
-                                  "voltage_base" )
-        #
+        #print("Signal Processing ...")
         nwbfile = rm.load_nwbfile(self.fullfilename)
         orderedepochs = rm.order_all_epochs_for_region(nwbfile=nwbfile, region="soma")
         timestamps_over_epochs = [ rm.timestamps_for_epoch( orderedepochs[i] )
                                    for i in range(len(orderedepochs)) ]
         data_over_epochs = [ rm.data_for_epoch( orderedepochs[i] )
                                    for i in range(len(orderedepochs)) ]
-        return [timestamps_over_epochs, data_over_epochs]
-        #    
-        print("Interpreting Done.")
-        print("Setting Prediction")
-        setattr(model, "prediction", [v for v in restingVm if v is not None])
-        print("Prediction Set.")
+        baseVms = spm.distill_Vm_pre_epoch( timestamps = timestamps_over_epochs,
+                                            datavalues = data_over_epochs )
+        setattr(model, "prediction", baseVms)
+        #print("Signal Processing Done.")
         print("Simulation produce_restingVm Done.")
-        #print(self.restingVm)
 
     # ----------------------- produce_spike_train ---------------------------
     def produce_spike_train(self, **kwargs):

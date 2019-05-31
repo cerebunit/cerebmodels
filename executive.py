@@ -66,9 +66,7 @@ class ExecutiveControl(object):
         *NOTE:* The string value will depend on the availability of model scales which can be checked using :py:meth:`.list_modelscales()`.
         """
         x =  fm.modelscale_inventory(model_scale=modelscale)
-        #if "DummyTest" in x: # DummyTest is the Dummy model for running test
-        #    x.remove("DummyTest")
-        return x
+        return [model for model in x if model not in ["__pycache__", "DummyTest"]]
 
     @staticmethod
     def choose_model(modelscale=None, modelname=None):

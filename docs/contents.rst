@@ -88,6 +88,7 @@ Operators
    :caption: Contents:
 
    managers/operatorsSignaling/converter.rst
+   managers/operatorsSignaling/reconstructer.rst
 
 For transcribing
 ================
@@ -147,6 +148,7 @@ Quick reference
 | :ref:`RecordManager`                       | - :ref:`Recorder`                       |
 +--------------------------------------------+-----------------------------------------+
 | :ref:`SignalProcessingManager`             | - :ref:`Converter`                      |
+|                                            | - :ref:`Reconstructer`                  |
 +--------------------------------------------+-----------------------------------------+
 | :ref:`TranscribeManager`                   | - :ref:`FileGenerator`                  |
 |                                            | - :ref:`TimeseriesGenerator`            |

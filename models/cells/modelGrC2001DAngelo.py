@@ -6,6 +6,7 @@ path_to_files = pwd + os.sep + "models" + os.sep + "cells" + os.sep + \
 
 from models.cells.GrC2001DAngelo.Granule import Granule
 from executive import ExecutiveControl
+from managers.simulation import SimulationManager as sm
 from managers.read import ReadManager as rm
 from managers.interpret import InterpretManager as im
 
@@ -96,9 +97,9 @@ class GranuleCell( sciunit.Model,
         #
         nwbfile = rm.load_nwbfile(self.fullfilename)
         orderedepochs = rm.order_all_epochs_for_region(nwbfile=nwbfile, region="soma")
-        timestamps_over_epochs = [ rm.timestamps_for_epoch( orderedepochs[i]
+        timestamps_over_epochs = [ rm.timestamps_for_epoch( orderedepochs[i] )
                                    for i in range(len(orderedepochs)) ]
-        data_over_epochs = [ rm.data_for_epoch( orderedepochs[i]
+        data_over_epochs = [ rm.data_for_epoch( orderedepochs[i] )
                                    for i in range(len(orderedepochs)) ]
         return [timestamps_over_epochs, data_over_epochs]
         #    

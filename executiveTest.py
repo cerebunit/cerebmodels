@@ -72,7 +72,7 @@ class ExecutiveControlTest(unittest.TestCase):
                           "tstop": parameters["tstop"]}
         model = self.ec.launch_model( parameters = parameters, onmodel = pickedmodel,
                                       stimparameters = stimparameters, stimloc = pickedmodel.cell.soma )
-        fullname = self.ec.save_response()
+        fullfilename = self.ec.save_response()
         #
         sesstime = str(self.ec.tm.nwbfile.session_start_time).replace(" ", "_")[0:-6]
         filename_shouldbe = self.ec.tm.nwbfile.session_id + "_" + sesstime.replace(":", "-") + ".h5"
@@ -82,7 +82,7 @@ class ExecutiveControlTest(unittest.TestCase):
         #
         fullname_shouldbe = path + os.sep + filename_shouldbe
         #
-        self.assertEqual( fullname, fullname_shouldbe )
+        self.assertEqual( fullfilename, fullname_shouldbe )
         
 
 if __name__ == '__main__':

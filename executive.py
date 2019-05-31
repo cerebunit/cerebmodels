@@ -166,8 +166,9 @@ class ExecutiveControl(object):
                                runtimeparameters = self.parameters,
                                stimparameters = self.stimparameters )
         self.tm.compile_nwbfile()
-        self.fullname = self.tm.save_nwbfile() # saves and returns fullname (filepath+filename)
-        return self.fullname
+        # saves and returns fullfilename (filepath+filename)
+        self.fullfilename = self.tm.save_nwbfile()
+        return self.fullfilename
 
 #    def load_response( self ):
 #        """Returns file (`NWB <https://www.nwb.org/>`_ formated``.h5`` file) by directing the :ref:`FilingManager` and the ``Reader`` in :ref:`RecordManager` operator to load the response following an earlier simulation run.

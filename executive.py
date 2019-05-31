@@ -46,7 +46,10 @@ class ExecutiveControl(object):
 
         **Arguments:** no argument is passed to get the list of model scales.
         """
-        return fm.available_modelscales()
+        x = fm.available_modelscales()
+        if "__pycache__" in x:
+            x.remove("__pycache__")
+        return x
 
     @staticmethod
     def list_models(modelscale=None):
@@ -141,9 +144,10 @@ class ExecutiveControl(object):
             if mode == "raw":
                 sm.engage_NEURON()
             elif mode == "capability":
-                sm.trigger_NEURON( onmodel, modelcapability = capabilities['model'], )
-                                   #parameters=parameters, stimparameters=stimparameters,
-                                   #stimloc=stimloc, onmodel=onmodel )
+                sm.trigger_NEURON( onmodel, modelcapability = capabilities['model'],
+                                   # Below are the **kwargs for lock_and_load_capability
+                                   parameters=parameters, stimparameters=stimparameters,
+                                   stimloc=stimloc, onmodel=onmodel, mode="capability" )
             self.recordings["stimulus"] = \
                     rm.postrun_record_NEURON( injectedcurrents = rec_i_indivs )
         # save the parameters as attributes

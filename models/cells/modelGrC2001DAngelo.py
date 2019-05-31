@@ -6,7 +6,8 @@ path_to_files = pwd + os.sep + "models" + os.sep + "cells" + os.sep + \
 
 from models.cells.GrC2001DAngelo.Granule import Granule
 from executive import ExecutiveControl
-from managers.managerInterpret import InterpretManager
+from managers.read import ReadManager as rm
+from managers.interpret import InterpretManager as im
 
 import sciunit
 from cerebunit.capabilities.cells.response import ProducesElectricalResponse
@@ -46,7 +47,7 @@ class GranuleCell( sciunit.Model,
     # =======================================================================
 
     # --------------------- produce_voltage_response ------------------------
-    def produce_voltage_response(self, runtimeparam=None, stimparam=None, model=None):
+    def produce_voltage_response(self, **kwargs):
         """generic/essential model response
 
         **Keyword Arguments:**
@@ -56,15 +57,16 @@ class GranuleCell( sciunit.Model,
                    "onmodel": instantiated model }
         """
         #ExecutiveControl.launch_model_raw("cells")
-        print("Simulation starting ...")
+        print("Simulation produce_voltage_response starting ...")
         ec = ExecutiveControl() # only works when in ~/cerebmodels
-        ec.launch_model( parameters = runtimeparam, mode = "raw"
-                         stimparameters = stimparam,
-                         stimloc = model.cell.soma, onmodel = model )
+        ec.launch_model( parameters = kwargs["parameters"],
+                         stimparameters = kwargs["stimparameters"],
+                         stimloc = kwargs["stimloc"], onmodel = kwargs["onmodel"],
+                         mode = "raw" )
         print("File saving ...")
         self.fullfilename = ec.save_response()
         print("File saved.")
-        print("Simulation Done.")
+        print("Simulation produce_voltage_response Done.")
 
     # ----------------------- produce_restingVm -----------------------------
     def produce_restingVm(self, **kwargs):
@@ -73,17 +75,16 @@ class GranuleCell( sciunit.Model,
                    "stimparameters": dictionary with keys "type" and "stimlist",
                    "onmodel": instantiated model }
         """
-        print("Simulation starting ...")
+        print("Sim produce_restingVm starting ...")
         ec = ExecutiveControl() # only works when in ~/cerebmodels
         model = kwargs["onmodel"]
         ec.launch_model( parameters = kwargs["parameters"],
                          stimparameters = kwargs["stimparameters"],
-                         stimloc = model.cell.soma, onmodel = model,
+                         stimloc = kwargs["stimloc"], onmodel = model,
                          capabilities = {"model": "produce_voltage_response",
-                                         "vtest": ProducesElectricalResponse} )
-        print("File saving ...")
-        ec.save_response()
-        print("File saved.")
+                                         "vtest": ProducesElectricalResponse},
+                         mode="capability")
+        #self.fullfilename
         print("Interpreting ...")
         im = InterpretManager()
         timestamps, datavalues = \
@@ -92,11 +93,20 @@ class GranuleCell( sciunit.Model,
            im.gather_efel_values( im.get_efel_results(timestamps, datavalues,
                                                       feature_name_list=["voltage_base"]),
                                   "voltage_base" )
+        #
+        nwbfile = rm.load_nwbfile(self.fullfilename)
+        orderedepochs = rm.order_all_epochs_for_region(nwbfile=nwbfile, region="soma")
+        timestamps_over_epochs = [ rm.timestamps_for_epoch( orderedepochs[i]
+                                   for i in range(len(orderedepochs)) ]
+        data_over_epochs = [ rm.data_for_epoch( orderedepochs[i]
+                                   for i in range(len(orderedepochs)) ]
+        return [timestamps_over_epochs, data_over_epochs]
+        #    
         print("Interpreting Done.")
         print("Setting Prediction")
         setattr(model, "prediction", [v for v in restingVm if v is not None])
         print("Prediction Set.")
-        print("Simulation Done.")
+        print("Simulation produce_restingVm Done.")
         #print(self.restingVm)
 
     # ----------------------- produce_spike_train ---------------------------

@@ -9,7 +9,6 @@ from executive import ExecutiveControl
 from managers.simulation import SimulationManager as sm
 from managers.read import ReadManager as rm
 from managers.signalprocessing import SignalProcessingManager as spm
-from managers.interpret import InterpretManager as im
 
 import sciunit
 from cerebunit.capabilities.cells.response import ProducesElectricalResponse
@@ -41,6 +40,7 @@ class GranuleCell( sciunit.Model,
         self.cell = Granule()
         os.chdir(pwd)
         ### ===============================================================
+        self.fullfilename = "nil"
         self.prediction = "nil"
         #
 
@@ -61,14 +61,15 @@ class GranuleCell( sciunit.Model,
         #ExecutiveControl.launch_model_raw("cells")
         print("Simulation produce_voltage_response starting ...")
         ec = ExecutiveControl() # only works when in ~/cerebmodels
-        ec.launch_model( parameters = kwargs["parameters"],
-                         stimparameters = kwargs["stimparameters"],
-                         stimloc = kwargs["stimloc"], onmodel = kwargs["onmodel"],
-                         mode = "raw" )
+        model = ec.launch_model( parameters = kwargs["parameters"],
+                                 stimparameters = kwargs["stimparameters"],
+                                 stimloc = kwargs["stimloc"],
+                                 onmodel = kwargs["onmodel"], mode = "raw" )
         print("File saving ...")
         self.fullfilename = ec.save_response()
         print("File saved.")
         print("Simulation produce_voltage_response Done.")
+        return model
 
     # ----------------------- produce_restingVm -----------------------------
     def produce_restingVm(self, **kwargs):
@@ -79,14 +80,13 @@ class GranuleCell( sciunit.Model,
         """
         print("Sim produce_restingVm starting ...")
         ec = ExecutiveControl() # only works when in ~/cerebmodels
-        model = kwargs["onmodel"]
-        ec.launch_model( parameters = kwargs["parameters"],
-                         stimparameters = kwargs["stimparameters"],
-                         stimloc = kwargs["stimloc"], onmodel = model,
-                         capabilities = {"model": "produce_voltage_response",
-                                         "vtest": ProducesElectricalResponse},
-                         mode="capability")
-        #self.fullfilename
+        model = ec.launch_model( parameters = kwargs["parameters"],
+                                 stimparameters = kwargs["stimparameters"],
+                                 stimloc = kwargs["stimloc"], onmodel = kwargs["onmodel"],
+                                 capabilities = {"model": "produce_voltage_response",
+                                                 "vtest": ProducesElectricalResponse},
+                                 mode="capability")
+        #self.fullfilename # already saved by invoking produce_voltage_response above
         #print("Signal Processing ...")
         nwbfile = rm.load_nwbfile(self.fullfilename)
         orderedepochs = rm.order_all_epochs_for_region(nwbfile=nwbfile, region="soma")
@@ -97,8 +97,10 @@ class GranuleCell( sciunit.Model,
         baseVms = spm.distill_Vm_pre_epoch( timestamps = timestamps_over_epochs,
                                             datavalues = data_over_epochs )
         setattr(model, "prediction", baseVms)
+        setattr(model, "fullfilename", self.fullfilename)
         #print("Signal Processing Done.")
         print("Simulation produce_restingVm Done.")
+        return model
 
     # ----------------------- produce_spike_train ---------------------------
     def produce_spike_train(self, **kwargs):

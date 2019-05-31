@@ -38,7 +38,7 @@ class Reconstructer(object):
         return a_trace
 
     @classmethod
-    def construct_base_efel_trace_overall(cls, timestamp, datavalue):
+    def construct_base_efel_trace_overall(cls, timestamps, datavalues):
         """Returns traces; a list of dictionaries with the keys: `"T"`, `"V"`, `"stim_start"` and `"stim_end"`.
 
         **Arguments:**
@@ -52,6 +52,6 @@ class Reconstructer(object):
         +----------+-------------------------+
 
         """
-        return [ cls.create_base_efel_trace_individual( timestamps[i], datavalues[i] )
+        return [ cls.construct_base_efel_trace_individual( timestamps[i], datavalues[i] )
                  for i in range(len(timestamps)) ] # [ trace0, trace1, trace2, ... ]
 

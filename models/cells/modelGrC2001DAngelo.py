@@ -5,7 +5,6 @@ path_to_files = pwd + os.sep + "models" + os.sep + "cells" + os.sep + \
                 "GrC2001DAngelo" + os.sep # record path to this model/folder
 
 from models.cells.GrC2001DAngelo.Granule import Granule
-from managers.simulation import SimulationManager as sm
 from executive import ExecutiveControl
 from managers.managerInterpret import InterpretManager
 
@@ -23,31 +22,23 @@ class GranuleCell( sciunit.Model,
     #uuid = "22dc8fd3-c62b-4e07-9e47-f5829e038d6d"
 
     def __init__(self):
-        ### =====================Instantiate the cell======================
-        #path_to_files = pwd + os.sep + "models" + os.sep + "cells" + \
-        #                os.sep + "GrC2001DAngelo" + os.sep
-        #os.chdir(path_to_files) # change to path_to_files
-        #self.cell = Granule()
-        #os.chdir(pwd)           # reset to start directory
-        # ------specify cell-regions from with response are recorded-------
-        self.regions = {"soma": 0.0}
-        ### ===============================================================
-        #
-        ### =====================Essential Attributes======================
+        ### ===================== Descriptive Attributes ======================
         self.modelscale = "cells"
         self.modelname = "GrC2001DAngelo"
-        self.prediction = "Nil"
+        # ------specify cell-regions from with response are recorded-------
+        self.regions = {"soma": 0.0}
         # -----------attributed inheritance from sciunit.Model--------------
-        # grc.name defaults to class name, i.e, GranuleCell
         self.name = "D'Angelo et al. 2001 model of GranuleCell"
         self.description = "D'Angelo et al. 2001 model of GranuleCell (GrC) and published in 10.1523/JNEUROSCI.21-03-00759.2001 This is the single compartment model. It models the rat granule cells because the model was derived from slices taken from 20 +/- 2 days old rats. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 46839."
         #
+        ### =================== Instantiate cell template ====================
         sm.lock_and_load_model_libraries(modelscale=self.modelscale,
                                          modelname=self.modelname)
         os.chdir(path_to_files)
         self.cell = Granule()
         os.chdir(pwd)
         ### ===============================================================
+        self.prediction = "Nil"
         #
 
     # =======================================================================
@@ -55,13 +46,25 @@ class GranuleCell( sciunit.Model,
     # =======================================================================
 
     # --------------------- produce_voltage_response ------------------------
-    def produce_voltage_response(self, **kwargs):
+    def produce_voltage_response(self, runtimeparam=None, stimparam=None, model=None):
         """generic/essential model response
 
-        Argument:
-        sm -- instantiated SimulationManager()
+        **Keyword Arguments:**
+
+        kwargs = { "parameters": dictionary with keys,
+                   "stimparameters": None or dictionary with keys "type" and "stimlist",
+                   "onmodel": instantiated model }
         """
-        sm.engage_NEURON()
+        #ExecutiveControl.launch_model_raw("cells")
+        print("Simulation starting ...")
+        ec = ExecutiveControl() # only works when in ~/cerebmodels
+        ec.launch_model( parameters = runtimeparam, mode = "raw"
+                         stimparameters = stimparam,
+                         stimloc = model.cell.soma, onmodel = model )
+        print("File saving ...")
+        self.fullfilename = ec.save_response()
+        print("File saved.")
+        print("Simulation Done.")
 
     # ----------------------- produce_restingVm -----------------------------
     def produce_restingVm(self, **kwargs):

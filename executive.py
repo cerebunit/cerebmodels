@@ -95,7 +95,7 @@ class ExecutiveControl(object):
                       stimparameters = None, stimloc = None,
                       capabilities = {'model':None, 'vtest':None},
                       mode="raw" ):
-        """Directs the :ref:`SimulationManager` to launch the simulation on an instantiated model.
+        """Directs the :ref:`SimulationManager` to launch simulation on an instantiated model.
 
         **Keyword Arguments:**
 
@@ -138,9 +138,9 @@ class ExecutiveControl(object):
             self.recordings["time"], self.recordings["response"], rec_i_indivs = \
                     rm.prepare_recording_NEURON( onmodel,
                                                       stimuli = stimuli_list )
-            if mode="raw":
+            if mode == "raw":
                 sm.engage_NEURON()
-            elif mode="capability":
+            elif mode == "capability":
                 sm.trigger_NEURON( onmodel, modelcapability = capabilities['model'], )
                                    #parameters=parameters, stimparameters=stimparameters,
                                    #stimloc=stimloc, onmodel=onmodel )

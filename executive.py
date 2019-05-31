@@ -27,7 +27,7 @@ class ExecutiveControl(object):
     +------------------------------+---------------------+      
     | :py:meth:`.launch_model`     | instance method     |
     +------------------------------+---------------------+      
-    | :py:meth:`.launch_model_raw` | static method       |
+    | :py:meth:`.launch_model_raw` | instance method     |
     +------------------------------+---------------------+
     | :py:meth:`.save_response`    | instance method     |
     +------------------------------+---------------------+
@@ -136,9 +136,9 @@ class ExecutiveControl(object):
             self.recordings["time"], self.recordings["response"], rec_i_indivs = \
                     rm.prepare_recording_NEURON( onmodel,
                                                       stimuli = stimuli_list )
-            sm.trigger_NEURON( onmodel, modelcapability = capabilities['model'],
-                               parameters=parameters, stimparameters=stimparameters,
-                               stimloc=stimloc, onmodel=onmodel )
+            sm.trigger_NEURON( onmodel, modelcapability = capabilities['model'], )
+                               #parameters=parameters, stimparameters=stimparameters,
+                               #stimloc=stimloc, onmodel=onmodel )
             self.recordings["stimulus"] = \
                     rm.postrun_record_NEURON( injectedcurrents = rec_i_indivs )
         # save the parameters as attributes
@@ -148,13 +148,37 @@ class ExecutiveControl(object):
         return self.chosenmodel
         #return "model was successfully simulated" # for executiveTest.py
 
-    @staticmethod
-    def launch_model_raw(modelscale):
-        """
-        **Argument:** string; "cells", "circuits" or "networks"
+    def launch_model_raw( self, parameters = None, onmodel = None,
+                          stimparameters = None, stimloc = None  ):
+        """Directs the :ref:`SimulationManager` to launch the simulation on an instantiated model.
+
+        **Keyword Arguments:**
+
+        +-------------------------------+---------------------------------+
+        | Key                           | Value type                      |
+        +===============================+=================================+
+        | ``parameters``                | dictionary                      |
+        +-------------------------------+---------------------------------+
+        |  ``onmodel``                  | instantiated model              |
+        +-------------------------------+---------------------------------+
+        | ``stimparameters`` (optional) | dictionary                      |
+        +-------------------------------+---------------------------------+
+        | ``stimloc`` (optional)        | attribute of instantiated model |
+        +-------------------------------+---------------------------------+
+
+        * ``parameters``- *mandatory* whose value is a dictionary. For example, ``parameters = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}``
+        * ``onmodel``- *mandatory* whose value is the instantiated model using :py:meth:`.choose_model()`. For example, ``onmodel = <instance>.choose_model(modelscale="a_chosen_scale", modelname="a_chosen_name")``.
+        * ``stimparameters``- optional whose value is a dictionary. For example, ``{"type": ["current", "IClamp"], "stimlist": [ {'amp': 0.5, 'dur': 100.0, 'delay': 10.0}, {'amp': 1.0, 'dur': 50.0, 'delay': 10.0+100.0} ] }``.
+        * ``stimloc``- optional (mandatory only if ``stimparameters`` argument is provided). Its value is an attribute of the instantiated model. Note that this instantiated model is the value for the mandatory keyword argument ``onmodel``.
 
         *NOTE:*
 
+        * called this method to launch the model without passing capability
+
+        .. raw:: html
+           </strike>
+
+        <strike>
         * For "cells" calling this method is the same as calling `SimulationManager.engage_NEURON()`
         * This function is useful in the special use case when a model capability method is dependent on another of its (same model but different) capability method. This means:
 
@@ -164,10 +188,30 @@ class ExecutiveControl(object):
 
         * This function is called inside capability method, a method defined in the model template.
         * It is recommended that this method be **NOT** used for running the model outside the model capability methods.
+        </strike>
 
         """
-        if modelscale is "cells":
+        uu.check_not_None_in_arg({'parameters': parameters, 'onmodel': onmodel})
+        self.simtime = datetime.datetime.now()
+        if onmodel.modelscale is "cells":
+            sm.prepare_model_NEURON( parameters=parameters, chosenmodel=onmodel,
+                                     modelcapability = capabilities['model'],
+                                     cerebunitcapability = capabilities['vtest'] )
+            stimuli_list = sm.stimulate_model_NEURON(
+                                          stimparameters = stimparameters,
+                                          modelsite = stimloc )
+            self.recordings["time"], self.recordings["response"], rec_i_indivs = \
+                    rm.prepare_recording_NEURON( onmodel,
+                                                      stimuli = stimuli_list )
+            #sm.trigger_NEURON( onmodel, modelcapability = capabilities['model'] )
             sm.engage_NEURON()
+            self.recordings["stimulus"] = \
+                    rm.postrun_record_NEURON( injectedcurrents = rec_i_indivs )
+        # save the parameters as attributes
+        self.chosenmodel = onmodel
+        self.parameters = parameters
+        self.stimparameters = stimparameters
+        return self.chosenmodel
 
     def save_response( self ):
         """Returns filename after saving the model response into a `NWB <https://www.nwb.org/>`_ formated ``.h5`` file located in ``~/response/<modelscale>/<modelname>/`` in root directory of ``cerebmodels``.

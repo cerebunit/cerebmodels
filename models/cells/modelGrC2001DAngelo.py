@@ -4,8 +4,8 @@ pwd = os.getcwd() # record root directory path ~/cerebmodels
 path_to_files = pwd + os.sep + "models" + os.sep + "cells" + os.sep + \
                 "GrC2001DAngelo" + os.sep # record path to this model/folder
 
-from managers.managerSimulation import SimulationManager as sm
 from models.cells.GrC2001DAngelo.Granule import Granule
+from managers.simulation import SimulationManager as sm
 from executive import ExecutiveControl
 from managers.managerInterpret import InterpretManager
 

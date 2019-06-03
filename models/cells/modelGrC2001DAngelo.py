@@ -66,7 +66,8 @@ class GranuleCell( sciunit.Model,
                                  stimloc = kwargs["stimloc"],
                                  onmodel = kwargs["onmodel"], mode = "raw" )
         print("File saving ...")
-        self.fullfilename = ec.save_response()
+        fullfilename = ec.save_response()
+        setattr(model, "fullfilename", fullfilename)
         print("File saved.")
         print("Simulation produce_voltage_response Done.")
         return model
@@ -88,7 +89,7 @@ class GranuleCell( sciunit.Model,
                                  mode="capability")
         #self.fullfilename # already saved by invoking produce_voltage_response above
         #print("Signal Processing ...")
-        nwbfile = rm.load_nwbfile(self.fullfilename)
+        nwbfile = rm.load_nwbfile(model.fullfilename)
         orderedepochs = rm.order_all_epochs_for_region(nwbfile=nwbfile, region="soma")
         timestamps_over_epochs = [ rm.timestamps_for_epoch( orderedepochs[i] )
                                    for i in range(len(orderedepochs)) ]
@@ -96,9 +97,8 @@ class GranuleCell( sciunit.Model,
                                    for i in range(len(orderedepochs)) ]
         baseVms = spm.distill_Vm_pre_epoch( timestamps = timestamps_over_epochs,
                                             datavalues = data_over_epochs )
-        setattr(model, "prediction", baseVms)
-        setattr(model, "fullfilename", self.fullfilename)
         #print("Signal Processing Done.")
+        setattr(model, "prediction", baseVms)
         print("Simulation produce_restingVm Done.")
         return model
 

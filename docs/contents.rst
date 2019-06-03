@@ -1,3 +1,11 @@
+How to add models in cerebmodels
+********************************
+.. toctree::
+   :maxdepth: 1
+   :caption: Contents:
+
+   template_for_cell_model.rst
+
 Code Documentation
 ******************
 

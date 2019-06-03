@@ -1,8 +1,9 @@
-#Template of the Granule cell model, D'Angelo et al. 2001
+#Template of the Granule cell model (single compartment), D'Angelo et al. 2001
+#Templating by Lungsi 2018 based on ~/GrC2001DAngelo/grc.hoc
 from neuron import h
 
 
-class Granule:
+class Granule(object):
     """Single compartment cell
     """
     def __init__(self):
@@ -26,6 +27,15 @@ class Granule:
         self.soma.insert("GrC_pNa")
         self.soma.insert("GrG_KM")
         self.soma.insert("GrC_Lkg2")
+
+        h.usetable_GrG_Na = 0
+        h.usetable_GrC_pNa = 0
+        h.usetable_GrC_CaHVA = 0
+        h.usetable_GrG_KV = 0
+        h.usetable_GrC_KA = 0
+        h.usetable_GrC_Kir = 0
+        h.usetable_GrC_KCa = 0
+        h.usetable_GrG_KM = 0
 
         self.soma.ena = 87.39
         self.soma.ek = -84.69

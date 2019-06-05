@@ -1,0 +1,50 @@
+// ***** Procedures to connect *****
+proc con1() {
+        //if(numarg()==1) {jn==$1}  
+	nclist2 = new List()
+       	//jn == 3
+	for(j=0;j<4;j=j+1) {
+	    //print j,k
+	    access Granule[0].dend_3[j]	
+	    Inhib[j] = new SpikeGenerator(0.5)
+            synG[j] = new GRC_GABA(0.5)
+            nclist2.append(new NetCon(Inhib[j], synG[j], -20, 0.000, 1e-3))
+        }
+}
+proc con2() {
+        //if(numarg()==1) {k3==$1}
+ 
+	nclist = new List()
+	//k3 == $1
+       	for(k3=0;k3<4;k3=k3+1) {
+		access Granule[0].dend_4[k3]
+        	Mossy[k3] = new SpikeGenerator(0.5)
+		synA[k3] = new AmpaCOD(0.5)
+		synNS[k3] = new NMDAS(0.5)
+	        nclist.append(new NetCon(Mossy[k3], synNS[k3],-20, 0.000, 1e-3))
+	        //nclist.append(new NetCon(Mossy[i], synNES[i],-20, 0.000, 1e-3))
+	        nclist.append(new NetCon(Mossy[k3], synA[k3],-20, 0.000, 1e-3))
+        }
+}
+
+// ***** Set USETABLES *******
+
+proc usetable(){
+	usetable_GRC_NA  = 	$1
+	usetable_GRC_NAR = 	$1
+	usetable_GRC_PNA = 	$1
+	usetable_GRC_KV  = 	$1
+	usetable_GRC_KA  =  	$1
+	usetable_GRC_KIR = 	$1
+	//usetable_GRC_KCA = 0
+	usetable_GRC_KM  = 	$1
+	usetable_GRC_CA  = 	$1
+}
+
+proc ACparams() {
+     xopen("WTFHF.DAPF.slowalfabeta.REV5.30.2016.ses")
+}
+
+proc HAOparams() {
+     xopen("KOFHF.DAPF.slowalfabeta.REV5.30.2016.ses")
+}

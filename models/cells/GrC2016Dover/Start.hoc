@@ -1,0 +1,60 @@
+// Cerebellum Granular Cell Model
+// Multicompartmental model - Initiation script
+// Last Modified 12-Feb-2007
+// Shyam Diwakar M. 
+// Last modified 25th July 2016
+// Modifications made by M. Goldfarb and S. Solinas
+
+// To get Grey background in plots edit: 
+// $NEURONHOME/share/nrn/lib/nrn.defaults
+// *Scene_background: #696969
+
+load_file("noload.hoc")
+
+// ***** General settings *****
+tstop=333
+v_init = -70
+xopen("Grc_Cell.hoc") // load templates
+objref Granule[1]
+Granule[0] = new GrC()
+	
+// ***** Synapses ****
+objref nclist,Mossy[4],Inhib[4],nclist2	//synA[4],synN_S[4],synN_ES[4]
+objref synNS[4],synA[4],synG[4]	// ,synNES[4]
+
+// ***** Load connections and USETABE procedures
+xopen("helper_procedures.hoc")
+con1()
+con2()
+
+// ***** Start GUI *****
+
+nrnmainmenu()
+nrncontrolmenu()
+
+xopen("ComPanel.hoc") // Control Panel
+
+// ***** Initialization *****
+
+finitialize(v_init)
+
+xopen("Parametri.hoc") //"Channels and Controls Panel"
+access GrC[0].soma
+
+xopen("Fig5.ses")
+
+objref IC
+IC = new IClamp(0.5)
+IC.del = 70 // ms
+IC.dur = 500 // ms
+IC.amp = 0.009 // nA
+
+HAOparams()
+print "Automatically loaded the Wild type Parameters!!!"
+xpanel("FHF setup parameters")
+        xlabel(" ===== Genetic Setup Panel ===== ")
+        xradiobutton("GrC with FHF in Hillock and AIS Only","HAOparams()",1)
+        xradiobutton("GrC with FHF in All Compartments","ACparams()")
+xpanel()
+
+run()

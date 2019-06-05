@@ -37,7 +37,7 @@ class PathSpawner(object):
         **Returned values:**
 
         * ``path/to/the/directory/mod_files``
-        * ``path/to/the/file/libnrnmech.so.0``
+        * ``path/to/the/directory/x86_64/.libs/libnrnmech.so.0``
 
         **Raised Exceptions:** ``ValueError`` if modelscale and modelname is empty.
 

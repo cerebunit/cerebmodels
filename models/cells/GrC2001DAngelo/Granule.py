@@ -39,5 +39,5 @@ class Granule(object):
 
         self.soma.ena = 87.39
         self.soma.ek = -84.69
-        self.eca = 129.33
-        self.ecl = -65
+        self.soma.eca = 129.33
+        #self.soma.ecl = -65 # not defined in any of the above mod files

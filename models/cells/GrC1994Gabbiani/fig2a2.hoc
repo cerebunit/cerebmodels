@@ -1,0 +1,11 @@
+// fig 2A2
+
+xopen("fig2a2.ses")
+tstop=135
+IClamp[0].dur=190	// length of current injection
+IClamp[0].del=5	// delay before injection
+IClamp[0].amp=0.005
+init()
+run()
+
+

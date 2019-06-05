@@ -1,0 +1,117 @@
+/*----------------------------------------------------------------
+  %W%                     %G%
+
+  turtle granule cell with 4 dendrites new electrical model.
+
+----------------------------------------------------------------*/
+
+
+global_ra = 100
+
+         					/* create sections */
+create    soma, dendrite[4], bulb[4]
+
+
+
+
+proc geometry() { local i, j
+
+						/* soma geometry */
+    soma {
+        nseg = 1
+        pt3dclear()
+        for j = 1, fscan() {
+            pt3dadd(fscan(),fscan(),fscan(),fscan())
+        }
+    }
+
+    for i = 0,3 {
+        dendrite[i] {
+            nseg = fscan()
+            pt3dclear()
+            for j = 1, fscan() {
+                pt3dadd(fscan(),fscan(),fscan(),fscan())
+            }
+        }
+    }
+
+    for i = 0,3 {
+        bulb[i] {
+            nseg = fscan()
+            pt3dclear()
+            for j = 1, fscan() {
+                pt3dadd(fscan(),fscan(),fscan(),fscan())
+            }
+        }
+    }
+
+					/* connect dendrites */
+    for i = 0,3 {
+      soma connect dendrite[i] (0), 1
+    }
+
+					/* connect bulbs */
+    for i = 0,3 {
+      dendrite[i] connect bulb[i] (0), 1
+    }
+
+}
+
+geometry()
+
+
+SOMA COORDINATES AND DIAMETERS:
+
+    2
+    0      0  0  6.76
+    14.55  0  0  6.76
+
+
+DENDRITE COORDINATES AND DIAMETERS:
+
+    2 2
+    5      0  0  1.24
+    93.1   0  0  1.24
+
+    2 2
+    -5      0  0  1.24
+    -93.1   0  0  1.24
+
+    2 2
+    0   5      0  1.24
+    0   93.1   0  1.24
+
+    2 2
+    0  -5      0  1.24
+    0  -93.1   0  1.24
+
+
+BULB COORDINATES AND DIAMETERS:
+
+    1 2
+    93.1   0  0  3.6
+    100.3  0  0  3.6
+
+    1 2
+    -93.1   0  0  3.6
+    -100.3  0  0  3.6
+
+    1 2
+    0   93.1   0  3.6
+    0   100.3  0  3.6
+
+    1 2
+    0  -93.1   0  3.6
+    0  -100.3  0  3.6
+
+/*----------------------------------------------------------------*/
+proc geometry() { 
+
+	/* NULL geometry procedure: keeps the user from
+	calling the geometry procedure in isolation. */
+
+    printf("\nYou must re-read the entire geometry\n")
+    printf("file to execute geometry().\n\n")
+}
+
+forall Ra = global_ra

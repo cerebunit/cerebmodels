@@ -1,0 +1,31 @@
+// fig1a.hoc generates figures 1A and 1B
+
+tstop = 2000
+
+IClamp[0].dur=1000	// length of current injection
+IClamp[0].del=100	// delay before injection
+
+//	create graph
+xopen("vgraph.ses")	// created by saving a volt graph
+ccgraph.exec_menu("Keep Lines")
+
+// use low resolution for speed
+steps_per_ms = 4
+dt = .25
+
+// run simulation with a few injections
+
+for i=0,3 {
+
+	if (i==0) {IClamp[0].amp = 0.01}
+	if (i==1) {IClamp[0].amp = -0.01}
+	if (i==2) {IClamp[0].amp = -0.02}
+	if (i==3) {IClamp[0].amp = -0.03}
+
+	init()
+	run()
+}
+ccgraph.exec_menu("View = plot")
+ccgraph.label(.45,.95,"Figure 1 A")
+
+

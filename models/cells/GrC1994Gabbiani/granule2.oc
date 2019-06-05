@@ -1,0 +1,55 @@
+/*  %W%                    %G%            */
+/* New model with the Ic current of Hines */
+// xopen("stdrun2.hoc") // obsoleted by nrngui.hoc nrn v5
+
+objref outerbox2, innerbox1, innerbox2
+outerbox2 = new HBox()
+outerbox2.intercept(1)
+
+    innerbox1 = new VBox()
+
+    innerbox1.intercept(1)
+
+        load_file("nrngui.hoc")
+
+        tstop = 100
+
+        xopen("granule2.proto")
+
+
+        objectvar stim
+        soma stim = new IClamp(.5)
+        stim.del = 5
+        stim.dur = 10
+        stim.amp=0.05
+        // nrnmainmenu() // duplicates nrngui.hoc
+        /* below can be uncommented if desired for
+        // additional shape plot
+        objectvar s
+        s = new PlotShape()
+        flush_list.append(s)
+        s.save_name("flush_list.")
+        */
+        xpanel("clue")
+        xlabel("click on below segment names to adjust max conductances")
+        xpanel()
+        load_template("MenuExplore")
+
+        load_template("PointProcessLocator")
+
+        objectvar menu_explore
+        menu_explore = new MenuExplore()
+
+    innerbox1.intercept(0)
+    innerbox1.map()
+    innerbox2 = new HBox()
+    innerbox2.intercept(1)
+
+        objectvar pplocator
+        pplocator = new PointProcessLocator(stim)
+
+        init()
+    innerbox2.intercept(0)
+    innerbox2.map()
+outerbox2.intercept(0)
+outerbox2.map("parameter adjustments",200,100,-1,-1)

@@ -1,0 +1,85 @@
+load_file("nrngui.hoc")
+
+objectvar scene_vector_[5]
+objref outerbox0, outerbox1
+objref fig2box, fig2left, fig2right
+outerbox0 = new HBox()
+  outerbox0.intercept(1)
+
+  outerbox1 = new VBox()
+    outerbox1.intercept(1)
+    
+        xpanel("Figures for Gabbiani et al 1994")
+        xbutton("Figure 1A", "restart(\"fig1a\")")
+        xpanel()
+        fig2box = new HBox()
+        fig2box.intercept(1)
+            xpanel("fig2a")
+            fig2left = new VBox()
+            fig2left.intercept(1)
+    
+                xbutton("Figure 2A1", "restart(\"fig2a1\")")
+                xbutton("Figure 2A2", "restart(\"fig2a2\")")
+                xbutton("Figure 2A3", "restart(\"fig2a3\")")
+            
+            fig2left.intercept(0)
+            fig2left.map()
+            xpanel()
+            xpanel("fig2b")
+            fig2right = new VBox()
+            fig2right.intercept(1)
+    
+                xbutton("Figure 2B1", "restart(\"fig2b1\")")
+                xbutton("Figure 2B2", "restart(\"fig2b2\")")
+                xbutton("Figure 2B3", "restart(\"fig2b3\")")
+    
+            fig2right.intercept(0)
+            fig2right.map()
+        
+            xpanel(5,100)
+        fig2box.intercept(0)
+        fig2box.map()
+    outerbox1.intercept(0)
+    outerbox1.map("simulation control",50,50,-1,-1)
+
+    load_file("runctrl.ses")
+
+
+outerbox0.intercept(0)
+outerbox0.map("simulation control",50,50,-1,-1)
+
+load_file("granule2.oc")
+
+strdef tstr
+
+pwmcnt = PWManager[0].count // the initial gui should not be dismissed
+
+proc restart() {local i
+	print PWManager[0].count
+	print " as compared to ",pwmcnt
+	objref graphItem, save_window_
+	for i=0, n_graph_lists-1 {
+			graphList[i].remove_all()
+		}
+		flush_list.remove_all()
+		fast_flush_list.remove_all()
+		doNotify()
+
+	for (i= PWManager[0].count-1; i >= pwmcnt; i -= 1) {
+		PWManager[0].close(i)
+		doNotify()
+	}
+	stoprun = 0
+	cvode_active(0)
+
+	dt = .025
+	steps_per_ms = 40
+
+	sprint(tstr, "%s.hoc", $s1)
+	load_file(1, tstr)
+}
+
+// use show diameter version
+Shape[0].exec_menu("Show Diam")
+Shape[1].exec_menu("Show Diam")
+

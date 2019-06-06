@@ -1,4 +1,4 @@
-#Template of the Purkinje cell model (single compartment), Akemann and Knöpfel 2061
+#Template of the Purkinje cell model (single compartment), Akemann and Knöpfel 206
 #Templating by Lungsi 2019 based on ~/PC2006Akemann/morphology_mechanisms.hoc
 from neuron import h
 #from pdb import set_trace as breakpoint

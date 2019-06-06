@@ -7,8 +7,7 @@ class Purkinje(object):
     """Multi-compartment cell
     """
     def __init__(self):
-        h.xopen("purkinje.hoc") # Within it parameters are defined and
-        # its geometry is set by loading granuel.nrn
+        h.xopen("purkinje.hoc")
 
         # There are thirteen compartments and the following are chosen as
         # attributes to this python class for potential recording

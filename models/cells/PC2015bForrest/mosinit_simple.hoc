@@ -1,0 +1,8 @@
+load_file("nrngui.hoc")
+totalruntime = startsw()
+load_file("2_compartment.hoc")
+load_file("lesbos.ses")
+load_file("simple_data_writer.hoc")
+// load_file("mex.hoc")
+totalruntime = startsw() - totalruntime
+print "total run time ", totalruntime

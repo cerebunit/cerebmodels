@@ -1,0 +1,28 @@
+
+// THIS FILE CALCULATES SPIKE FREQUENCY
+// Note that this file is NOT run by default - its call is commented out in "mosinit_simple.hoc" and "mosinit_full.hoc". To run this file please uncomment it
+// in those files. 
+
+objref nc, nil 
+soma nc = new NetCon(&v(0.5), nil) 
+// SpinyDendrite nc = new NetCon(&v(0.5), nil) 
+
+objref tsp 
+tsp = new Vector() 
+nc.record(tsp) 
+
+run() 
+
+objref isivec 
+isivec = tsp.c // isivec is a copy of tsp, the spike time Vector 
+isivec.deriv(1) // isivec contains the interspike intervals 
+
+objref freq 
+freq = new Vector(isivec.size()) 
+// for i = 0,freq.size()-1 freq.x[i] = 1/isivec.x[i] 
+for i = 0,freq.size()-1 freq.x[i] = 1000/isivec.x[i] 
+freq.printf() 
+freq.mean()
+
+
+

@@ -1,0 +1,44 @@
+tstop = 50
+
+
+
+objref rect, recv, recvdend
+rect = new Vector()
+recv = new Vector()
+recvdend = new Vector()
+// recv.record(&soma.v(0.5))
+recv.record(&v(0.5))
+recvdend.record(&Couple.v(0.5))
+rect.record(&t)
+
+run() 
+
+// Following commands print the voltage and the time in the NEURON terminal. But instead you want to put them in a .dat file, which is what the code later on does 
+// recv.printf()
+// rect.printf()
+
+objref savdata
+savdata = new File()
+savdata.wopen("data_output.txt")
+savdata.printf("t. soma.v(0.5)\n")
+objref tempmatrix
+tempmatrix = new Matrix()
+tempmatrix.resize(recv.size(),2)
+tempmatrix.setcol(0, rect)
+tempmatrix.setcol(1, recv)
+tempmatrix.fprint(savdata, " %g")
+savdata.close()
+
+
+objref savdata_dend
+savdata_dend = new File()
+savdata_dend.wopen("data_output_dend.txt")
+savdata_dend.printf("t. Couple.v(0.5)\n")
+objref tempmatrix
+tempmatrix = new Matrix()
+tempmatrix.resize(recvdend.size(),2)
+tempmatrix.setcol(0, rect)
+tempmatrix.setcol(1, recvdend)
+tempmatrix.fprint(savdata_dend, " %g")
+savdata_dend.close()
+

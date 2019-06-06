@@ -1,0 +1,392 @@
+
+
+alcohol = 0        // IF THIS IS SET TO 1 THEN WE IMPLEMENT THE ALCOHOL PUMP DECLINE 
+// Note that for alcohol experiments you need to set km of pump.mod to be 12 instead of 40
+multiple = 1           // this is a single parameter that can affect the rate of decline. But is more complicated than this though, so take a look at code below. 
+
+
+create soma
+create Couple
+
+soma	      {nseg=1 L=22 diam=22 }
+
+length = 529.29
+
+diamax = 4311.37/(3.14*length)
+diamax_2 = sqrt(diamax)
+diamax_3 = diamax_2 * 2
+
+Couple {nseg=1 L= length diam= diamax_3 }  //  rallbranch=1}
+
+access soma
+ soma connect Couple(0),1
+
+// length = 529.29, DIAMETER = 3.22
+// DO NOT GET CONFUSEd WITH RADIUS AND DIAMETER
+
+a=0 
+forall for (x) a += area(x) 
+
+corrD = 42310/a 
+
+
+// global_ra = 250
+// set_ra()
+
+
+access soma
+soma {
+
+cm = 0.8
+
+insert narsg      // Na current. Resurgent. Markov model
+insert hpkj       // Ih              hyperpolarisation activated cation current
+insert bkpkj      // BK ca2+ dependent K+ current
+insert cadiff     // calcium diffusion
+insert kpkj
+insert kpkj2
+insert kpkjslow
+insert captain        // P type ca. P type calcium current
+
+gbar_narsg = 0.156     
+ghbar_hpkj = 0.00104           
+gkbar_bkpkj = 0.0728
+gkbar_kpkj = 0.0416        
+gkbar_kpkj2 = 0.0208       
+gkbar_kpkjslow = 0.0416     
+pcabar_captain = 0.00052   //  0.00005 
+
+insert lkpkj      // leak current
+e_lkpkj = -70
+g_lkpkj = 0.0001
+
+ena = 60
+ek = -88
+
+// -------------------
+insert pump 
+km_pump = 40                 // Michaelis-Menten
+n_pump = 1
+decline_pump = alcohol        // If this is set to 1 then we switch on the oubain/alcohol pump decline system
+initialdensity_pump = 1   // this is the density before the decline or the fixed density if no decline is chosen
+red_pump = 0           // this is the lag before the decline takes place
+lex_pump = 70 * multiple                    // this sets the speed of the decline
+// -------------------
+
+insert nadifl D_nadifl = 0.60 
+tau_nadifl = 5000  
+
+insert myexchangersoma
+
+//----------------------
+insert mypumpsoma
+decline_mypumpsoma = alcohol                       // If this is set to 1 then we switch on the oubain/alcohol pump decline system
+initialdensity_mypumpsoma = 0.5             // this is the density before the decline or the fixed density if no decline is chosen
+red_mypumpsoma = 50000           // this is the lag before the decline takes place
+lex_mypumpsoma = 200 * multiple                   // this sets the speed of the decline
+green_mypumpsoma = 50000           // this is the lag before the second rate of decline takes place
+lux_mypumpsoma = 200 * multiple                    // this sets the speed of the second set of decline
+//----------------------
+
+insert gkca
+gkbar_gkca = 0.01
+
+}
+
+
+
+
+Couple   {
+
+cm=0.8 * corrD 
+
+insert cha   gkhbar_cha = 0.00028914405 * corrD       // Ih              hyperpolarisation activated cation current. CHANGED NAME
+ 
+insert leak 
+gl_leak = (7.93319415*10^-5) * corrD
+el_leak = -80
+ 
+nab = 0.036    //  KD
+ruti = 0.032   // KA
+tt =  0.001    // Whalter Kv1.1 (or maybe kv1.2)
+
+        insert cap2 cai = 4e-5 cao = 2.4 gcabar_cap2 = 0.0016 * corrD
+         insert cat cai = 4e-5 cao = 2.4  gcabar_cat = 0.0006 * corrD
+         insert cae cai = 4e-5 cao = 2.4  gcabar_cae = 0.0032 * corrD
+         insert khh gkbar_khh = 0.00024 * corrD
+         insert km  gkbar_km  = 0.000004 * corrD
+         insert ka  gkbar_ka  = ruti * corrD
+         insert kd  gkbar_kd  = nab * corrD
+         insert kc3 gkbar_kc3  = 0.06 * corrD
+         insert k23 gkbar_k23  = 0.000156 * corrD
+         insert cad taur_cad = 2 cainf_cad = 4e-5
+		    kt_cad = 4e-5 kd_cad = 4e-5 
+depth_cad = 0.1  * corrD
+
+insert kv1
+gbar_kv1 = tt * corrD
+
+insert kdyn
+KAF_kdyn = 0.0119 // bursts at 5,149 
+// 0.01 - no bursts // 0.012 - bursts at 5000  // 0.013 bursts at around 3,500 // 0.015 bursts at around 2,500 // 0.02 - bursts at around 1000  
+// OLD: 0.1428571428571  //  0.008  // 0.011    //  (~50:50)
+// OLD: IN FULL MODEL IS 0.143, IN 40 COMPARTMENT IS 0.033, IN 5 COMPARTMENT IS 0.02. IN 2 COMPARTMENT IS 0.008 (BUT if Ra = 250+length = 240, it is 0.0055)
+dep_kdyn = 70e-3    // Have not applied corrD to the depth
+peak_kdyn = 3.03     // peak value of extracellular K concentration (because of buffering system)
+
+insert myexchanger
+ImaxNax_myexchanger = 0.00208768267 * corrD
+
+
+//----------------------
+
+insert mypump
+decline_mypump = alcohol                                 // If this is set to 1 then we switch on the oubain/alcohol pump decline system
+initialdensity_mypump = 0.00208768267 * corrD              // this is the density before the decline or the fixed density if no decline is chosen
+red_mypump = 50000                                         // this is the lag before the decline takes place
+lex_mypump = 200 * multiple                                            // this sets the speed of the decline
+
+//----------------------
+insert newnew
+km_newnew = 2.245        
+n_newnew = 1
+decline_newnew = alcohol                                   // If this is set to 1 then we switch on the oubain/alcohol pump decline system
+initialdensity_newnew = 0.0010438413 * corrD         // this is the density before the decline or the fixed density if no decline is chosen
+red_newnew = 50000           // this is the lag before the decline takes place
+lex_newnew = 200 * multiple                   // this sets the speed of the decline
+//----------------------
+
+// YOUR OWN ERG CURRENT (sequential, Hodgkin-Huxley)
+insert erg
+gbar_erg = 0 * corrD     //  0.01, 0.03 too small    0.1 does it, 0.05 does it.     (with vhalf = -5)
+vhalf_erg = -5   // - 35 is the default, but you could legitimately change this to -5 because it is -5 with physiological levels of external calcium 
+// (external calcium allosterically effects the channel)
+
+
+}
+
+
+
+// ------------------------------------
+// Some global stuff. 
+// ------------------------------------
+
+
+celsius = 36
+
+
+// ------------------------------------
+// Synapses 
+// ------------------------------------
+
+
+
+
+
+// inix = 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+inix = 0
+
+// enux = 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+enux = 0
+
+// paranux = 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+paranux = 0
+
+// basket_nux = 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+basket_nux = 0
+
+
+// -----------
+// CLIMBING FIBER
+// -----------
+
+
+objref Exciteconn
+objref Esynapse
+objref Espikesource // A spike source for our inhibitory synapse
+objref ecit_synapses,excit_synapses, ec_list
+ecit_synapses = new List()
+excit_synapses = new List()
+ec_list = new List()
+
+
+Couple   {
+
+ ecit_synapses.append(Espikesource = new NetStim(0.5)) // arbitrary location
+  Espikesource.interval = 1000
+  /* inter-spike interval of the input (in ms)  1Hz = 1000ms inter-spike 
+  interval
+100Hz = 10ms interspike interval
+ */
+  Espikesource.number = enux
+  Espikesource.start = 0
+  Espikesource.noise = 0 // =0 periodic input, = 1 Poisson
+ 
+//  for j=0,336 {   // have taken this out. so now only have a single CF synapse on this compartment 
+    Couple excit_synapses.append(Esynapse = new Exp2Syn(0.5)) /* the location of
+    synapse on
+    the compartment */
+    Esynapse.tau1 = 0.5 // synaptic time constant (ms)
+    Esynapse.tau2 = 1.2 // synaptic time constant (ms)
+    Esynapse.e = 0 // synaptic reversal potential (mV)
+/* opening time constant of 0.5 ms, a closing time constant of 1.2 ms
+and a reversal potential of 0 mV. */
+    thresh = 10 // not important when connection is from NetStim
+    delay = 0     // 54000
+    Eweight = 0.1  // 0.0062 connection strength in S                 0.0000000062 = 6.2nS
+    Exciteconn = new NetCon(Espikesource, Esynapse, thresh, delay, Eweight)
+ec_list.append(Exciteconn)
+// setpointer mix_nip(0.5), Esynapse.i
+// setpointer mix_cadifl(0.5), Esynapse.i
+// }
+}
+
+
+
+
+// ------------------------------------
+// Synapses
+// j=0,19 adds 20 synapses to each dendritic compartment
+// j=0,1000 adds 1001 synapses to each dendritic compartment
+// PS you can use the synapse lists to double check things like:
+// print icit_synapses.count
+// print inhib_synapses.count
+// If there is j=0,19 then there will be 20 synapses to each dendritic compartment. There will be 20*(85+1002) synapses.
+// print 20*(85+1002)
+// ------------------------------------
+
+
+
+// -----------
+// BASKET
+// -----------
+
+objref Econn
+objref Isynapse
+objref Ispikesource // A spike source for our inhibitory synapse
+objref icit_synapses,inhib_synapses, nc_list
+inhib_synapses = new List()
+icit_synapses = new List()
+nc_list = new List()
+
+//---
+//Soma
+// 50 basket cells terminate on Purkinje cell on the soma 
+// Ispikesource.noise set to 0 because firing synchronously
+//---
+
+ soma icit_synapses.append(Ispikesource = new NetStim(0.5)) // arbitrary location
+  Ispikesource.interval = 1000       
+  /* inter-spike interval of the input (in ms)  1Hz = 1000ms inter-spike 
+  interval */
+  Ispikesource.number = basket_nux
+  Ispikesource.start = 0
+  Ispikesource.noise = 0 // =0 periodic input, = 1 Poisson
+ 
+for j=0,49 {
+    soma inhib_synapses.append(Isynapse = new Exp2Syn(0.5))
+    /* the location of synapse on the compartment */
+    Isynapse.tau1 = 0.9 // synaptic time constant (ms)
+    Isynapse.tau2 = 26.5 // synaptic time constant (ms)
+    Isynapse.e = -80 // synaptic reversal potential (mV)
+/* opening time constant of 0.9 ms, a closing time constant of 26.5 ms
+and a reversal potential of -80 mV. */
+    thresh = 10 // not important when connection is from NetStim
+    delay = 0.0
+    Iweight = 0 //3.72 connection strength in S
+    Econn = new NetCon(Ispikesource, Isynapse, thresh, delay, Iweight)
+nc_list.append(Econn)
+  }
+
+
+// -----------
+// STELLATE
+// -----------
+
+
+//---
+// 2 stellate cell synaptic contacts on every smooth dendritic compartment
+// Ispikesource.noise set to 1 because firing asynchronously
+// 1 on each SpinyDendrite (1002 synapses); 2 on every SmoothDendrite (2*85 = 190 synapses); total = 1,192 synapses
+//---
+
+
+// What you've done now - instead of having 1192 synaptic contacts onto this single comparment: you have just a single connection but you increase the 
+// frequency of this connect by 1192 times (i.e. decrease the interspike interval by 1192 times). This greatly speeds up the simulation. 
+
+Couple  {
+  Couple icit_synapses.append(Ispikesource = new NetStim(0.5)) // arbitrary location
+  Ispikesource.interval = 1000/1192
+  /* inter-spike interval of the input (in ms)  1Hz = 1000ms inter-spike 
+  interval
+100Hz = 10ms interspike interval
+ */
+  Ispikesource.number = inix
+  Ispikesource.start = 0
+  Ispikesource.noise = 1 // =0 periodic input, = 1 Poisson
+
+
+//   for j=0,1191 {
+    Couple inhib_synapses.append(Isynapse = new Exp2Syn(0.5))
+    /* the location of synapse on the compartment */
+    Isynapse.tau1 = 0.9 // synaptic time constant (ms)
+    Isynapse.tau2 = 26.5 // synaptic time constant (ms)
+    Isynapse.e = -80 // synaptic reversal potential (mV)
+/* opening time constant of 0.9 ms, a closing time constant of 26.5 ms
+and a reversal potential of -80 mV. */
+    thresh = 10 // not important when connection is from NetStim
+    delay = 0.0
+    Iweight = 0.001 // 0.09604   // 0.2 // 0.002604  // 0.02604 // 52.08 connection strength in S
+    Econn = new NetCon(Ispikesource, Isynapse, thresh, delay, Iweight)
+nc_list.append(Econn)
+//  }
+}
+
+// -----------
+// PARALLEL FIBER
+// -----------
+
+//---
+//SpinyDendrites
+// Parralel fiber synaptic inputs
+//1 contact on every spiny dendritic compartment
+// Espikesource.noise set to 1 because firing asynchronously
+// j=0,199 is 200 synapses per spinydendrite
+
+// 200,000 synapses at 0.01 Hz
+// replace with just 1 synapse; frequency = 2000 Hz 
+// interspike inteval = 0.5
+//---
+
+Couple  {
+
+  Couple ecit_synapses.append(Espikesource = new NetStim(0.5)) // arbitrary location
+  Espikesource.interval = 0.5
+  /* inter-spike interval of the input (in ms)  1Hz = 1000ms inter-spike 
+  interval
+100Hz = 10ms interspike interval
+1000 Hz = 1ms interspike interval
+2000 Hz = 0.5 ms interspike interval
+10,000 Hz = 0.1 ms interspike interval
+
+ 
+ */
+  Espikesource.number = paranux
+  Espikesource.start = 0
+  Espikesource.noise = 1 // =0 periodic input, = 1 Poisson
+   
+    Couple excit_synapses.append(Esynapse = new Exp2Syn(0.5)) /* the location of
+    synapse on
+    the compartment */
+    Esynapse.tau1 = 0.5 // synaptic time constant (ms)
+    Esynapse.tau2 = 1.2 // synaptic time constant (ms)
+    Esynapse.e = 0 // synaptic reversal potential (mV)
+/* opening time constant of 0.5 ms, a closing time constant of 1.2 ms
+and a reversal potential of 0 mV. */
+    thresh = 10 // not important when connection is from NetStim
+    delay = 0.0
+    Eweight = 0.00007  // 0.007 // 0.0007  // connection strength in S   0.0000000007 = 0.7nS
+    Exciteconn = new NetCon(Espikesource, Esynapse, thresh, delay, Eweight)
+ec_list.append(Exciteconn)
+}
+

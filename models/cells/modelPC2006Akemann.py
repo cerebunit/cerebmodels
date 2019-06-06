@@ -31,7 +31,7 @@ class PurkinjeCell( sciunit.Model,
         self.regions = {"soma": 0.0}
         # -----------attributed inheritance from sciunit.Model--------------
         self.name = "Akemann and Knöpfel 2006 model of PurkinjeCell"
-        self.description = "Akemann & Knöpfel 2063 model of PurkinjeCell (PC) and published in 10.1523/JNEUROSCI.5204-05.2006 This is a single compartment model. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 80769."
+        self.description = "Akemann & Knöpfel 006 model of PurkinjeCell (PC) and published in 10.1523/JNEUROSCI.5204-05.2006 This is a single compartment model. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 80769."
         #
         ### =================== Instantiate cell template ====================
         sm.lock_and_load_model_libraries(modelscale=self.modelscale,

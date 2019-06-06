@@ -1,0 +1,245 @@
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	Plot of VSFP responses in Fig. 9 A, 9B1, 9B2, 9C1, 9C2 
+	of Akemann et al. Biophys. J. (2009) 96:3959-3976
+
+	Laboratory for Neuronal Circuit Dynamics
+	RIKEN Brain Science Institute, Wako City, Japan
+	http://www.neurodynamics.brain.riken.jp
+
+	Date of Implementation: July 2008
+	Contact: akemann@brain.riken.jp
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+load_file("morphology_mechanisms.hoc")
+load_file("nrngui.hoc")
+
+objref fig9A, fig9B1, fig9B2, fig9C1, fig9C2
+objref vbox
+
+begintemplate protocol
+public stimStart, stimEnd, end, ampBase, ampStim, traceDT
+stimStart = 0
+stimEnd = 0
+end = 0
+ampBase = 0
+ampStim = 0
+traceDT = 0
+endtemplate protocol
+
+
+//*********************************************************************************
+proc run_model() { localobj time, voltage, VP23activation, VP23fluorescence, VP31activation, VP31fluorescence, electrode 
+// $o1 protocol
+
+if( $o1.stimStart >= $o1.stimEnd || $o1.stimEnd >= $o1.end ) {
+	print "Input error!"
+	return }
+ 
+time = new Vector()
+voltage = new Vector()
+VP23activation = new Vector()
+VP23fluorescence = new Vector()
+VP31activation = new Vector()
+VP31fluorescence = new Vector()
+
+soma electrode = new IClamp(0.5)
+
+soma nc_VSFP23M3 = 0
+soma nc_VSFP31M3 = 0
+
+simulate( $o1, time, voltage, electrode )
+
+soma nc_VSFP23M3 = 500e8	// 500 units per um2
+soma nc_VSFP31M3 = 0
+
+simulateVSFP23( $o1, VP23activation, VP23fluorescence, electrode )
+if( stoprun == 1 ) return
+
+soma nc_VSFP23M3 = 0
+soma nc_VSFP31M3 = 500e8
+
+simulateVSFP31( $o1, VP31activation, VP31fluorescence, electrode )
+if( stoprun == 1 ) return
+
+vbox=new VBox()
+vbox.intercept(1)
+
+  fig9A = new Graph()
+  fig9A.size( 0, 10, -1, 1 )
+  voltage.line( fig9A, time )
+  fig9A.label("voltage")
+  fig9A.exec_menu("View = plot")
+  fig9A.label(0.15, 0.5, "fig9A")
+
+  fig9B1 = new Graph()
+  fig9B1.size( 0, 10, -1, 1 )
+  VP23activation.line( fig9B1, time )
+  fig9B1.label("VSFP23 activation")
+  fig9B1.exec_menu("View = plot")
+  fig9B1.label(0.15, 0.5, "fig9B1")
+
+  fig9B2 = new Graph()
+  fig9B2.size( 0, 10, -1, 1 )
+  VP23fluorescence.line( fig9B2, time )
+  fig9B2.label("VSFP23 fluorescence")
+  fig9B2.exec_menu("View = plot")
+  fig9B2.label(0.15, 0.5, "fig9B2")
+
+  fig9C1 = new Graph()
+  fig9C1.size( 0, 10, -1, 1 )
+  VP31activation.line( fig9C1, time )
+  fig9C1.label("VSFP31 activation")
+  fig9C1.exec_menu("View = plot")
+  fig9C1.label(0.15, 0.5, "fig9C1")
+
+  fig9C2 = new Graph()
+  fig9C2.size( 0, 10, -1, 1 )
+  VP31fluorescence.line( fig9C2, time )
+  fig9C2.label("VSFP31 fluorescence")
+  fig9C2.exec_menu("View = plot")
+  fig9C2.label(0.15, 0.5, "fig9C2")
+
+vbox.intercept(0)
+vbox.map("figure 9 left panel simulations Akemann et al. 2009",120,180,600,500)
+
+}  
+	
+//**********************************************************************
+proc simulate() { 
+//	$o1 protocol
+//	$o2 time vector
+//	$o3 voltage vector
+//	$o4 electrode
+
+if($o1.traceDT > dt) {$o1.traceDT = int($o1.traceDT/dt) * dt} else {$o1.traceDT = dt}
+
+$o2.resize(int($o1.end/$o1.traceDT)+1)
+$o3.resize(int($o1.end/$o1.traceDT)+1)
+
+$o2.record( &t, $o1.traceDT )
+$o3.record( &soma.v(0.5), $o1.traceDT )
+
+$o4.del = 0
+$o4.dur = $o1.end
+$o4.amp = $o1.ampBase
+
+tstop = $o1.stimStart
+run()
+if( stoprun ==1 ) return
+
+$o4.amp = $o1.ampStim
+continuerun($o1.stimEnd)
+if( stoprun == 1 ) return
+
+$o4.amp = $o1.ampBase
+continuerun($o1.end)
+if ( stoprun == 1) return
+
+}
+
+//**********************************************************************
+proc simulateVSFP23() { 
+//	$o1 protocol
+//	$o2 VPactivation vector
+//	$o3 VPfluorescence vector
+//	$o4 electrode
+
+
+if($o1.traceDT > dt) {$o1.traceDT = int($o1.traceDT/dt) * dt} else {$o1.traceDT = dt}
+
+$o2.resize(int($o1.end/$o1.traceDT)+1)
+$o3.resize(int($o1.end/$o1.traceDT)+1)
+
+$o2.record( &soma.fluoActivation_VSFP23M3(0.5), $o1.traceDT )
+$o3.record( &soma.fluoSignal_VSFP23M3(0.5), $o1.traceDT )
+
+$o4.del = 0
+$o4.dur = $o1.end
+$o4.amp = $o1.ampBase
+
+tstop = $o1.stimStart
+run()
+if( stoprun ==1 ) return
+
+$o4.amp = $o1.ampStim
+continuerun($o1.stimEnd)
+if( stoprun == 1 ) return
+
+$o4.amp = $o1.ampBase
+continuerun($o1.end)
+if ( stoprun == 1) return
+
+}
+
+// ***************************************************************************
+proc simulateVSFP31() { 
+//	$o1 protocol
+//	$o2 VPactivation vector
+//	$o3 VPfluorescence vector
+//	$o4 electrode
+
+
+if($o1.traceDT > dt) {$o1.traceDT = int($o1.traceDT/dt) * dt} else {$o1.traceDT = dt}
+
+$o2.resize(int($o1.end/$o1.traceDT)+1)
+$o3.resize(int($o1.end/$o1.traceDT)+1)
+
+$o2.record( &soma.fluoActivation_VSFP31M3(0.5), $o1.traceDT )
+$o3.record( &soma.fluoSignal_VSFP31M3(0.5), $o1.traceDT )
+
+$o4.del = 0
+$o4.dur = $o1.end
+$o4.amp = $o1.ampBase
+
+tstop = $o1.stimStart
+run()
+if( stoprun ==1 ) return
+
+$o4.amp = $o1.ampStim
+continuerun($o1.stimEnd)
+if( stoprun == 1 ) return
+
+$o4.amp = $o1.ampBase
+continuerun($o1.end)
+if ( stoprun == 1) return
+
+}
+
+
+//************* Main *******************************************
+
+objref prot
+prot = new protocol()
+
+prot.stimStart = 200
+prot.stimEnd = 400
+prot.end = 700
+prot.ampBase = -0.020		// (nA)
+prot.ampStim = 0		// (nA)
+
+dt = 0.005
+v_init = -69.7
+
+nrnsecmenu(0.5, 1)
+//if( ismembrane("VSFP23M3") ) nrnglobalmechmenu("VSFP23M3")
+//if( ismembrane("VSFP31M3") ) nrnglobalmechmenu("VSFP31M3")
+
+xpanel("Figure 9 left panel")
+
+xvalue("Start stimulus (ms)", "prot.stimStart")
+xvalue("End of Simulation (ms)", "prot.stimEnd")
+xvalue("End of Protocol (ms)", "prot.end")
+xlabel("")
+xvalue("Baseline current (nA)", "prot.ampBase")
+xvalue("Stimulus current (nA)", "prot.ampStim")
+
+xlabel("")
+xvalue("dt", "dt")
+xvalue("t", "t")
+xbutton("Stop", "stoprun = 1")
+xlabel("")
+
+xbutton("Start", "run_model( prot )")
+xlabel("")
+xpanel()
+

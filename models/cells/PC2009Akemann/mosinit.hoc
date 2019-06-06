@@ -1,0 +1,2 @@
+load_file("nrngui.hoc")
+load_file("Fig_9_left_panel.hoc")

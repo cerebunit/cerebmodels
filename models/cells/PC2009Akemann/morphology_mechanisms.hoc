@@ -1,0 +1,69 @@
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	Loader for a 1-compartment Purkinje cell model
+	including recombinant proteins VSFP2.3 and VSFP3.1
+
+	Laboratory for Neuronal Circuit Dynamics
+	RIKEN Brain Science Institute, Wako City, Japan
+	http://www.neurodynamics.brain.riken.jp
+
+	Date of Implementation: May 2008
+	Contact: akemann@brain.riken.jp
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+celsius = 37  // (degC)
+
+create soma
+access soma
+
+soma.nseg = 1
+soma.L = 20		// (um)       
+soma.diam = 20	// (um)
+soma.cm = 1       // (uF/cm2)
+soma.Ra = 150	// (ohm cm) 
+
+soma {
+insert Nav11
+insert Kv1
+insert Kv3
+insert Kv4
+insert KCa1
+insert Caint
+insert Cav2
+insert HCN
+insert leak
+insert VSFP23M3
+insert VSFP31M3
+}
+
+gateCurrent_Nav11 = 0
+gateCurrent_Kv1 = 0
+gateCurrent_Kv3 = 0
+gateCurrent_Kv4 = 0
+gateCurrent_KCa1 = 0
+gateCurrent_Cav2 = 0
+gateCurrent_HCN = 0
+
+baseline_VSFP23M3 = 0
+baseline_VSFP31M3 = 0
+
+soma.ena = 60	// (mV)
+soma.ek = -88	// (mV)
+soma.eh_HCN = -30
+soma.e_leak = -61
+soma.cao = 2   // (mM)
+     
+soma.gbar_Nav11 = 0.038
+soma.gbar_Kv1 = 0.011
+soma.gbar_Kv3 = 0.02
+soma.gbar_Kv4 = 0.0039
+soma.gbar_KCa1 = 2 * 0.007
+soma.pbar_Cav2 = 2 * 0.00003
+soma.gbar_HCN = 2 * 0.0001
+soma.gbar_leak = 0.00012
+
+soma.nc_VSFP23M3 = 0	 // (1/cm2)
+soma.nc_VSFP31M3 = 0
+
+
+

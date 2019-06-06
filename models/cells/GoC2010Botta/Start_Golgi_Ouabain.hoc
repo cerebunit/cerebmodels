@@ -1,0 +1,198 @@
+/*******Cerebellar Golgi Cell Model with Na+/K+ ATPase**********
+
+Developers:    Fabio M Simoes de Souza & E De Schutter
+
+Work Progress: July 2009 - Dec 2009
+
+Developed At:  Okinawa Institute of Science and Technology
+               Computational Neuroscience Unit
+               Okinawa - Japan
+	       
+Model Published in: 
+             Botta P, Simoes de Souza F, Sangrey T, De Schutter E, Valenzuela F (2010)
+             Alcohol excites cerebellar Golgi cells by inhibiting the Na+/K+ ATPase.
+             Neuropsychopharmacology 35: 1984-1996.
+
+This script is a modification from a previous published GoC model (Solinas et al., 2007).
+A Na+/K+ ATPase and ionic concentration pools for Na+, K+, Ca2+ were incorporated into the soma of the model. 
+The equations that simulated the Na+/K+ ATPase are described in Table S10 of Takeuchi et al. (2006)
+
+References:
+Sergio M. Solinas, Lia Forti, Elisabetta Cesana, Jonathan Mapelli, Erik De Schutter and Egidio D`Angelo (2008) Computational reconstruction of pacemaking and intrinsic electroresponsiveness in cerebellar golgi cells. Frontiers in Cellular Neuroscience 1:1-12.
+
+Takeuchi A, Tatsumi S, Sarai N, Terashima K, Matsuoka S, Noma A (2006) Ionic mechanisms of cardiac cell swelling induced by blocking Na+/K+ pump as revealed by experiments and simulation. J. G. Physiol. 128: 495-507.
+
+********************************************/
+
+xopen("$(NEURONHOME)/lib/hoc/noload.hoc") 
+nrnmainmenu()
+load_file("nrngui.hoc")
+//nrncontrolmenu()
+
+// Load the Golgi cell template
+xopen("Golgi_template.hoc")
+objref Golgi[1]
+Golgi[0] = new Goc()
+
+v_init = -60
+dt = 0.025
+
+
+access Golgi[0].soma
+
+cvode.active(0)
+
+// Set output
+load_file("Save_data.hoc")
+// Initialize the counter
+simcnt = cplus()
+
+// Plot the Vm of the major compartments
+//load_file("sessions/Vm.ses")
+
+// Initialize all mechanisms
+tstop=1
+run()
+init()
+
+// Create new data directory
+strdef dirname, command
+//sprint(dirname,"SimData_%d",simcnt)
+sprint(dirname,"SimData",simcnt)
+sprint(command,"mkdir -p %s",dirname)
+system(command)
+// Store the Scripts in the data directory
+sprint(command,"mkdir -p %s/Scripts",dirname)
+system(command)
+sprint(command,"cp -r *.hoc *.mod sessions %s/Scripts/",dirname)
+system(command)
+
+// Synaptic activation
+//xopen("Synapses.hoc")
+
+// Model surface
+cell_surf_um = 0
+access Golgi[0].soma
+soma_surf = area(0.5)*1e-8 // cm2
+cell_surf_cm = cell_surf_cm + area(0.5)*1e-8*nseg
+for i = 0,2 {
+access Golgi[0].dend[i]
+cell_surf_cm = cell_surf_cm + area(0.5)*1e-8*nseg}
+dend_surf = cell_surf_cm - soma_surf
+access Golgi[0].axon
+axon_surf = area(0.5)*1e-8
+cell_surf_cm = cell_surf_cm + area(0.5)*1e-8*nseg
+conv_mA_pA = 1e9
+
+// Load the Golgi control panel
+//xopen("Golgi_ComPanel.hoc")
+
+// Load scripts for electroresponsiveness study
+load_file("utils.hoc")
+access Golgi[0].soma
+objref time_tr
+time_tr = new Vector()
+time_tr.record(&t)
+print "Cell membrane area in um2 = ",cell_surf_cm*1e8
+
+// Inject current with gaussian noise
+access Golgi[0].soma
+objref gnoise
+gnoisestate = 0
+gnoise = new IClamp(0.5)
+gnoise.del = 1e9
+gnoise.dur = 100000
+gnoise.amp = 0
+objref r
+gauss_noise_amp = 0.032 // pA
+r = new Random()
+r.normal(0,gauss_noise_amp)
+r.play(&gnoise.amp)
+
+// Here we must choose where to place the VC and CC
+// electrodes: soma or micropipette?
+// use soma for gaussian noise injections!!!
+// use the micropipette for all other simulations
+// in order to reproduce the experimental setup
+access Golgi[0].elec
+// access Golgi[0].soma
+
+// Current & Voltage Clamp elements
+objref vclampy,cclampy[3]
+vclampy = new VClamp(0.5)
+cclampy[0] = new IClamp(0.5)
+cclampy[1] = new IClamp(0.5)
+objref store
+store = new Vector()
+
+tstop = 500
+
+
+//create an electrode in the soma
+objectvar stim
+
+ stim= new IClamp(0.5)
+ stim.del=0
+ stim.dur=100
+ stim.amp=0.0
+
+//Opening Section
+xopen("Golgi_Pump_Ouabain.ses")
+
+
+celsius=23.0
+print "celcius(degC): ", celsius
+
+inakmax_nakpump=5
+print "inakmax_nakpump: ", inakmax_nakpump
+
+
+//ouabain=0.0 uM
+ouabain_nakpump=0
+print "Ouabain(mM): ", ouabain_nakpump
+
+v_init = -60
+//v_leak=-56.5
+v_leak=-44.5
+
+Golgi[0].soma.el_Golgi_lkg=v_leak
+Golgi[0].dend[0].el_Golgi_lkg=v_leak
+Golgi[0].dend[1].el_Golgi_lkg=v_leak
+Golgi[0].dend[2].el_Golgi_lkg=v_leak
+Golgi[0].axon.el_Golgi_lkg=v_leak
+print "el_Golgi_lkg: ", Golgi[0].soma.el_Golgi_lkg
+
+
+Golgi[0].soma.ko(0.5)=5
+Golgi[0].soma.ki(0.5)=140
+Golgi[0].soma.nao(0.5)=145
+Golgi[0].soma.nai(0.5)=5
+
+//TTX 
+// Golgi[0].soma.gnabar_Golgi_Na(0.5)=0
+// Golgi[0].soma.gnabar_Golgi_NaR(0.5)=0
+// Golgi[0].soma.gbar_Golgi_NaP=0
+
+xpanel("Alcohol increases Golgi cell firing")
+  xbutton("Figure 7g from Botta et al. 2010","recreate()")
+xpanel()
+
+Graph[0].family(1) // allows color switching control
+proc recreate() {
+  Graph[0].color(1) // black
+  ouabain_nakpump=0.0000
+  print "ouabain(mM): ", ouabain_nakpump
+
+  init()
+  run()
+  continuerun(500)
+
+ Graph[0].color(9) // gray
+
+//ouabain=0.1 uM	
+  ouabain_nakpump=0.0001
+  print "ouabain(mM): ", ouabain_nakpump
+  init()
+  run()
+  continuerun(500)
+}

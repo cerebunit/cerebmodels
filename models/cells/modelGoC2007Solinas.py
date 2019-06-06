@@ -1,4 +1,4 @@
-# ~/models/cells/modelGoC2008Solinas.py
+# ~/models/cells/modelGoC2007Solinas.py
 import os
 pwd = os.getcwd() # record root directory path ~/cerebmodels
 path_to_files = pwd + os.sep + "models" + os.sep + "cells" + os.sep + \
@@ -31,7 +31,7 @@ class GolgiCell( sciunit.Model,
         self.regions = {"soma": 0.0, "axon": 0.0,}# "dend": 0.0}
         # -----------attributed inheritance from sciunit.Model--------------
         self.name = "Solinas et al. 2007 model of GolgiCell"
-        self.description = "Solinas et al. 2007 model of GolgiCell (GoC) and published in 10.3389/neuro.03.004.2007 This is a multi-ompartment (131) model. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 112685."
+        self.description = "Solinas et al. 2007 model of GolgiCell (GoC) and published in 10.3389/neuro.03.004.2007 This is a multi-compartment (131) model. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 112685."
         #
         ### =================== Instantiate cell template ====================
         sm.lock_and_load_model_libraries(modelscale=self.modelscale,

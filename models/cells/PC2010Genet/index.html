@@ -1,0 +1,368 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+	<TITLE></TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice.org 3.2  (Linux)">
+	<META NAME="AUTHOR" CONTENT="sgenet">
+	<META NAME="CREATED" CONTENT="20130114;16380000">
+	<META NAME="CHANGEDBY" CONTENT="sgenet">
+	<META NAME="CHANGED" CONTENT="20130120;18280000">
+	<META NAME="AppVersion" CONTENT="14.0000">
+	<META NAME="Company" CONTENT="isir">
+	<META NAME="DocSecurity" CONTENT="0">
+	<META NAME="HyperlinksChanged" CONTENT="false">
+	<META NAME="LinksUpToDate" CONTENT="false">
+	<META NAME="ScaleCrop" CONTENT="false">
+	<META NAME="ShareDoc" CONTENT="false">
+	<STYLE TYPE="text/css">
+	<!--
+		@page { size: 8.27in 11.69in; margin: 0.98in }
+		P { margin-bottom: 0.08in; direction: ltr; color: #000000; widows: 2; orphans: 2 }
+		A:link { color: #0000ff; so-language: zxx }
+	-->
+	</STYLE>
+</HEAD>
+<BODY LANG="fr-FR" TEXT="#000000" LINK="#0000ff" DIR="LTR">
+<P ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%"><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">This
+file documents the content of the </SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>genet_Purkinje.zip</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+package:</SPAN></FONT></FONT></P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%">
+<BR>
+</P>
+<P ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%"><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">Simulations
+of the Purkinje cell (PC) model of the cerebellum investigated in
+</SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>Genet
+S., Sabarly L., Guigon E., Berry H. and B. Delord (2010) Dendritic
+Signals Command Firing Dynamics in a Mathematical Model of Cerebellar
+Purkinje Cells    Biophys. J. (99) 427-436.</I></SPAN></FONT></FONT></P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%">
+<BR>
+</P>
+<P ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%"><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">For
+more information: </SPAN></FONT></FONT>
+</P>
+<P ALIGN=JUSTIFY STYLE="text-indent: 0.24in; margin-bottom: 0in; line-height: 100%">
+<FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">see
+<A HREF="http://www.isir.upmc.fr/index.php?op=view_profil&amp;lang=fr&amp;id=138">http://www.isir.upmc.fr/index.php?op=view_profil&amp;lang=fr&amp;id=138</A></SPAN></FONT></FONT></P>
+<P ALIGN=JUSTIFY STYLE="text-indent: 0.24in; margin-bottom: 0in; line-height: 100%">
+<FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">or
+contact <A HREF="mailto:stephane.genet@snv.jussieu.fr">stephane.genet@snv.jussieu.fr</A></SPAN></FONT></FONT></P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%">
+<BR>
+</P>
+<P ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%"><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">The
+text assumes that readers may be unfamiliar with Neuron and therefore
+provides information to quickly adjust parameter values in order to
+illustrate the dendritic control of somatic firing dynamics in PC. By
+default, synaptic parameters are set to illustrate the triggering of
+somatic firing by dendritic plateau potentials.</SPAN></FONT></FONT></P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%">
+<BR>
+</P>
+<P ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%"><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><U><B>Model
+overview</B></U></SPAN></FONT></FONT></P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%">
+<BR>
+</P>
+<P ALIGN=JUSTIFY STYLE="margin-left: 0.2in; margin-bottom: 0in; line-height: 100%">
+<FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><B>1.</B></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+The model uses the geometry of a reconstructed PC (</SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>Shelton
+D.P. (1985) Membrane resistivity estimated for the Purkinje neuron by
+means of a passive computer model. Neuroscience. 14:111–131</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">).
+</SPAN></FONT></FONT>
+</P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-left: 0.2in; margin-bottom: 0in; line-height: 100%">
+<BR>
+</P>
+<P ALIGN=JUSTIFY STYLE="margin-left: 0.2in; margin-bottom: 0in; line-height: 100%">
+<FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><B>2.</B></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+It uses a set of four non-linear voltage activated ion currents (see
+</SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>Genet,
+S., and B. Delord. 2002. A biophysical model of nonlinear dynamics
+underlying plateau potentials and calcium spikes in Purkinje cell
+dendrites. J. Neurophysiol. 88:2430–2444</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">):</SPAN></FONT></FONT></P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-left: 0.2in; margin-bottom: 0in; line-height: 100%">
+<BR>
+</P>
+<P ALIGN=JUSTIFY STYLE="margin-left: 0.2in; margin-bottom: 0in; line-height: 100%">
+   <FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">-
+</SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>I</I></SPAN></FONT></FONT><SUB><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>Kdr</I></SPAN></FONT></FONT></SUB><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">:
+a classical, non-inactivating delayed rectifier K current</SPAN></FONT></FONT></P>
+<P ALIGN=JUSTIFY STYLE="margin-left: 0.2in; margin-bottom: 0in; line-height: 100%">
+   <FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">-
+</SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>I</I></SPAN></FONT></FONT><SUB><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>Ksub</I></SPAN></FONT></FONT></SUB><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">:
+a sub-threshold (with respect to Ca spikes) K current with steep
+voltage activation</SPAN></FONT></FONT></P>
+<P ALIGN=JUSTIFY STYLE="margin-left: 0.2in; margin-bottom: 0in; line-height: 100%">
+     <FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">These
+two K currents are present in both dendrites and soma of the model.</SPAN></FONT></FONT></P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-left: 0.2in; margin-bottom: 0in; line-height: 100%">
+<BR>
+</P>
+<P ALIGN=JUSTIFY STYLE="margin-left: 0.2in; margin-bottom: 0in; line-height: 100%">
+   <FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">-
+</SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>I</I></SPAN></FONT></FONT><SUB><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>CaP</I></SPAN></FONT></FONT></SUB><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">:
+a high-threshold, non-inactivating Ca current, only present in
+dendrites.</SPAN></FONT></FONT></P>
+<P ALIGN=JUSTIFY STYLE="margin-left: 0.2in; margin-bottom: 0in; line-height: 100%">
+   <FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">-
+</SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>I</I></SPAN></FONT></FONT><SUB><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>Nar</I></SPAN></FONT></FONT></SUB><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">:
+the voltage-dependent sodium current of Purkinje cell, with its
+resurgent component, only present in the soma.</SPAN></FONT></FONT></P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-left: 0.2in; margin-bottom: 0in; line-height: 100%">
+<BR>
+</P>
+<P ALIGN=JUSTIFY STYLE="margin-left: 0.2in; margin-bottom: 0in; line-height: 100%">
+<FONT COLOR="#000000"><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><B>3.</B></SPAN></FONT></FONT></FONT><FONT COLOR="#000000"><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+Internal free Ca</SPAN></FONT></FONT></FONT><FONT COLOR="#000000"><SUP><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">2+</SPAN></FONT></FONT></SUP></FONT><FONT COLOR="#000000"><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+ions dynamics is described to account for </SPAN></FONT></FONT></FONT><FONT COLOR="#000000"><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>E</I></SPAN></FONT></FONT></FONT><FONT COLOR="#000000"><SUB><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>Ca</I></SPAN></FONT></FONT></SUB></FONT><FONT COLOR="#000000"><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+changes upon activation of </SPAN></FONT></FONT></FONT><FONT COLOR="#000000"><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>I</I></SPAN></FONT></FONT></FONT><FONT COLOR="#000000"><SUB><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>Ca</I></SPAN></FONT></FONT></SUB></FONT><FONT COLOR="#000000"><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+during dendritic plateau potentials and spikes.</SPAN></FONT></FONT></FONT></P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-left: 0.2in; margin-bottom: 0in; line-height: 100%">
+<BR>
+</P>
+<P ALIGN=JUSTIFY STYLE="margin-left: 0.2in; margin-bottom: 0in; line-height: 100%">
+<FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><B>4.</B></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+Synaptic currents:</SPAN></FONT></FONT></P>
+<P ALIGN=JUSTIFY STYLE="margin-left: 0.2in; margin-bottom: 0in; line-height: 100%">
+<FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">The
+model splits both excitatory currents of parallel fibers (PF) and
+inhibitory currents of stellate cells (SC) synapses into </SPAN></FONT></FONT>
+</P>
+<P ALIGN=JUSTIFY STYLE="margin-left: 0.2in; margin-bottom: 0in; line-height: 100%">
+     <FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">-
+a tonic component (</SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>pf.mod</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+and </SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>stellat.mod</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">)
+uniformly distributed over the dendritic tree,</SPAN></FONT></FONT></P>
+<P ALIGN=JUSTIFY STYLE="margin-left: 0.2in; margin-bottom: 0in; line-height: 100%">
+     <FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">-
+a phasic component: (</SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>pf_phasic.mod</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+and </SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>stellat_phasic.mod</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">)
+distributed over the membrane of spiny branch #68.</SPAN></FONT></FONT></P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-left: 0.2in; margin-bottom: 0in; line-height: 100%">
+<BR>
+</P>
+<P ALIGN=JUSTIFY STYLE="margin-left: 0.2in; margin-bottom: 0in; line-height: 100%">
+<FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">EPSC
+of the climbing fiber (</SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>cf.mod</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">)
+is distributed only over smooth segments of the dendrites.</SPAN></FONT></FONT></P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-left: 0.2in; margin-bottom: 0in; line-height: 100%">
+<BR>
+</P>
+<P ALIGN=JUSTIFY STYLE="margin-left: 0.2in; margin-bottom: 0in; line-height: 100%">
+<FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">(Note:
+Fig. SM5-1 in the paper can be reproduced by injecting a DC current
+with an electrode inserted in a proximal dendrite)</SPAN></FONT></FONT></P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%">
+<BR>
+</P>
+<P ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%"><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><U><B>Running
+the model</B></U></SPAN></FONT></FONT></P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%">
+<BR>
+</P>
+<P ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%"><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">(Instructions
+for MSWIN users; for other OS, please check, </SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>e.g.</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">,
+http://senselab.med.yale.edu/modeldb/ShowModel.asp?model=116096 or
+the Neuron software documentation).</SPAN></FONT></FONT></P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%">
+<BR>
+</P>
+<UL>
+	<LI><P ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%"><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">After
+	downloading the package, extract the archive to a (new) sub-folder
+	of the Neuron folder. Check if the nrnmech.dll file is in the new
+	folder. Otherwise, Run mknrndll.exe, select the new folder and Click
+	on the 'make nrnmech.dll button'. The nrnmech.dll file should now
+	appear in the sub-folder.</SPAN></FONT></FONT></P>
+</UL>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%">
+<BR>
+</P>
+<UL>
+	<LI><P ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%"><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">Open
+	the Neuron GUI, then load first the </SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>nrnmech.dll
+	file</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+	and next the </SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>full_CP.hoc</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+	file.</SPAN></FONT></FONT></P>
+</UL>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%">
+<BR>
+</P>
+<P ALIGN=JUSTIFY STYLE="text-indent: 0.24in; margin-bottom: 0in; line-height: 100%">
+<FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><B>Preliminary
+settings</B></SPAN></FONT></FONT></P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%">
+<BR>
+</P>
+<UL>
+	<LI><P ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%"><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">Verify
+	through the pull-menu </SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>Tools→DistributedMechanisms→globalRa</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+	that the cytoplasmic resistivity (</SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>R</I></SPAN></FONT></FONT><SUB><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>a</I></SPAN></FONT></FONT></SUB><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">)
+	is set to 250 Ohm-cm (if not, click on the corresponding left button
+	after entering this numerical value)</SPAN></FONT></FONT></P>
+	<LI><P ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%"><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">Access
+	the soma compartment through </SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>Tools→Distributed
+	Mechanisms→Viewers→Shape Name</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+	and select the soma: check that </SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>ena</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+	is set to +60mV; otherwise, do as with </SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>R</I></SPAN></FONT></FONT><SUB><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>a</I></SPAN></FONT></FONT></SUB><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">.</SPAN></FONT></FONT></P>
+	<LI><P ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%"><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">Visualizing
+	results: use the </SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>Graph→Voltage
+	axis</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+	sub-menu of the GUI to open a graphic window: right-click on the
+	mouse to make appear a menu allowing the selection of plotted
+	variables. </SPAN></FONT></FONT>
+	</P>
+</UL>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%">
+<BR>
+</P>
+<P ALIGN=JUSTIFY STYLE="text-indent: 0.24in; margin-bottom: 0in; line-height: 100%">
+<FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><B>Numerical
+settings</B></SPAN></FONT></FONT></P>
+<P ALIGN=JUSTIFY STYLE="text-indent: 0.24in; margin-bottom: 0in; line-height: 100%">
+<FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">In
+the </SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>Tools
+menu</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">:</SPAN></FONT></FONT></P>
+<UL>
+	<LI><P ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%"><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">select
+	</SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>Variable
+	Step Control</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+	and click on the </SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>Use
+	variable dt</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+	(in order for Neuron to use a numerical method adapted to the widely
+	different time constants of the variables in the model)</SPAN></FONT></FONT></P>
+	<LI><P ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%"><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">select
+	</SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>RunControl</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+	and enter the following parameter values:</SPAN></FONT></FONT></P>
+</UL>
+<P ALIGN=JUSTIFY STYLE="margin-left: 0.32in; text-indent: -0.32in; margin-bottom: 0in; line-height: 100%">
+                <FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">-
+</SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>Initial
+(mV)</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">:
+-62.5 (initial uniform membrane potential close to the resting state)</SPAN></FONT></FONT></P>
+<P ALIGN=JUSTIFY STYLE="text-indent: 0.32in; margin-bottom: 0in; line-height: 100%">
+         <FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">-
+</SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>Tstop
+(ms)</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">:
+750 (total duration of the simulation)</SPAN></FONT></FONT></P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%">
+<BR>
+</P>
+<P ALIGN=JUSTIFY STYLE="text-indent: 0.24in; margin-bottom: 0in; line-height: 100%">
+<FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><B>Synaptic
+settings</B></SPAN></FONT></FONT></P>
+<UL>
+	<LI><P ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%"><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">display
+	the list of uniform mechanisms using 
+	</SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>Tools→DistributedMechanisms→Managers→Homogeneous
+	spec</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">.
+	In the newly appearing </SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>ShowMechanism</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+	dialog box, click the </SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>MechType
+	button</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+	and select </SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>stellat</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">:
+	     the conductance value should read 2e-06 (Siemens/cm2) with a
+	reversal potential of -95mV (</SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>Hint:
+	parameters of every other added mechanism can be accessed and
+	changed in the same way</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">).
+	Clicking the </SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>Run
+	Button</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+	in the </SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>RunControl
+	box</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+	at this step should result in a ~constant membrane potential
+	trajectory whatever selected compartment(s) in the model PC.</SPAN></FONT></FONT></P>
+</UL>
+<P ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%"><A NAME="_GoBack"></A>
+ 
+</P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%">
+<BR>
+</P>
+<P ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%">  
+<FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">-</SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><B>Triggering
+dendritic plateaus:</B></SPAN></FONT></FONT></P>
+<P ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%"><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">After
+accessing the </SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>ShowMecanism</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+sub-menu, select </SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>pf_phasic</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+and progressively increase the conductance value. At </SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>g</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">=1e-2
+Siemens/cm2, a volley of 10 PF EPSC should trigger a dendritic
+plateau and the firing of Na spikes in the soma as depicted in Fig1.A
+below. </SPAN></FONT></FONT>
+</P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%">
+<BR>
+</P>
+<P ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%">  
+<FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><B>-Triggering
+dendritic valleys:</B></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+begin by increasing </SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>Tstop</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+to 1500ms in the </SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>RunControl</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">
+box as this simulation attempts to illustrate two dynamical features
+of the model: (</SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>i</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">)
+how a depolarizing tonic input switches dendrites to their plateau
+state, thereby triggering a persistent firing of Na spikes in the
+model’s soma and (</SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US"><I>ii</I></SPAN></FONT></FONT><FONT FACE="Times New Roman, serif"><FONT SIZE=3><SPAN LANG="en-US">)
+how a volley of SC EPSC can interrupt, beyond its duration, the
+somatic firing owing to the triggering of a dendritic valley.
+Respectively set the tonic SC conductance to zero and the tonic PF
+conductance to 1e-6 Siemens/cm2. Set the phasic SC conductance to
+1e-2 Siemens/cm2 with an activation delay of 750ms. As shown in
+Fig.1B below, the tonic current should switch dendrites to their
+plateau state and hence trigger sustained firing of Na spikes in the
+soma. The SC phasic input should trigger a several hundreds of ms
+duration dendritic valley during which the somatic firing is
+interrupted. </SPAN></FONT></FONT>
+</P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0in; line-height: 100%">
+<BR>
+</P>
+<P ALIGN=JUSTIFY STYLE="margin-bottom: 0.14in; line-height: 100%"><FONT FACE="Times New Roman, serif"><SPAN LANG="en-US"><B>Fig.
+1. Dendritic control of somatic firing dynamics in Purkinje cells.</B></SPAN></FONT></P>
+<P ALIGN=JUSTIFY STYLE="margin-bottom: 0.14in; line-height: 100%"> <FONT FACE="Times New Roman, serif"><SPAN LANG="en-US">		</SPAN></FONT><IMG SRC="./screenshot.png" ALIGN=LEFT WIDTH=398 HEIGHT=625 BORDER=0></P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0.14in; line-height: 100%">
+<BR><BR>
+</P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0.14in; line-height: 100%">
+<BR><BR>
+</P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0.14in; line-height: 100%">
+<BR><BR>
+</P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0.14in; line-height: 100%">
+<BR><BR>
+</P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0.14in; line-height: 100%">
+<BR><BR>
+</P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0.14in; line-height: 100%">
+<BR><BR>
+</P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0.14in; line-height: 100%">
+<BR><BR>
+</P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0.14in; line-height: 100%">
+<BR><BR>
+</P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0.14in; line-height: 100%">
+<BR><BR>
+</P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0.14in; line-height: 100%">
+<BR><BR>
+</P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0.14in; line-height: 100%">
+<BR><BR>
+</P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0.14in; line-height: 100%">
+<BR><BR>
+</P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0.14in; line-height: 100%">
+<BR><BR>
+</P>
+<P LANG="en-US" ALIGN=JUSTIFY STYLE="margin-bottom: 0.14in; line-height: 100%">
+<BR><BR>
+</P>
+<P ALIGN=JUSTIFY STYLE="margin-bottom: 0.14in; line-height: 100%"><BR><BR>
+</P>
+</BODY>
+</HTML>

@@ -1,9 +1,9 @@
 #Template of the Purkinje cell model, Forrest 2015
 #This are two templates:
 #Template 1: 1088 compartment (full)
-#Templating by Lungsi 2019 based on ~/PC2015Genet/full_morph.hoc
+#Templating by Lungsi 2019 based on ~/PC2015aForrest/full_morph.hoc
 #Template 2: 2 compartments (reduced)
-#Templating by Lungsi 2019 based on ~/PC2015Genet/2_compartment.hoc
+#Templating by Lungsi 2019 based on ~/PC2015bForrest/2_compartment.hoc
 #PC2015bForrest -> Template 2
 from neuron import h
 #from pdb import set_trace as breakpoint

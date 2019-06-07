@@ -1,0 +1,399 @@
+// CN model used in Saak V Ovsepian, Volker Steuber, Marie Le 
+// Berre, Liam O'Hara, Valerie B O'Leary, and J. Oliver Dolly 
+// (2013). A Defined Heteromeric KV1 Channel Stabilizes the 
+// Intrinsic Pacemaking and Regulates the Efferent Code of Deep 
+// Cerebellar Nuclear Neurons to Thalamic Targets. Journal of 
+// Physiology (epub ahead of print). 
+//
+// written by Johannes Luthman, modified by Volker Steuber
+//
+// main simulation script that replicates Figure 9A,B
+// in Ovsepian et al. (2013)
+
+
+strdef strFilePrefix
+
+Kdrblock = 1 // will be overwritten
+strFilePrefix = "Kdr60"
+
+load_file("nrngui.hoc")
+load_file("model1_params.hoc")
+load_file("DCN_morph.hoc")
+load_file("DCN_mechs2.hoc")
+
+objref oRndInh, oRndExc,CurrentClamp,ra,VoltageClamp,Vol1,Edata,Edata1
+objref gammaStimPC[INHTOTALSYNAPSES]
+objref netconPC[INHTOTALSYNAPSES],spikecount,spiketimes,Vol,GABAsyn,vdata_ex,vtemp_ex,vlength_ex,Vect_list_ex
+
+// Declare instances of the GammaStim objects for excitatory synapses
+// (1 GammaStim activates 1 AMPA + 1 fNMDA + 1 sNMDA) and the corresponding
+// NetCon objects (=1 each for AMPA, fNMDA, and sNMDA).
+objref gammaStimExc[EXCTOTALSYNAPSES],filed,filed1
+objref filed3,filed4,filed5
+
+objref netconExc[3 * EXCTOTALSYNAPSES]
+
+
+num=1
+if (name_declared("x")==5) { // x has been assigned a numerical value
+  num = x
+}
+print "num is ", num
+
+strdef PCdata, MFdata, ext,PCfilename,MFfilename
+PCdata = "datasp"
+MFdata = "datasp_ex"
+ext = ".dat"
+sprint(PCfilename,"%s%d%s",PCdata,num,ext)	
+sprint(MFfilename,"%s%d%s",MFdata,num,ext)	
+print PCfilename
+print MFfilename
+
+
+strdef PCl, MFl, ext,PClname,MFlname
+PCl = "l"
+MFl = "l_ex"
+ext = ".dat"
+sprint(PClname,"%s%d%s",PCl,num,ext)	
+sprint(MFlname,"%s%d%s",MFl,num,ext)	
+print PClname
+print MFlname
+
+
+
+objref fdata,vtemp,vdata,Vect_list,fdata1,vlength
+vdata=new Vector()
+vtemp=new Vector()
+vlength = new Vector()
+Vect_list=new List()
+fdata = new File() //datasp
+fdata1 = new File() //datasp
+Vol1=new Vector()
+Edata = new File()
+Edata1=new File()
+vdata_ex=new Vector()
+vtemp_ex=new Vector()
+vlength_ex = new Vector()
+Vect_list_ex=new List()
+
+objref NaFcurrent,NaPcurrent,fKdrcurrent,sKdrcurrent,SKcurrent,TNCcurrent, hcurrent,CaLVAcurrent,CaHVAcurrent,trialtorecord 
+objref vectmp,vectmp1,fnmdalist,snmdalist,CaLVA_h,NaP_h
+
+
+NaFcurrent = new Vector()
+NaPcurrent = new Vector()
+fKdrcurrent = new Vector()
+sKdrcurrent = new Vector()
+SKcurrent = new Vector()
+TNCcurrent = new Vector()
+hcurrent = new Vector()
+CaLVAcurrent = new Vector()
+CaHVAcurrent = new Vector()
+trialtorecord = new Vector()
+trialtorecord.append(1,9,11,13,21,23,33,35,49,43,52,53,61,68,72,78,87,88,99,91)
+trialtorecord.indgen(1,100,1)
+CaLVA_h = new Vector()
+NaP_h = new Vector()
+
+fnmdalist =new List()
+snmdalist =new List()
+
+
+for i=0, EXCTOTALSYNAPSES-1 {
+	
+vectmp = new Vector()
+vectmp1 = new Vector()
+
+fnmdalist.append(vectmp)
+snmdalist.append(vectmp1)
+
+}
+
+
+
+// model vecstim for inhibitory input
+fdata.ropen(PCfilename)
+fdata1.ropen(PClname)
+
+        vtemp = new Vector()
+        vdata.scanf(fdata)
+        vlength.scanf(fdata1)
+        fdata.close()
+        fdata1.close()
+numspikespercell = int(vdata.size()/INHTOTALSYNAPSES)
+
+src_start = 0
+        for i = 0, INHTOTALSYNAPSES-1 { 
+            vtemp = new Vector()
+            src_tmp = vlength.x[i]
+    
+            vtemp.copy(vdata,0,src_start,src_start+src_tmp-1)
+            src_start=src_start+src_tmp
+            Vect_list.append(vtemp)
+        }
+        
+// model netstim for inhibitory input
+
+Edata.ropen(MFfilename)
+Edata1.ropen(MFlname)
+
+        vtemp_ex = new Vector()
+        vdata_ex.scanf(Edata)
+        vlength_ex.scanf(Edata1)
+        Edata.close()
+        Edata1.close()
+//numspikespercell = int(vdata_ex.size()/EXCTOTALSYNAPSES)
+
+src_start_ex = 0
+        for i = 0, EXCTOTALSYNAPSES-1 { 
+            vtemp_ex = new Vector()
+            src_tmp_ex = vlength_ex.x[i]
+    
+            vtemp_ex.copy(vdata_ex,0,src_start_ex,src_start_ex+src_tmp_ex-1)
+            src_start_ex=src_start_ex+src_tmp_ex
+            Vect_list_ex.append(vtemp_ex)
+        }
+        
+                           
+
+///////////////////////////////////////////////////////////////
+
+proc DCNloop() {
+        DCNmechs()
+        tstop=2000
+	
+    	runSimulation()
+        if (trialtorecord.indwhere("==",num) >= 0) {
+    	rec_data()
+    	} 
+   	run(tstop)
+    	spiketimes.printf()
+
+       //quit()
+
+}
+
+
+proc runSimulation() {
+        
+    // Set up the excitatory synapses
+    
+    oRndExc = new Random()
+    oRndExc.ACG(randomiserSeed)
+    spiketimes=new Vector()
+    Vol=new Vector()
+
+    soma spikecount=new APCount(0.5)
+    spikecount.thresh=-20
+    spikecount.record(spiketimes)
+    Vol.record(&soma.v(0.5))
+    
+    soma CurrentClamp = new IClamp(0.5)
+    CurrentClamp.amp = 0//-0.15
+    CurrentClamp.dur = 0//1500
+    CurrentClamp.del = 500
+    //CurrentClamp.del = 0
+    //Vol.record(&soma.h_NaP(0.5))
+    
+    soma VoltageClamp = new SEClamp(0.5)
+    VoltageClamp.amp1 = -70
+    VoltageClamp.dur1 = 0//1500
+    //Vol.record(&VoltageClamp.i)
+
+    //Vol.record(&fnmda[0].i)
+    Vol1.record(&snmda[0].i)
+
+
+
+    
+    soma GABAsyn = new Exp2Syn(0.5)
+    GABAsyn.tau1 = 0.25 //0.25
+    GABAsyn.tau2 =2.25  //2.25
+    GABAsyn.e = -GABARevPot
+    
+
+       ra=new Random()
+
+    for (c=0; c < EXCTOTALSYNAPSES; c+=1) {
+//        gammaStimExc[c] = new NetStim()
+//        gammaStimExc[c].number = 1e9
+//        gammaStimExc[c].interval = 100
+//        gammaStimExc[c].start = 0
+//        gammaStimExc[c].noise = 1+ra.uniform(0,1)
+        
+        gammaStimExc[c] = new VecStim(0.5)
+        gammaStimExc[c].play(Vect_list_ex.object[c])
+    }
+
+    // Set up the excitatory NetCons.
+    ncIndex = 0
+    for (c=0; c < EXCTOTALSYNAPSES; c+=1) {
+
+        // Create three NetCons for each excitatory GammaStim to connect it
+        // to the ampa and the two nmda receptors.
+        netconExc[ncIndex] = new NetCon(gammaStimExc[c], ampa[c])
+        netconExc[ncIndex].threshold = 0 //mV
+        netconExc[ncIndex].weight = gAMPA
+        netconExc[ncIndex+1] = new NetCon(gammaStimExc[c], fnmda[c])
+        netconExc[ncIndex+1].threshold = 0 //mV
+        netconExc[ncIndex+1].weight = gfNMDA
+        netconExc[ncIndex+2] = new NetCon(gammaStimExc[c], snmda[c])
+        netconExc[ncIndex+2].threshold = 0 //mV
+        netconExc[ncIndex+2].weight = gsNMDA
+
+        ncIndex = ncIndex + 3
+    }
+    
+    oRndInh = new Random()
+    oRndInh.ACG(randomiserSeed)
+    for (c=0; c<INHTOTALSYNAPSES; c+=1) {
+         //gammaStimPC[c] = new NetStim(0.5)
+         //gammaStimPC[c].number = 0//1e9
+        //gammaStimPC[c].interval = 0//40
+        //gammaStimPC[c].start = 0
+        //gammaStimPC[c].noise = 0//oRndInh.uniform(0,1)
+        
+        gammaStimPC[c] = new VecStim(0.5)
+        gammaStimPC[c].play(Vect_list.object[c])
+    }        
+    
+
+    // Set up the GABA NetCons.
+    gsIndex = 0
+    counterOfNetCons = 0
+   
+    for (cGABA=0; cGABA < INHTOTALSYNAPSES; cGABA=cGABA+1) {
+
+        //netconPC[cGABA] = new NetCon(gammaStimPC[cGABA], GABAsyn)
+        s=ra.discunif(0,300)
+        netconPC[cGABA] = new NetCon(gammaStimPC[cGABA], gaba[s])
+       
+
+        //netconPC[cGABA].threshold = 0 //mV
+        netconPC[cGABA].weight = gGABA//3e-3 //0.2e-3//0.3e-3//gGABA //0.25
+
+      
+    }
+
+    
+} // end of "proc runSimulation()".
+
+proc rec_data() {
+	
+	//record current
+   rec_dt_current = 0.1 //ms
+   rec_dt_nmda = 0.5	 //ms
+   NaFcurrent.record(&soma.ina_NaF(0.5),rec_dt_current)
+   NaPcurrent.record(&soma.ina_NaP(0.5),rec_dt_current)
+   fKdrcurrent.record(&soma.ik_fKdr(0.5),rec_dt_current)
+   sKdrcurrent.record(&soma.ik_sKdr(0.5),rec_dt_current)
+   SKcurrent.record(&soma.ik_SK(0.5),rec_dt_current)
+   hcurrent.record(&soma.ih_h(0.5),rec_dt_current)
+   TNCcurrent.record(&soma.i_TNC(0.5),rec_dt_current)
+   CaLVAcurrent.record(&soma.ical_CaLVA(0.5),rec_dt_current)
+   CaHVAcurrent.record(&soma.ica_CaHVA(0.5),rec_dt_current)
+   CaLVA_h.record(&soma.h_CaLVA(0.5),rec_dt_current)
+   NaP_h.record(&soma.h_NaP(0.5),rec_dt_current)
+
+   
+   for i=0, EXCTOTALSYNAPSES-1 {
+	
+
+
+//fnmdalist.object(i).record(&fnmda[i].g,rec_dt_nmda)
+//snmdalist.object(i).record(&snmda[i].g,rec_dt_nmda)
+
+}
+ 
+}
+
+
+
+
+//DCNrun()
+
+DCNloop()
+
+strdef file1, file2, ext,filename1,filename2
+file1 = "m1_a"
+file2 = "m1_b"
+ext = ".bin"
+sprint(filename1,"%s%d%s",file1,num,ext)	
+sprint(filename2,"%s%d%s",file2,num,ext)	
+print filename1
+print filename2
+
+
+filed = new File()
+filed.wopen(filename1)
+filed.close(filename1)
+filed.aopen(filename1) 
+
+Vol.vwrite(filed)
+//Vol1.vwrite(filed)
+
+filed.close()
+
+filed1 = new File()
+filed1.wopen(filename2)
+filed1.close(filename2)
+filed1.aopen(filename2) 
+
+spiketimes.vwrite(filed1)
+filed1.close()
+
+if (trialtorecord.indwhere("==",num) >= 0) {
+print "sss"
+
+strdef filename3,filename4,file3,file4,file5,filename5   
+ 	
+file3 = "m1_c"
+file4 = "m1_d"
+file5 = "m1_e"
+sprint(filename3,"%s%d%s",file3,num,ext)	
+sprint(filename4,"%s%d%s",file4,num,ext)
+sprint(filename5,"%s%d%s",file5,num,ext)
+
+filed3 = new File()
+filed3.wopen(filename3)
+filed3.close(filename3)
+filed3.aopen(filename3) 
+
+NaFcurrent.vwrite(filed3)
+NaPcurrent.vwrite(filed3)
+fKdrcurrent.vwrite(filed3)
+fKdrcurrent.vwrite(filed3)
+sKdrcurrent.vwrite(filed3)
+TNCcurrent.vwrite(filed3)
+hcurrent.vwrite(filed3)
+CaLVAcurrent.vwrite(filed3)
+CaHVAcurrent.vwrite(filed3)
+CaLVA_h.vwrite(filed3)
+NaP_h.vwrite(filed3)
+filed3.close()
+
+filed4 = new File()
+filed4.wopen(filename4)
+filed4.close(filename4)
+filed4.aopen(filename4) 
+
+for i=0, EXCTOTALSYNAPSES-1 {
+	
+//	fnmdalist.object(i).vwrite(filed4)
+}
+
+filed4.close()
+
+filed5 = new File()
+filed5.wopen(filename5)
+filed5.close(filename5)
+filed5.aopen(filename5) 
+
+for i=0, EXCTOTALSYNAPSES-1 {
+	
+//	snmdalist.object(i).vwrite(filed5)
+}
+
+filed5.close()
+}
+quit()

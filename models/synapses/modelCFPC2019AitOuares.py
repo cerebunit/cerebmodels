@@ -28,7 +28,7 @@ class ClimbingFiberPurkinjeCell( sciunit.Model,
         self.modelscale = "synapses"
         self.modelname = "CFPC2019AitOuares"
         # ------specify cell-regions from with response are recorded-------
-        self.regions = {"soma": 0.0}
+        self.regions = {"dend": 0.0}
         # -----------attributed inheritance from sciunit.Model--------------
         self.name = "Ait Ouares et al. 2019 model of Climbing fiber to Purkinje cell dendrite"
         self.description = "Ait Ouares 2019 model of ClimbingFiber (CF) to PurkinjeCell (PC) and published in 10.1523/JNEUROSCI.2155-18.2018 This is the single compartment (dendrite) model. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 244679."

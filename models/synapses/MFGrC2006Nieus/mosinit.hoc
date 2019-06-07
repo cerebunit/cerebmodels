@@ -1,0 +1,4 @@
+load_file("nrngui.hoc")
+load_file("Figure7_of_Nieus2006_Demo.hoc")
+load_file("init.ses")
+

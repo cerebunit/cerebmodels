@@ -1,0 +1,36 @@
+// DEMO SOFTWARE FOR THE PAPER NIEUS et al. 2006 
+// For any questions email me: thierry.nieus AT iit.it
+// Simulates figure 7 of the former paper
+
+xopen("$(NEURONHOME)/lib/hoc/noload.hoc") 
+
+create soma
+access soma 
+
+objref stimfib,conMFnmda,conMFampa
+objref synA,synN
+
+stimfib=new SpikeGenerator2(0.5)
+synA=new Ampa(0.5)
+synN=new Nmda(0.5)
+conMFampa=new NetCon(stimfib, synA,-20, 0.000, 1e-3)
+conMFnmda=new NetCon(stimfib, synN,-20, 0.000, 1e-3)
+
+stimfib.start=50
+
+for j=1,9 {stimfib.time[j]=10}
+stimfib.time[j]=1e5
+
+load_proc("nrnmainmenu") 
+load_file("init.ses")
+
+nrnmainmenu() 
+tstop=250
+Prel=0.416
+
+proc MenuReleaseProbability(){
+	xpanel("")
+	xlabel("Mossy fibre to Granule Cell Release Probability")
+	xvalue("MF to GRC synapse Prel","Prel",1,"synA.U=synN.U=Prel")
+	xpanel()
+}

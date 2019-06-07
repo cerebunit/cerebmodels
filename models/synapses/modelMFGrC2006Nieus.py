@@ -37,7 +37,7 @@ class MossyFiberGranuleCell( sciunit.Model,
         sm.lock_and_load_model_libraries(modelscale=self.modelscale,
                                          modelname=self.modelname)
         os.chdir(path_to_files)
-        self.cell = Granule()
+        self.cell = MossyGranule()
         os.chdir(pwd)
         ### ===============================================================
         self.fullfilename = "nil"

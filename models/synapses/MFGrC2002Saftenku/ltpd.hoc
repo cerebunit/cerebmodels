@@ -1,0 +1,107 @@
+objref LTPDparams
+LTPDparams = new VBox()
+LTPDparams.intercept(1)
+ 
+LTP_gamma=GrCell[0].ltp1[0].gamma  
+LTP_eta=GrCell[0].ltp1[0].eta  
+LTP_nu1=GrCell[0].ltp1[0].nu1  
+LTP_nu2=GrCell[0].ltp1[0].nu2  
+LTP_pp=GrCell[0].ltp1[0].pp  
+LTP_pd=GrCell[0].ltp1[0].pd 
+LTP_gdel1=GrCell[0].ltp1[0].gdel1 
+LTP_gdel2=GrCell[0].ltp1[0].gdel2 
+LTP_Mp=GrCell[0].ltp1[0].Mp 
+LTP_Md=GrCell[0].ltp1[0].Md 
+LTP_Ap=GrCell[0].ltp1[0].Ap 
+LTP_Ad=GrCell[0].ltp1[0].Ad 
+ampa_freqdel=GrCell[0].ampa[0].freqdel
+nmda_freqdel=GrCell[0].nmda[0].freqdel
+Tau_rec= GrCell[0].syn1[0].taurec
+Tau_facil= GrCell[0].syn1[0].taufacil
+Tau_1= GrCell[0].syn1[0].tauin
+U= GrCell[0].syn1[0].usr
+u0=GrCell[0].syn1[0].u0
+
+xpanel("1") 
+xlabel("Parameters of long-term plasticity")  
+xvalue("Gamma (ms-1)","LTP_gamma", 1,"UpDateLTP()", 0, 0 )
+xvalue("Eta (ms-1)","LTP_eta", 1,"UpDateLTP()", 0, 0 )
+xvalue("Nu1 (ms-1)","LTP_nu1", 1,"UpDateLTP()", 0, 0 )
+xvalue("Nu2 (ms-1)","LTP_nu2", 1,"UpDateLTP()", 0, 0 )
+xvalue("pp (ms-1)","LTP_pp", 1,"UpDateLTP()", 0, 0 )
+xvalue("pd (ms-1)","LTP_pd", 1,"UpDateLTP()", 0, 0 )
+xvalue("gdel1(nA-1ms-1)","LTP_gdel1", 1,"UpDateLTP()", 0, 0 )
+xvalue("gdel2(nA-1ms-1)","LTP_gdel2", 1,"UpDateLTP()", 0, 0 )
+xvalue("Mp (nA/ms)","LTP_Mp", 1,"UpDateLTP()", 0, 0 )
+xvalue("Md (nA/ms)","LTP_Md", 1,"UpDateLTP()", 0, 0 )
+xvalue("Ap (nA^2)","LTP_Ap", 1,"UpDateLTP()", 0, 0 )
+xvalue("Ad (nA^2)","LTP_Ad", 1,"UpDateLTP()", 0, 0 )
+xvalue("Freqdel for AMPA (nA-1)","ampa_freqdel", 1,"UpDateLTP()", 0, 0 )
+xvalue("Freqdel for NMDA (nA-1)","nmda_freqdel", 1,"UpDateLTP()", 0, 0 )
+xpanel()
+xpanel("2")
+xlabel("Parameters of voltage-dependent and synaptic conductances")
+xbutton("Granule cell parameters","param1()")
+xbutton("AMPAR parameters","param2()")
+xbutton("NMDAR parameters","param3()")
+xpanel()
+xpanel("3")
+xlabel("Parameters of short-term plasticity")
+xvalue("Tau decay (ms)","Tau_1", 1,"UpDatePre()", 0, 0 )
+xvalue("Tau recovery (ms)","Tau_rec", 1,"UpDatePre()", 0, 0 )
+xvalue("Tau facilitation (ms)","Tau_facil", 1,"UpDatePre()", 0, 0 )
+xvalue("Use of resources by each AP","U", 1,"UpDatePre()", 0, 0 )
+xvalue("Initial facilitated use","u0", 1,"UpDatePre()", 0, 0 )
+xpanel()
+xpanel("4")
+xlabel("Stimulus")
+GrCell[0].stim0.del = 1000 
+GrCell[0].stim0.dur = 4000
+GrCell[0].stim0.amp = 0.00733 
+xbutton("IClamp","param5()")
+xpanel()
+
+LTPDparams.intercept(0)
+LTPDparams.map("Parameters")
+
+proc UpDateLTP(){
+	for (i=0;i<=3;i=i+1) {
+GrCell[0].ltp1[i].gamma= LTP_gamma 
+GrCell[0].ltp1[i].eta= LTP_eta  
+GrCell[0].ltp1[i].nu1= LTP_nu1  
+GrCell[0].ltp1[i].nu2= LTP_nu2  
+GrCell[0].ltp1[i].pp= LTP_pp  
+GrCell[0].ltp1[i].pd= LTP_pd 
+GrCell[0].ltp1[i].gdel1= LTP_gdel1
+GrCell[0].ltp1[i].gdel2= LTP_gdel2
+GrCell[0].ltp1[i].Mp= LTP_Mp 
+GrCell[0].ltp1[i].Md= LTP_Md 
+GrCell[0].ltp1[i].Ap= LTP_Ap
+GrCell[0].ltp1[i].Ad = LTP_Ad
+GrCell[0].ampa[i].freqdel= ampa_freqdel
+GrCell[0].nmda[i].freqdel= nmda_freqdel
+}
+}
+proc UpDatePre(){
+	for (i=0;i<=3;i=i+1) {
+		GrCell[0].syn1[i].taurec=Tau_rec
+		GrCell[0].syn1[i].taufacil=Tau_facil
+	      GrCell[0].syn1[i].tauin=Tau_1
+		GrCell[0].syn1[i].usr=U
+		GrCell[0].syn1[i].u0=u0
+}
+}
+proc param1(){
+	xopen("grcparam.hoc")
+}
+proc param2(){
+	xopen("ampa.hoc")
+}
+proc param3(){
+	xopen("nmda.hoc")
+}
+proc param5(){
+	xopen("cclamp.hoc")
+}
+
+

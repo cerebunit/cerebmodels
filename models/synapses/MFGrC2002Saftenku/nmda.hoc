@@ -1,0 +1,54 @@
+// Lester and Jahr (1992) kinetic scheme of NMDA receptors
+
+objref NMDAMenu
+NMDAMenu = new VBox()
+NMDAMenu.intercept(1)
+
+Nmda_C1C2=GrCell[0].nmda[0].cnm_4_3
+Nmda_C2C1= GrCell[0].nmda[0].cnm_3_4
+Nmda_C2C3= GrCell[0].nmda[0].cnm_3_2
+Nmda_C3C2= GrCell[0].nmda[0].cnm_2_3
+Nmda_C3O= GrCell[0].nmda[0].cnm_2_1
+Nmda_OC3= GrCell[0].nmda[0].cnm_1_2
+Nmda_C3D= GrCell[0].nmda[0].cnm_2_5
+Nmda_DC3= GrCell[0].nmda[0].cnm_5_2
+Nmda_Gmax2= GrCell[0].nmda[0].gbarnmda
+Nmda_v02= GrCell[0].nmda[0].v0_block
+Nmda_alpha= GrCell[0].nmda[0].alpha_vspom
+Nmda_Erev= GrCell[0].nmda[0].Erev
+xpanel("1")
+xlabel("NMDA")
+xvalue("C1C2 (ms^-1 uM^1)","Nmda_C1C2",1,"UpDateNMDA()", 0, 0 )
+xvalue("C2C1 (ms^-1)","Nmda_C2C1",1,"UpDateNMDA()", 0, 0 )
+xvalue("C2C3 (ms^-1 uM^1)","Nmda_C2C3",1,"UpDateNMDA()", 0, 0 )
+xvalue("C3C2 (ms^-1)","Nmda_C3C2",1,"UpDateNMDA()", 0, 0 )
+xvalue("C3O (ms^-1)","Nmda_C3O",1,"UpDateNMDA()", 0, 0 )
+xvalue("OC3 (ms^-1)","Nmda_OC3",1,"UpDateNMDA()", 0, 0 )
+xvalue("C3D (ms^-1)","Nmda_C3D",1,"UpDateNMDA()", 0, 0 )
+xvalue("DC3 (ms^-1)","Nmda_DC3",1,"UpDateNMDA()", 0, 0 )
+xvalue("Gmax2 (pS)","Nmda_Gmax", 1,"UpDateNMDA()", 0, 0 )
+xvalue("V0 Block (mV)","Nmda_v02", 1,"UpDateNMDA()", 0, 0 )
+xvalue("Alpha Block (mV)","Nmda_alpha", 1,"UpDateNMDA()", 0, 0 )
+xvalue("Erev (mV)","Nmda_Erev", 1,"UpDateNMDA()", 0, 0 )
+xpanel()
+
+NMDAMenu.intercept(0)
+NMDAMenu.map("NMDA model")
+
+proc UpDateNMDA(){
+	for (i=0;i<=3;i=i+1) {
+GrCell[0].nmda[i].cnm_4_3= Nmda_C1C2
+GrCell[0].nmda[i].cnm_3_4= Nmda_C2C1
+GrCell[0].nmda[i].cnm_3_2= Nmda_C2C3
+GrCell[0].nmda[i].cnm_2_3= Nmda_C3C2
+GrCell[0].nmda[i].cnm_2_1= Nmda_C3O 
+GrCell[0].nmda[i].cnm_1_2= Nmda_OC3
+GrCell[0].nmda[i].cnm_2_5= Nmda_C3D 
+GrCell[0].nmda[i].cnm_5_2= Nmda_DC3
+GrCell[0].nmda[i].gbarnmda= Nmda_Gmax2
+GrCell[0].nmda[i].v0_block= Nmda_v02
+GrCell[0].nmda[i].alpha_vspom= Nmda_alpha 
+GrCell[0].nmda[i].Erev= Nmda_Erev 
+}
+}	
+

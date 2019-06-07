@@ -1,0 +1,48 @@
+objref Menufig
+Menufig=new VBox( ) 
+Menufig.intercept(1)    	
+xpanel("Fig")
+xradiobutton("LTP after 4 bursts at 100 Hz","LTP( )")
+xradiobutton("LTD after continuous stimulation at 2 Hz","LTD( )")
+xpanel( )
+Menufig.intercept(0)
+Menufig.map("Granule Cell Plasticity")
+proc LTP( ){
+for(i=0; i<=NumSyn-1; i=i+1){
+Mossy[i].pp.t01=20
+Mossy[i].pp.t02=420000
+Mossy[i].pp.fast_freq=100
+Mossy[i].pp.slow_freq=4
+Mossy[i].pp.APinburst=10
+Mossy[i].pp.startbursting=2000
+Mossy[i].pp.endbursting=3000
+t01= Mossy[i].pp.t01
+t02= Mossy[i].pp.t02
+InSpike= Mossy[i].pp.fast_freq
+InBurst= Mossy[i].pp.slow_freq
+Spikes= Mossy[i].pp.APinburst
+StartIn= Mossy[i].pp.startbursting
+EndIn= Mossy[i].pp.endbursting 
+UpDateMossy( )
+
+}
+}
+proc LTD(){
+for(i=0;i<=NumSyn-1;i=i+1){
+Mossy[i].pp.t01=20
+Mossy[i].pp.t02=420000
+Mossy[i].pp.fast_freq=2
+Mossy[i].pp.slow_freq=0
+Mossy[i].pp.APinburst=10
+Mossy[i].pp.startbursting=2000
+Mossy[i].pp.endbursting= 3500
+t01= Mossy[i].pp.t01
+t02= Mossy[i].pp.t02
+InSpike= Mossy[i].pp.fast_freq
+InBurst= Mossy[i].pp.slow_freq
+Spikes= Mossy[i].pp.APinburst
+StartIn= Mossy[i].pp.startbursting
+EndIn= Mossy[i].pp.endbursting 
+UpDateMossy( )
+}
+}

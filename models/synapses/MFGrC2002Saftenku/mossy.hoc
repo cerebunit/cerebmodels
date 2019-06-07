@@ -1,0 +1,70 @@
+objref grafs[4]
+ngraph = 0
+objref mfpanel
+proc addgraph() { local ii	
+      ngraph = ngraph+1
+	ii = ngraph-1
+	grafs[ii] = new Graph(0)
+      grafs[ii].size(0,tstop,$2,$3)
+	grafs[ii].view(0,0,4000,48,0,48,150,48)
+	grafs[ii].addvar($s1,1,0)
+	grafs[ii].save_name("graphList[0].")
+      graphList[0].append(grafs[ii])
+      grafs[ii].exec_menu("View=plot")
+      grafs[ii].flush()
+}
+proc UpDateMossy(){
+	for(i=0;i<=3;i=i+1) {
+            Mossy[i].pp.fast_freq=InSpike
+            Mossy[i].pp.slow_freq=InBurst
+            Mossy[i].pp.startbursting=StartIn
+            Mossy[i].pp.endbursting=EndIn 
+		Mossy[i].pp.noise=Noise
+            if (i<=NumSyn-1) {
+		Mossy[i].pp.t01=t01
+            Mossy[i].pp.t02=t02
+            Mossy[i].pp.APinburst=Spikes 
+             		} else {
+			Mossy[i].pp.t01= -1
+                  Mossy[i].pp.t02= -1
+               Mossy[i].pp.APinburst=0   
+}
+}
+}
+
+mfpanel = new VBox()
+mfpanel.intercept(1)
+
+t01= Mossy[0].pp.t01
+t02= Mossy[0].pp.t02
+InSpike= Mossy[0].pp.fast_freq 
+InBurst= Mossy[0].pp.slow_freq 
+Spikes= Mossy[0].pp.APinburst 
+StartIn= Mossy[0].pp.startbursting 
+EndIn= Mossy[0].pp.endbursting 
+Noise= Mossy[0].pp.noise 
+NumSyn=2
+ UpDateMossy() 
+
+xpanel("Mossy Traces")   
+addgraph("Mossy[0].pp.y",0,2)
+addgraph("Mossy[1].pp.y",0,2)
+addgraph("Mossy[2].pp.y",0,2)
+addgraph("Mossy[3].pp.y",0,2)
+xpanel()  
+xpanel("2")
+xvalue("The first spike","t01",1,"UpDateMossy()", 0, 0 )
+xvalue("The last spike","t02",1,"UpDateMossy()", 0, 0 )
+xvalue("Number of synapses ","NumSyn", 1,"UpDateMossy()", 0, 0 )
+xvalue("Interspike frequency (Hz)","InSpike", 1,"UpDateMossy()", 0, 0 )
+xvalue("Interburst frequency (Hz)","InBurst", 1,"UpDateMossy()", 0, 0 )
+xvalue("Spikes per burst","Spikes", 1,"UpDateMossy()", 0, 0 )
+xvalue("Begin of the Input (ms)","StartIn", 1,"UpDateMossy()", 0, 0 )
+xvalue("End of the Input (ms)","EndIn", 1,"UpDateMossy()", 0, 0 )
+xvalue("Poisson Noise (0=Not)","Noise", 1,"UpDateMossy()", 0, 0 )
+xpanel()
+mfpanel.intercept(0)
+mfpanel.map("Mossy Fibers")
+
+
+

@@ -1,0 +1,66 @@
+//Kinetic scheme of AMPA receptors of Jonas, Major, Sakmann (1993)
+objref AMPAMenu
+AMPAMenu = new VBox()
+AMPAMenu.intercept(1)
+Ampa_C1C2=GrCell[0].ampa[0].cam_4_3
+Ampa_C2C3=GrCell[0].ampa[0].cam_3_2
+Ampa_D1D2=GrCell[0].ampa[0].cam_7_6
+Ampa_OD3= GrCell[0].ampa[0].cam_1_5
+Ampa_OC3= GrCell[0].ampa[0].cam_1_2
+Ampa_C3O= GrCell[0].ampa[0].cam_2_1
+Ampa_C3C2= GrCell[0].ampa[0].cam_2_3
+Ampa_C3D2= GrCell[0].ampa[0].cam_2_6
+Ampa_C2C1= GrCell[0].ampa[0].cam_3_4
+Ampa_C2D1= GrCell[0].ampa[0].cam_3_7
+Ampa_D3O= GrCell[0].ampa[0].cam_5_1
+Ampa_D2C3= GrCell[0].ampa[0].cam_6_2
+Ampa_D2D1= GrCell[0].ampa[0].cam_6_7
+Ampa_D1C2= GrCell[0].ampa[0].cam_7_3
+Ampa_D2D3= GrCell[0].ampa[0].cam_6_5
+Ampa_D3D2= GrCell[0].ampa[0].cam_5_6
+Ampa_Gmax= GrCell[0].ampa[0].gbarampa
+xpanel("1")
+	xlabel("AMPA")
+xvalue("C1C2 (mM-1ms-1)","Ampa_C1C2", 1,"UpDateAMPA()", 0, 0 )
+xvalue("C2C3 (mM-1ms-1)","Ampa_C2C3", 1,"UpDateAMPA()", 0, 0 )
+xvalue("D1D2 (mM-1ms-1)","Ampa_D1D2", 1,"UpDateAMPA()", 0, 0 )
+xvalue("OD3 (ms-1)","Ampa_OD3", 1,"UpDateAMPA()", 0, 0 )
+xvalue("OC3 (ms-1)","Ampa_OC3", 1,"UpDateAMPA()", 0, 0 )
+xvalue("C3O (ms-1)","Ampa_C3O", 1,"UpDateAMPA()", 0, 0 )
+xvalue("C3C2 (ms-1)","Ampa_C3C2", 1,"UpDateAMPA()", 0, 0 )
+xvalue("C3D2 (ms-1)","Ampa_C3D2", 1,"UpDateAMPA()", 0, 0 )
+xvalue("C2C1 (ms-1)","Ampa_C2C1", 1,"UpDateAMPA()", 0, 0 )
+xvalue("C2D1 (ms-1)","Ampa_C2D1", 1,"UpDateAMPA()", 0, 0 )
+xvalue("D3O (ms-1)","Ampa_D3O", 1,"UpDateAMPA()", 0, 0 )
+xvalue("D2C3 (ms-1)","Ampa_D2C3", 1,"UpDateAMPA()", 0, 0 )
+xvalue("D2D1 (ms-1)","Ampa_D2D1", 1,"UpDateAMPA()", 0, 0 )
+xvalue("D1C2 (ms-1)","Ampa_D1C2", 1,"UpDateAMPA()", 0, 0 )
+xvalue("D2D3 (ms-1)","Ampa_D2D3", 1,"UpDateAMPA()", 0, 0 )
+xvalue("D3D2 (ms-1)","Ampa_D3D2", 1,"UpDateAMPA()", 0, 0 )
+xvalue("Gmax (umho)","Ampa_Gmax", 1,"UpDateAMPA()", 0, 0 )
+xpanel()
+
+AMPAMenu.intercept(0)
+AMPAMenu.map("AMPAR parameters")
+
+proc UpDateAMPA(){
+	for (i=0;i<=3;i=i+1) {
+GrCell[0].ampa[i].cam_4_3=Ampa_C1C2
+GrCell[0].ampa[i].cam_3_2=Ampa_C2C3
+GrCell[0].ampa[i].cam_7_6=Ampa_D1D2
+GrCell[0].ampa[i].cam_1_5=Ampa_OD3
+GrCell[0].ampa[i].cam_1_2=Ampa_OC3
+GrCell[0].ampa[i].cam_2_1=Ampa_C3O
+GrCell[0].ampa[i].cam_2_3=Ampa_C3C2
+GrCell[0].ampa[i].cam_2_6=Ampa_C3D2
+GrCell[0].ampa[i].cam_3_4=Ampa_C2C1
+GrCell[0].ampa[i].cam_3_7=Ampa_C2D1
+GrCell[0].ampa[i].cam_5_1=Ampa_D3O
+GrCell[0].ampa[i].cam_6_2=Ampa_D2C3
+GrCell[0].ampa[i] [i].cam_6_7=Ampa_D2D1
+GrCell[0].ampa[i] [i].cam_7_3=Ampa_D1C2
+GrCell[0].ampa[i] [i].cam_6_5=Ampa_D2D3
+GrCell[0].ampa[i] [i].cam_5_6=Ampa_D3D2
+GrCell[0].ampa[i] [i].gbarampa=Ampa_Gmax
+}
+}	

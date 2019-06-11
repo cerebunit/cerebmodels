@@ -12,7 +12,8 @@ class Purkinje(object):
     """Multi-compartment cell
     """
     def __init__(self):
-        h("proc set_ra() {}") # this step is needed otherwise there is RuntimeError
+        h("load_file(\"nrngui.hoc\")") #h("proc set_ra() {}")
+        # this step is needed otherwise there is RuntimeError
         # for the undefined function when loading full_morph.hoc where this function
         # is called at line 3676. The above step defines the function set_ra()
         h.xopen("full_morph.hoc")

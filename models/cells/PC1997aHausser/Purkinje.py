@@ -10,8 +10,7 @@ class Purkinje(object):
     def __init__(self):
         h.xopen("P19.hoc")
 
-        # There are 1088 compartments and the following are chosen as
-        # attributes to this python class for potential recording
+        # The following are chosen as attributes for potential recording
         self.soma = h.soma
         self.dend_root = h.dendA1_0 # see Fig.2A Zang et al. 2018 10.1016/j.celrep.2018.07.011
         # Zang et al. 2018 used a modified version of this.

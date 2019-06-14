@@ -34,8 +34,7 @@ class Golgi(object):
         # under Methods section, Model GoC's sub-section
         # "We adopted a resting membrane potential of -60 mV and a
         # passive leakage current with reversal porential at -44.5 mV."
-        self.soma.v = -60.
-        [ setattr(d, "v", -60.) for d in self.dend ]
+        h("v_init = -60.")
         self.soma.el_Golgi_lkg = -44.5
         [ setattr(d, "el_Golgi_lkg", -44.5) for d in self.dend ]
         

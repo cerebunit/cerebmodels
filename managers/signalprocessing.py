@@ -10,13 +10,15 @@ class SignalProcessingManager(object):
     """
     **Available methods:**
 
-    +----------------------------------+-----------------+
-    | Method name                      | Method type     |
-    +==================================+=================+
-    | :py:meth:`.transform_signal`     | static method   |
-    +----------------------------------+-----------------+
-    | :py:meth:`.distill_Vm_pre_epoch` | static method   |
-    +----------------------------------+-----------------+
+    +--------------------------------------+-----------------+
+    | Method name                          | Method type     |
+    +======================================+=================+
+    | :py:meth:`.transform_signal`         | static method   |
+    +--------------------------------------+-----------------+
+    | :py:meth:`.distill_baseVm_pre_epoch` | static method   |
+    +--------------------------------------+-----------------+
+    | :py:meth:`.distill_peakVm_pre_epoch` | static method   |
+    +--------------------------------------+-----------------+
 
     """
 

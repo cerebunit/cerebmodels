@@ -102,6 +102,36 @@ class PurkinjeCell( sciunit.Model,
         print("Simulation produce_restingVm Done.")
         return model
 
+    # ----------------------- produce_spikeheight -----------------------------
+    def produce_spikeheight(self, **kwargs):
+        """
+        kwargs = { "parameters": dictionary with keys,
+                   "stimparameters": dictionary with keys "type" and "stimlist",
+                   "onmodel": instantiated model }
+        """
+        print("Sim produce_restingVm starting ...")
+        ec = ExecutiveControl() # only works when in ~/cerebmodels
+        model = ec.launch_model( parameters = kwargs["parameters"],
+                                 stimparameters = kwargs["stimparameters"],
+                                 stimloc = kwargs["stimloc"], onmodel = kwargs["onmodel"],
+                                 capabilities = {"model": "produce_voltage_response",
+                                                 "vtest": ProducesElectricalResponse},
+                                 mode="capability")
+        #self.fullfilename # already saved by invoking produce_voltage_response above
+        #print("Signal Processing ...")
+        nwbfile = rm.load_nwbfile(model.fullfilename)
+        orderedepochs = rm.order_all_epochs_for_region(nwbfile=nwbfile, region="soma")
+        timestamps_over_epochs = [ rm.timestamps_for_epoch( orderedepochs[i] )
+                                   for i in range(len(orderedepochs)) ]
+        data_over_epochs = [ rm.data_for_epoch( orderedepochs[i] )
+                                   for i in range(len(orderedepochs)) ]
+        baseVms = spm.distill_Vm_pre_epoch( timestamps = timestamps_over_epochs,
+                                            datavalues = data_over_epochs )
+        #print("Signal Processing Done.")
+        setattr(model, "prediction", baseVms)
+        print("Simulation produce_spikeheight Done.")
+        return model
+
     # ----------------------- produce_spike_train ---------------------------
     def produce_spike_train(self, **kwargs):
         """

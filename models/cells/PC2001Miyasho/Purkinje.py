@@ -15,3 +15,4 @@ class Purkinje(object):
         self.dend_sm = h.SmoothDendrite # len(h.SmoothDendrite) -> 85
         self.dend_sp = h.SpinyDendrite  # len(h.SpinyDendrite) -> 1002
 
+        # based on purkinje.ses dt = 0.025(default) and v_init = -65

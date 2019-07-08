@@ -77,7 +77,7 @@ class SimAssembler(object):
                         # https://www.neuron.yale.edu/phpBB/viewtopic.php?t=12
                         # https://www.neuron.yale.edu/phpBB/viewtopic.php?t=2665
                         h.steps_per_ms = 1/value # dt must be consistent with steps_per_ms
-                    # set run-time parameters
+                    # set rest run-time parameters
                     setattr(h, key, value)
                 else:
                     raise AttributeError(key + " is not an attribute in h. Try loading the model mod files.")

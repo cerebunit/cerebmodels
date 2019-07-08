@@ -13,3 +13,7 @@ class Purkinje(object):
         # python class for recording is just soma
         self.soma = h.soma
 
+        # based on the readme.txt
+        h.dt = 0.025
+        h.steps_per_ms = 1/h.dt
+

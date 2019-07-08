@@ -20,3 +20,4 @@ class Purkinje(object):
         # However, since the cell is the main region of interest
         # PC1997aHausser is in ~/models/cells/ NOT in ~/models/synapses
 
+        # no explicit dt is known to be given so use the default = 0.025

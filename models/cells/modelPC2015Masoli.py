@@ -73,14 +73,47 @@ class PurkinjeCell( sciunit.Model,
         print("Simulation produce_voltage_response Done.")
         return model
 
-    # ----------------------- produce_restingVm ----------------------------- 
-    def produce_restingVm(self, **kwargs):
+    # ----------------------- produce_restingVm -----------------------------
+    def produce_restingVm(self, roi, **kwargs):
         """
+        roi, region of interest is a string, i.e, 1 key in chosenmodel.regions
         kwargs = { "parameters": dictionary with keys,
                    "stimparameters": dictionary with keys "type" and "stimlist",
                    "onmodel": instantiated model }
         """
-        print("Sim produce_restingVm starting ...")
+        print("Sim produce_"+roi+"_restingVm starting ...")
+        ec = ExecutiveControl() # only works when in ~/cerebmodels
+        model = ec.launch_model( parameters = kwargs["parameters"],
+                                 stimparameters = kwargs["stimparameters"],
+                                 stimloc = kwargs["stimloc"], onmodel = kwargs["onmodel"],
+                                 capabilities = {"model": "produce_voltage_response",
+                                                 "vtest": ProducesElectricalResponse},
+                                 mode="capability")
+        nwbfile = rm.load_nwbfile(model.fullfilename)
+        orderedepochs = rm.order_all_epochs_for_region(nwbfile=nwbfile, region=roi)
+        timestamps_over_epochs = [ rm.timestamps_for_epoch( orderedepochs[i] )
+                                   for i in range(len(orderedepochs)) ]
+        data_over_epochs = [ rm.data_for_epoch( orderedepochs[i] )
+                                   for i in range(len(orderedepochs)) ]
+        baseVms = spm.distill_Vm_pre_epoch( timestamps = timestamps_over_epochs,
+                                            datavalues = data_over_epochs )
+        setattr(model, "prediction", baseVms)
+        print("Simulation produce_"+roi+"_restingVm Done.")
+        return model
+
+    # ----------------------- produce_soma_restingVm --------------------------
+    def produce_soma_restingVm(self, **kwargs):
+        return self.produce_restingVm("soma", **kwargs)
+
+    # ----------------------- produce_soma_spikeheight ------------------------
+    def produce_spikeheight(self, roi, **kwargs):
+        """
+        roi, region of interest is a string, i.e, 1 key in chosenmodel.regions
+        kwargs = { "parameters": dictionary with keys,
+                   "stimparameters": dictionary with keys "type" and "stimlist",
+                   "onmodel": instantiated model }
+        """
+        print("Sim produce_"+roi+"_spikeheight starting ...")
         ec = ExecutiveControl() # only works when in ~/cerebmodels
         model = ec.launch_model( parameters = kwargs["parameters"],
                                  stimparameters = kwargs["stimparameters"],
@@ -89,16 +122,22 @@ class PurkinjeCell( sciunit.Model,
                                                  "vtest": ProducesElectricalResponse},
                                  mode="capability" )
         nwbfile = rm.load_nwbfile(model.fullfilename)
-        orderedepochs = rm.order_all_epochs_for_region(nwbfile=nwbfile, region="soma")
+        orderedepochs = rm.order_all_epochs_for_region(nwbfile=nwbfile, region=roi)
         timestamps_over_epochs = [ rm.timestamps_for_epoch( orderedepochs[i] )
                                    for i in range(len(orderedepochs)) ]
         data_over_epochs = [ rm.data_for_epoch( orderedepochs[i] )
                                    for i in range(len(orderedepochs)) ]
-        baseVms = spm.distill_Vm_pre_epoch( timestamps = timestamps_over_epochs,
-                                            datavalues = data_over_epochs )
-        setattr(model, "prediction", baseVms)
-        print("Simulation produce_restingVm Done.")
+        baseVms = spm.distill_baseVm_pre_epoch( timestamps = timestamps_over_epochs,
+                                                datavalues = data_over_epochs )
+        peakVms = spm.distall_peakVm_from_spikes( timestamps = timestamps_over_epochs,
+                                                  datavalues = data_over_epochs )
+        setattr(model, "prediction", peaksVm[0] - baseVm[0])
+        print("Simulation produce_"+roi+"_spikeheight Done.")
         return model
+
+    # ----------------------- produce_soma_spikeheight ------------------------
+    def produce_soma_spikeheight(self, **kwargs):
+        return self.produce_spikeheight("soma", **kwargs)
 
     # ----------------------- produce_spike_train ---------------------------
     def produce_spike_train(self, **kwargs):

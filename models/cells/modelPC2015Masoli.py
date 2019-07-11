@@ -163,9 +163,9 @@ class PurkinjeCell( sciunit.Model,
                                    for i in range(len(orderedepochs)) ]
         baseVm = spm.distill_baseVm_pre_epoch( timestamps = timestamps_over_epochs,
                                                 datavalues = data_over_epochs )
-        peakVms = spm.distill_peakVm_from_spikes( timestamps = timestamps_over_epochs,
-                                                  datavalues = data_over_epochs )
-        setattr(model, "prediction", peakVms[0] - baseVm[0])
+        #peakVms = spm.distill_peakVm_from_spikes( timestamps = timestamps_over_epochs,
+        #                                          datavalues = data_over_epochs )
+        #setattr(model, "prediction", peakVms[0] - baseVm[0])
         print("Simulation produce_"+roi+"_inputR Done.")
         return model
 

@@ -3,6 +3,7 @@ Available models
 .. toctree::
    :maxdepth: 1
    :caption: Contents:
+
    models/available_models.rst
 
 How to add models in cerebmodels

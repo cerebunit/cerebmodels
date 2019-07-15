@@ -14,6 +14,7 @@ import sciunit
 from cerebunit.capabilities.cells.response import ProducesElectricalResponse
 from cerebunit.capabilities.cells.measurements import ProducesEphysMeasurement
 
+import numpy
 
 class PurkinjeCell( sciunit.Model,
                     ProducesElectricalResponse,
@@ -95,7 +96,7 @@ class PurkinjeCell( sciunit.Model,
                                    for i in range(len(orderedepochs)) ]
         data_over_epochs = [ rm.data_for_epoch( orderedepochs[i] )
                                    for i in range(len(orderedepochs)) ]
-        baseVms = spm.distill_Vm_pre_epoch( timestamps = timestamps_over_epochs,
+        baseVms = spm.distill_baseVm_pre_epoch( timestamps = timestamps_over_epochs,
                                             datavalues = data_over_epochs )
         setattr(model, "prediction", baseVms)
         print("Simulation produce_"+roi+"_restingVm Done.")
@@ -140,6 +141,21 @@ class PurkinjeCell( sciunit.Model,
         return self.produce_spikeheight("soma", **kwargs)
 
     # ----------------------- produce_inputR ----------------------------------
+    def _compute_inputR(self, baseVms, stimpar):
+        "private function called by produce_inputR"
+        datapts = len(baseVms)
+        list_Rin = []
+        currents = stimpar["stimlist"]
+        if datapts <= 1:
+            raise ValueError("Simulation must be done with >= 3 epochs for computing Rin.")
+        else:
+            for i in range(datapts-1):
+                numer = baseVms[i+1] - baseVms[i]
+                denom = [ currents[i]["amp"]-0 if i==0 else
+                          currents[i]["amp"]-currents[i-1]["amp"] ][0]
+                list_Rin.append( numer/denom ) #Mohm
+            return numpy.mean(list_Rin)
+
     def produce_inputR(self, roi, **kwargs):
         """
         roi, region of interest is a string, i.e, 1 key in chosenmodel.regions
@@ -161,11 +177,9 @@ class PurkinjeCell( sciunit.Model,
                                    for i in range(len(orderedepochs)) ]
         data_over_epochs = [ rm.data_for_epoch( orderedepochs[i] )
                                    for i in range(len(orderedepochs)) ]
-        baseVm = spm.distill_baseVm_pre_epoch( timestamps = timestamps_over_epochs,
+        baseVms = spm.distill_baseVm_pre_epoch( timestamps = timestamps_over_epochs,
                                                 datavalues = data_over_epochs )
-        #peakVms = spm.distill_peakVm_from_spikes( timestamps = timestamps_over_epochs,
-        #                                          datavalues = data_over_epochs )
-        #setattr(model, "prediction", peakVms[0] - baseVm[0])
+        setattr(model, "prediction", self._compute_inputR(baseVms, kwargs["stimparameters"]))
         print("Simulation produce_"+roi+"_inputR Done.")
         return model
 

@@ -29,7 +29,7 @@ class PurkinjeCell( sciunit.Model,
         self.modelscale = "cells"
         self.modelname = "PC1997bHausser"
         # ------specify cell-regions from with response are recorded-------
-        self.regions = {"soma": 0.0}#"dend_root": 0.0}
+        self.regions = {"soma": 0.0, "dend_root": 0.0}
         # -----------attributed inheritance from sciunit.Model--------------
         self.name = "Hausser 20.2.1997 model of PurkinjeCell"
         self.description = "Hausser 20.2.1997 model of PurkinjeCell (PC) and used by Vetter et al. 2001 for Dendritica, published in 10.1152/jn.2001.85.2.926 This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 7907."
@@ -97,8 +97,8 @@ class PurkinjeCell( sciunit.Model,
                                    for i in range(len(orderedepochs)) ]
         data_over_epochs = [ rm.data_for_epoch( orderedepochs[i] )
                                    for i in range(len(orderedepochs)) ]
-        baseVms = spm.distill_Vm_pre_epoch( timestamps = timestamps_over_epochs,
-                                            datavalues = data_over_epochs )
+        baseVms = spm.distill_baseVm_pre_epoch( timestamps = timestamps_over_epochs,
+                                                datavalues = data_over_epochs )
         #print("Signal Processing Done.")
         setattr(model, "prediction", baseVms)
         print("Simulation produce_"+roi+"_restingVm Done.")

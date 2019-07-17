@@ -28,7 +28,8 @@ class PurkinjeCell( sciunit.Model,
         self.modelscale = "cells"
         self.modelname = "PC2011Brown"
         # ------specify cell-regions from with response are recorded-------
-        self.regions = {"soma": 0.0}#"dend": 0.0, "spine": 0.0}
+        self.regions = {"soma": 0.0, "dend_root": 0.0, "dend_sm": 0.0, "dend_sp": 0.0,
+                        "spine_head": 0.0, "spine_neck": 0.0}
         # -----------attributed inheritance from sciunit.Model--------------
         self.name = "Brown et al. 2011 model of PurkinjeCell"
         self.description = "Brown 2011 model of PurkinjeCell (PC) and published in 10.1007/s10827-011-0317-0 This is a multi-compartment (38) model. It is a PPR (preserved path reduction) model. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 126637."
@@ -94,8 +95,8 @@ class PurkinjeCell( sciunit.Model,
                                    for i in range(len(orderedepochs)) ]
         data_over_epochs = [ rm.data_for_epoch( orderedepochs[i] )
                                    for i in range(len(orderedepochs)) ]
-        baseVms = spm.distill_Vm_pre_epoch( timestamps = timestamps_over_epochs,
-                                            datavalues = data_over_epochs )
+        baseVms = spm.distill_baseVm_pre_epoch( timestamps = timestamps_over_epochs,
+                                                datavalues = data_over_epochs )
         setattr(model, "prediction", baseVms)
         print("Simulation produce_"+roi+"_restingVm Done.")
         return model

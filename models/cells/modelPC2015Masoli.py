@@ -30,7 +30,8 @@ class PurkinjeCell( sciunit.Model,
         self.modelscale = "cells"
         self.modelname = "PC2015Masoli"
         # ------specify cell-regions from with response are recorded-------
-        self.regions = {"soma": 0.0}#, "axonAIS": 0.0, "axonNOR3": 0.0}
+        self.regions = {"soma": 0.0, "dend": 0.0, "axonAIS": 0.0,
+                        "axonNOR": 0.0, "axonNOR2": 0.0, "axonNOR3": 0.0}
         # -----------attributed inheritance from sciunit.Model--------------
         # pc.name defaults to class name, i.e, PurkinjeCell
         self.name = "Masoli et al. 2015 model of PurkinjeCell"

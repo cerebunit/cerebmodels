@@ -47,6 +47,8 @@ class Recorder(object):
 
         **Arguments:** Pass a NEURON `section <https://www.neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/topology/secspec.html>`_ or a list whose elements are NEURON sections (e.g. dendrites) of the cell, assuming that the model is instantiated.
 
+        NOTE: If the argument is a list of sections (of a particular anatomical region) then rather than record for each and every section within the list only one section is recorded. This one section is picked randomly hence each section has equal probability to be picked. Also, note that this picking of a section may be determined and done within the __cell template__ (**not** the model template). Then, the regions (passed here as the argument) will most likely be a NEURON section.
+
         **Returned value:** ``h.Vector`` of recorded voltages. `More about this data type. <https://www.neuron.yale.edu/neuron/static/new_doc/programming/math/vector.html>`_
 
         **Use case:**

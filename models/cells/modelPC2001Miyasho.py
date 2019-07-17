@@ -28,7 +28,7 @@ class PurkinjeCell( sciunit.Model,
         self.modelscale = "cells"
         self.modelname = "PC2001Miyasho"
         # ------specify cell-regions from with response are recorded-------
-        self.regions = {"soma": 0.0} #"dend_sm": 0.0, "dend_sp": 0.0}
+        self.regions = {"soma": 0.0, "dend_sm": 0.0, "dend_sp": 0.0}
         # -----------attributed inheritance from sciunit.Model--------------
         self.name = "Miyasho et al. 2001 model of PurkinjeCell"
         self.description = "Miyasho 2001 model of PurkinjeCell (PC) and published in 10.1016/S0006-8993(00)03206-6 This is a multi-compartment (1088) model. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 17664."

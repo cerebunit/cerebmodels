@@ -17,7 +17,7 @@ class Purkinje(object):
         dend_sm = h.SmoothDendrite # len(h.SmoothDendrite) -> 85
         dend_sp = h.SpinyDendrite  # len(h.SpinyDendrite) -> 1002
         #
-        self.dend_sm = dend_sm[ randint(0, len(den_sm)-1) ]
-        self.dend_sp = dend_sp[ randint(0, len(den_sp)-1) ]
+        self.dend_sm = dend_sm[ randint(0, len(dend_sm)-1) ]
+        self.dend_sp = dend_sp[ randint(0, len(dend_sp)-1) ]
 
         # based on purkinje.ses dt = 0.025(default) and v_init = -65

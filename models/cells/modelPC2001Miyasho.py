@@ -94,8 +94,8 @@ class PurkinjeCell( sciunit.Model,
                                    for i in range(len(orderedepochs)) ]
         data_over_epochs = [ rm.data_for_epoch( orderedepochs[i] )
                                    for i in range(len(orderedepochs)) ]
-        baseVms = spm.distill_Vm_pre_epoch( timestamps = timestamps_over_epochs,
-                                            datavalues = data_over_epochs )
+        baseVms = spm.distill_baseVm_pre_epoch( timestamps = timestamps_over_epochs,
+                                                datavalues = data_over_epochs )
         setattr(model, "prediction", baseVms)
         print("Simulation produce_"+roi+"_restingVm Done.")
         return model

@@ -7,6 +7,7 @@
 #PC2015aForrest -> Template 1
 from neuron import h
 #from pdb import set_trace as breakpoint
+from random import randint
 
 class Purkinje(object):
     """Multi-compartment cell
@@ -21,6 +22,10 @@ class Purkinje(object):
         # There are 1088 compartments and the following are chosen as
         # attributes to this python class for potential recording
         self.soma = h.soma
-        self.dend_sm = h.SmoothDendrite # len(h.SmoothDendrite) -> 85
-        self.dend_sp = h.SpinyDendrite # len(h.SpinyDendrite) -> 1002
+        #
+        dend_sm = h.SmoothDendrite # len(h.SmoothDendrite) -> 85
+        dend_sp = h.SpinyDendrite # len(h.SpinyDendrite) -> 1002
+        #
+        self.dend_sm = dend_sm[ randint(0, len(dend_sm)-1) ]
+        self.dend_sp = dend_sp[ randint(0, len(dend_sp)-1) ]
 

@@ -28,7 +28,7 @@ class PurkinjeCell( sciunit.Model,
         self.modelscale = "cells"
         self.modelname = "PC2010Genet"
         # ------specify cell-regions from with response are recorded-------
-        self.regions = {"soma": 0.0}#"dend_sm": 0.0, "dend_sp": 0.0}
+        self.regions = {"soma": 0.0, "dend_sm": 0.0, "dend_sp": 0.0}
         # -----------attributed inheritance from sciunit.Model--------------
         self.name = "Genet et al. 2010 model of PurkinjeCell"
         self.description = "Genet 2010 model of PurkinjeCell (PC) and published in 10.1016/j.bpj.2010.04.056 This is a multi-compartment (1088) model. It is a resonstruction of Shelton's 1985 model which has been rescaled for dimensions of a guinea pig cell. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 147218."
@@ -94,8 +94,8 @@ class PurkinjeCell( sciunit.Model,
                                    for i in range(len(orderedepochs)) ]
         data_over_epochs = [ rm.data_for_epoch( orderedepochs[i] )
                                    for i in range(len(orderedepochs)) ]
-        baseVms = spm.distill_Vm_pre_epoch( timestamps = timestamps_over_epochs,
-                                            datavalues = data_over_epochs )
+        baseVms = spm.distill_baseVm_pre_epoch( timestamps = timestamps_over_epochs,
+                                                datavalues = data_over_epochs )
         setattr(model, "prediction", baseVms)
         print("Simulation produce_"+roi+"_restingVm Done.")
         return model

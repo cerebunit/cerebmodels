@@ -1,5 +1,6 @@
 # ~/managers/operatorsYield/recorder.py
 import numpy as np
+from random import randint
 
 from neuron import h
 
@@ -41,10 +42,10 @@ class Recorder(object):
         return recorded_time
 
     @staticmethod
-    def response_voltage_NEURON(section):
+    def response_voltage_NEURON(region):
         """Returns an array (NEURON's ``h.Vector``) of recorded voltage response from a given cell section.
 
-        **Arguments:** Pass a NEURON `section <https://www.neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/topology/secspec.html>`_ of the cell, assuming that the model is instantiated.
+        **Arguments:** Pass a NEURON `section <https://www.neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/topology/secspec.html>`_ or a list whose elements are NEURON sections (e.g. dendrites) of the cell, assuming that the model is instantiated.
 
         **Returned value:** ``h.Vector`` of recorded voltages. `More about this data type. <https://www.neuron.yale.edu/neuron/static/new_doc/programming/math/vector.html>`_
 
@@ -59,6 +60,11 @@ class Recorder(object):
         ``>> axonNOR3 = rc.response_voltage_NEURON(cell.axonNOR3)``
 
         """
+        if isinstance(region, type(h.Section())):
+            section = region
+        else:
+            section = region[ randint(0, len(region)-1) ]
+        #
         recorded_voltage = h.Vector()
         recorded_voltage.record(section(0.5)._ref_v)
         return recorded_voltage

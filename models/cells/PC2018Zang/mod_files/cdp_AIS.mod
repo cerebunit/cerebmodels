@@ -4,7 +4,17 @@ NEURON {
   SUFFIX cdpAIS
   USEION ca READ cao, cai, ica WRITE cai
   RANGE ica_pmp,ca1,ca2,ca3,ca4,ca5,ca9
-:RANGE pump_0  
+:RANGE pump_0
+: below idummy, a dummy current was not in the original model
+: w/o it the simulation via ExecutiveControl of cerebmodels results in --
+: at line 134 in file cdp_AIS.mod
+: Error at section location AIS(0.85) Convergence not achieved in maximum number of iterations
+: NEURON: scopmath library error
+: ifake was added by Lungsi as per M.Hines suggestion for a very similar problem --
+: see https://www.neuron.yale.edu/phpBB/viewtopic.php?t=1014
+: https://senselab.med.yale.edu/ModelDB/ShowModel.cshtml?model=53876&file=/mvns/ca_soma.mod#tabs-2
+  NONSPECIFIC_CURRENT idummy : used to move the calc. of the breakpt. to same t as other currents
+: note that idummy is also found under ASSIGNED and BREAKPOINT
 GLOBAL vrat, TotalPump
     : vrat must be GLOBAL--see INITIAL block
     : however TotalBuffer and TotalPump may be RANGE
@@ -24,7 +34,9 @@ UNITS {
 }
 
 PARAMETER {
-    v
+        :amp  (mA/cm2) : added this by Lungsi based on 
+                      : https://www.neuron.yale.edu/phpBB/viewtopic.php?t=1905
+        v
 	celsius =34     (degC)
         
 	:cainull =2.5e-4 (mM)
@@ -80,6 +92,8 @@ PARAMETER {
 }
 
 ASSIGNED {
+        idummy (mA/cm2) : dummy current used to make solver move (see above for more)
+                        : calculation of breakpt. to same t as currents (explanations)
 	diam      (um)
 	ica       (mA/cm2)
 	ica_pmp   (mA/cm2)
@@ -132,6 +146,8 @@ BREAKPOINT {
 	SOLVE state METHOD sparse
 :	ica_pmp_last = ica_pmp
 :	ica = ica_pmp
+        idummy = 0 : causes solver to execute the breakpoint block at the
+                   : same time as the calculation of other currents
 }
 
 LOCAL factors_done

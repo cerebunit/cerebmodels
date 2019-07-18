@@ -118,6 +118,7 @@ AIS {
 	ena = 63
     ghbar_hpkj = 3.6e-4*0.3
    insert cdpAIS
+   //forall if (ismembrane("ca_ion")) insert cdpAIS // adds cdpAIS only to sections needing it
 
     insert Kv3
     gbar_Kv3 =0.3*6*2*2*2*4*2
@@ -175,3 +176,23 @@ AIS {
 //continuerun(tstop)		// This is "run()" without the "init()"
 //stopsw()
 
+// based on the issue
+//at line 134 in file cdp_AIS.mod
+//Error at section location AIS(0.85) Convergence not achieved in maximum number of iterations
+//NEURON: scopmath library error
+// in addition to creation of idummy, see cdp_AIS.mod the custom init() below is created
+// This is based on https://www.neuron.yale.edu/phpBB/viewtopic.php?t=1905
+proc init() {
+  ca0_ca_ion = 10 //whatever_you_want_it_to_be
+  forall if (ismembrane("cdpAIS")) amp_cdpAIS = 0 // so it doesn't contribute to total ica(x)
+  finitialize(v_init)
+  forall if (ismembrane("ca_ion")) {
+    // iterate over all internal nodes (segments) and adjust amp_cdpAIS accordingly
+    for (x,0) amp_cdpAIS(x) = -ica(x)
+  }
+  if (cvode.active()) {
+    cvode.re_init()
+  } else {
+    fcurrent()
+  }
+}

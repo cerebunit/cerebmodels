@@ -29,7 +29,7 @@ class PurkinjeCell( sciunit.Model,
         self.modelscale = "cells"
         self.modelname = "PC2018Zang"
         # ------specify cell-regions from with response are recorded-------
-        self.regions = {"soma": 0.0}#"ais": 0.0, "dend_root": 0.0, "dend_sm": 0.0, "dend_sp": 0.0}
+        self.regions = {"soma": 0.0, "ais": 0.0, "dend_root": 0.0, "dend_sm": 0.0, "dend_sp": 0.0}
         # -----------attributed inheritance from sciunit.Model--------------
         self.name = "Zang et al. 2018 model of PurkinjeCell"
         self.description = "Zang et al. 2018 model of PurkinjeCell (PC) and published in 10.1016/j.celrep.2018.07.011 This is a multi-compartment modified version of the Purkinje cell from Mike Hausser (cell 2, 19.2.97). This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 243446."
@@ -95,8 +95,8 @@ class PurkinjeCell( sciunit.Model,
                                    for i in range(len(orderedepochs)) ]
         data_over_epochs = [ rm.data_for_epoch( orderedepochs[i] )
                                    for i in range(len(orderedepochs)) ]
-        baseVms = spm.distill_Vm_pre_epoch( timestamps = timestamps_over_epochs,
-                                            datavalues = data_over_epochs )
+        baseVms = spm.distill_baseVm_pre_epoch( timestamps = timestamps_over_epochs,
+                                                datavalues = data_over_epochs )
         setattr(model, "prediction", baseVms)
         print("Simulation produce_"+roi+"_restingVm Done.")
         return model

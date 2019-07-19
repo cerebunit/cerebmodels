@@ -195,13 +195,13 @@ class Stimulator(object):
         | Keys           | Value type                                                   |
         +================+==============================================================+
         | ``parameters`` | - list such that each element is a dictionary [ {}, {}, {} ] |
-        |                | - Eg: [ {"amp1": 0.0, "dur1": 50.0},                         |
+        |                | - Eg: [ {"amp1": 0.0, "dur1": 50.0, "rs" 0.01},              |
         |                |         {"amp2": 10.0, "dur2": 100.0},                       |
         |                |         {"amp3": 20.0, "dur3": 150.0} ]                      |
         |                |**NOTE** There is not "amp>3" (therefore no "dur>3")          |
-        |                | - To add the electrode/pipette resistance do it for all with |
-        |                | key "rs". This should be the same for all because its the    |
-        |                | same setup, just the amplitudes differ.                      |
+        |                | - To add the electrode/pipette resistance do it just once    |
+        |                | with key "rs". This should be the same for all because its   |
+        |                | the same setup, just the amplitudes differ.                  |
         |                | - Since "Clamp is on at time 0, off at time dur1+dur2+dur3"  |
         |                |if you don't want to start the simulation with it just set    |
         |                |"amp1": 0.0                                                   |
@@ -255,8 +255,8 @@ class Stimulator(object):
         if voltagetype is None or injparameters is None or neuronsection is None:
             raise ValueError("voltagetype must be either 'SEClamp' or 'VClamp'. injparameters must be a list such that its elements are dictionaries [ {}, {}, ... ]. neuronsection must be for eg cell.soma where cell = CellTemplate().")
         else:
-            if currenttype is "SEClamp" or \
-               currenttype is "VClamp":
+            if voltagetype is "SEClamp" or \
+               voltagetype is "VClamp":
                 desiredfunc = self.__getattribute__( "inject_"+voltagetype )
                 stimuli_list = desiredfunc( injparameters, neuronsection )
             else:

@@ -188,7 +188,7 @@ proc init() {
   finitialize(v_init)
   forall if (ismembrane("ca_ion")) {
     // iterate over all internal nodes (segments) and adjust amp_cdpAIS accordingly
-    for (x,0) amp_cdpAIS(x) = -ica(x)
+    //for (x,0) amp_cdpAIS(x) = -ica(x)
   }
   if (cvode.active()) {
     cvode.re_init()

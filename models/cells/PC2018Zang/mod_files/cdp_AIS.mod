@@ -3,7 +3,7 @@
 NEURON {
   SUFFIX cdpAIS
   USEION ca READ cao, cai, ica WRITE cai
-  RANGE ica_pmp,ca1,ca2,ca3,ca4,ca5,ca9
+  RANGE ica_pmp,ca1,ca2,ca3,ca4,ca5,ca9, amp
 :RANGE pump_0
 : below idummy, a dummy current was not in the original model
 : w/o it the simulation via ExecutiveControl of cerebmodels results in --
@@ -34,7 +34,7 @@ UNITS {
 }
 
 PARAMETER {
-        :amp  (mA/cm2) : added this by Lungsi based on 
+        amp  (mA/cm2) : added this by Lungsi based on 
                       : https://www.neuron.yale.edu/phpBB/viewtopic.php?t=1905
         v
 	celsius =34     (degC)

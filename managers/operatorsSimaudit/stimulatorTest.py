@@ -150,5 +150,16 @@ class StimulatorTest(unittest.TestCase):
         os.chdir(pwd) # reset to the location of this stimulatorTest.py
         #shutil.rmtree("x86_64") # remove created directory ~/operatorsSimaudit/x86_64
 
+    #@unittest.skip("reason for skipping")
+    def test_8_inject_SEClamp(self):
+        #os.chdir("..") # this moves you up to ~/managers
+        #os.chdir("..") # you are now in parent /cerebmodels
+        injparam = [ {"amp1": 0.0, "dur1": 50.0},
+                     {"amp2": -70., "dur2": 100.},
+                     {"amp3": 50.0, "dur3": 150.0} ]
+        voltg_stimuli = self.st.inject_SEClamp(injparam, self.chosenmodel.cell.soma)
+        self.assertEqual( len(voltg_stimuli ), len(injparam) )
+        #os.chdir(pwd) # reset to the location of this stimulatorTest.py
+
 if __name__ == '__main__':
     unittest.main()

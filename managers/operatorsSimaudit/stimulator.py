@@ -184,3 +184,81 @@ class Stimulator(object):
             else:
                 raise ValueError("currenttype must be 'IClamp', 'IRamp','GrC_Sine'")
         return stimuli_list
+
+    @staticmethod
+    def inject_SEClamp(parameters, injectsite):
+        """Injects SEClamp for `NEURON <https://neuron.yale.edu/neuron/>`_
+
+        **Keyword Arguments:**
+
+        +----------------+--------------------------------------------------------------+
+        | Keys           | Value type                                                   |
+        +================+==============================================================+
+        | ``parameters`` | - list such that each element is a dictionary [ {}, {}, {} ] |
+        |                | - Eg: [ {"amp1": 0.0, "dur1": 50.0},                         |
+        |                |         {"amp2": 10.0, "dur2": 100.0},                       |
+        |                |         {"amp3": 20.0, "dur3": 150.0} ]                      |
+        |                |**NOTE** There is not "amp>3" (therefore no "dur>3")          |
+        |                | - To add the electrode/pipette resistance do it for all with |
+        |                | key "rs". This should be the same for all because its the    |
+        |                | same setup, just the amplitudes differ.                      |
+        |                | - Since "Clamp is on at time 0, off at time dur1+dur2+dur3"  |
+        |                |if you don't want to start the simulation with it just set    |
+        |                |"amp1": 0.0                                                   |
+        +----------------+--------------------------------------------------------------+
+        | ``injectsite`` | ``neuron`` ``section``, for e.g., ``cell.soma``              |
+        +----------------+--------------------------------------------------------------+
+
+        **Returned values:** list of currents where each element is a ``hoc`` object ``h.SEClamp``.
+
+        **NOTE:** The ``h.SEClamp`` function is available in NEURON as `SEClamp <https://neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/mechanisms/mech.html#SEClamp>`_ by default. 
+
+        """
+        no_of_voltages = len(parameters) # number of voltages
+        list_of_voltages = []
+        for i in range(no_of_voltages):
+            list_of_voltages.append( h.SEClamp(0.5, sec=injectsite) )
+            for key, value in parameters[i].items():
+                if key in list_of_voltages[i].__dict__:
+                    setattr(list_of_voltages[i], key, value)
+                else:
+                    raise AttributeError( key + " is not an attribute in h.SEClamp." )
+        return list_of_voltages
+
+    def inject_voltage_NEURON(self, voltagetype=None, injparameters=None, neuronsection=None):
+        """Sets voltage injection parameters to either ``h.SEClamp``, ``h.VClamp``,
+
+        **Keyword Arguments:**
+
+        +-------------------+--------------------------------------------------------------+
+        | Keys              | Value type                                                   |
+        +===================+==============================================================+
+        | ``voltagetype``   | string; ``"SEClamp"`` or ``"VClamp"``.                       |
+        +-------------------+--------------------------------------------------------------+
+        | ``injparameters`` | - list such that each element is a dictionary [ {}, {}, {} ] |
+        |                   | - for ``SEClamp`` see :py:meth:`.inject_SEClamp`.            |
+        |                   | - for ``VClamp`` see :py:meth:`.inject_VClamp`.              |
+        +-------------------+--------------------------------------------------------------+
+        | ``neuronsection`` | ``neuron`` ``section``, for e.g., ``cell.soma``              |
+        +-------------------+--------------------------------------------------------------+
+
+        **Returned values:**Stimuli list where each element is ``hoc`` object ``h.SEClamp`` or ``h.VClamp``, depending on the given ``voltagetype`` parameter.
+
+        *NOTE:*
+
+        * depending on the currenttype choice :py:meth:`.inject_SEClamp` or :py:meth:`.inject_VClamp` is called
+        * ``h.SEClamp`` and not ``h.VClamp`` is recommended as `it is almost never necessary to use VClamp <https://www.neuron.yale.edu/phpBB/viewtopic.php?t=505>`_
+        * also,  `VClamp will not work with variable step integration (CVODE) <https://neurojustas.com/2018/03/27/important-neuron-gotchas-and-tips/>`_
+           
+        """
+
+        if voltagetype is None or injparameters is None or neuronsection is None:
+            raise ValueError("voltagetype must be either 'SEClamp' or 'VClamp'. injparameters must be a list such that its elements are dictionaries [ {}, {}, ... ]. neuronsection must be for eg cell.soma where cell = CellTemplate().")
+        else:
+            if currenttype is "SEClamp" or \
+               currenttype is "VClamp":
+                desiredfunc = self.__getattribute__( "inject_"+voltagetype )
+                stimuli_list = desiredfunc( injparameters, neuronsection )
+            else:
+                raise ValueError("currenttype must be 'SEClamp', 'VClamp'")
+        return stimuli_list

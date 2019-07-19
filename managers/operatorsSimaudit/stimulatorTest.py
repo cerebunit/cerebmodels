@@ -190,5 +190,21 @@ class StimulatorTest(unittest.TestCase):
                           [injparam[0]["amp1"], injparam[1]["dur2"], injparam[2]["dur3"]] )
         os.chdir(pwd) # reset to the location of this stimulatorTest.py
 
+    #@unittest.skip("reason for skipping")
+    def test_11_inject_voltage_NEURON_VClamp(self):
+        #os.chdir("..") # this moves you up to ~/managers
+        #os.chdir("..") # you are now in parent /cerebmodels
+        os.chdir(rootwd)
+        injparam = [ {"amp": 0.0, "dur": 50.0, "tau1": 5},
+                     {"amp": -70., "dur": 100.},
+                     {"amp": 50.0, "dur": 150.0} ]
+        voltg_stimuli = self.st.inject_voltage_NEURON(
+                                       voltagetype = "VClamp",
+                                       injparameters = injparam,
+                                       neuronsection = self.chosenmodel.cell.soma)
+        self.assertEqual( [voltg_stimuli.amp[0], voltg_stimuli.dur[1], voltg_stimuli.tau1],
+                          [injparam[0]["amp"], injparam[1]["dur"], injparam[0]["tau1"]] )
+        os.chdir(pwd) # reset to the location of this stimulatorTest.py
+
 if __name__ == '__main__':
     unittest.main()

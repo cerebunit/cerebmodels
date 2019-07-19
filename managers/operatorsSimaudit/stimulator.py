@@ -27,6 +27,8 @@ class Stimulator(object):
     +----------------------------------+------------------+
     | :py:meth:`.inject_SEClamp`       | static method    |
     +----------------------------------+------------------+
+    | :py:meth:`.inject_VClamp`        | static method    |
+    +----------------------------------+------------------+
     | :py:meth:`inject_voltage_NEURON` | class method     |
     +----------------------------------+------------------+
 
@@ -245,9 +247,9 @@ class Stimulator(object):
         |                |         {"amp": 10.0, "dur": 100.0},                         |
         |                |         {"amp": 20.0, "dur": 150.0} ]                        |
         |                |**NOTE** There is no amp[>2] (therefore no dur[>2])           |
-        |                | - To add the electrode/pipette resistance do it just once    |
-        |                | with key "rs". This should be the same for all because its   |
-        |                | the same setup, just the amplitudes differ.                  |
+        |                | - To change clamp parameters  with keys "gain", "rstim",     |
+        }                |"tau1" and "tau2", do it just once. They should be the same   |
+        |                |for all because its the same setup, just the amplitude changes|
         |                | - Since "Clamp is on at 0, off at time dur[0]+dur[1]+dur[2]" |
         |                |if you don't want to start the simulation with it just set the|
         |                | first "amp": 0.0                                             |
@@ -255,24 +257,11 @@ class Stimulator(object):
         | ``injectsite`` | ``neuron`` ``section``, for e.g., ``cell.soma``              |
         +----------------+--------------------------------------------------------------+
 
-        **Returned values:** list of currents where each element is a ``hoc`` object ``h.VClamp``.
+        **Returned values:** a ``hoc`` object ``h.VClamp``.
 
         **NOTE:** The ``h.VClamp`` function is available in NEURON as `VClamp <https://neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/mechanisms/mech.html#VClamp>`_ by default. 
 
         """
-        #no_of_voltages = len(parameters) # number of voltages
-        #list_of_voltages = []
-        #for i in range(no_of_voltages):
-        #    list_of_voltages.append( h.VClamp(0.5, sec=injectsite) )
-        #    for key, value in parameters[i].items():
-        #        if key in list_of_voltages[i].__dict__:
-                    #setattr(list_of_voltages[i], key+"["+str(i)+"]", value)
-        #            list_of_voltages[i]
-        #            list_of_voltages[i]
-        #            getattr(list_of_voltages[i], key)
-        #        else:
-        #            raise AttributeError( key + " is not an attribute in h.VClamp." )
-        #return list_of_voltages
         # NOTE: Do not insert several instances of this model at the same location
         # to make level changes. That is equivalent to independent clamps and they
         # will have incompatible internal state values.
@@ -281,9 +270,11 @@ class Stimulator(object):
         for i in range(no_of_voltages):
             for key, value in parameters[i].items():
                 if key in clampingvoltages.__dict__:
-                    #setattr(clampingvoltages, key, value)
-                    clampattr = getattr(clampingvoltages, key)
-                    clampattr[i] = value
+                    if key in ["gain", "rstim", "tau1", "tau2"]:
+                        setattr(clampingvoltages, key, value)
+                    else:
+                        clampattr = getattr(clampingvoltages, key)
+                        clampattr[i] = value
                 else:
                     raise AttributeError( key + " is not an attribute in h.VClamp." )
         return clampingvoltages

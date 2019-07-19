@@ -162,7 +162,7 @@ class StimulatorTest(unittest.TestCase):
                           [injparam[0]["amp1"], injparam[1]["dur2"], injparam[2]["dur3"]] )
         #os.chdir(pwd) # reset to the location of this stimulatorTest.py
 
-    @unittest.skip("reason for skipping")
+    #@unittest.skip("reason for skipping")
     def test_9_inject_VClamp(self):
         #os.chdir("..") # this moves you up to ~/managers
         #os.chdir("..") # you are now in parent /cerebmodels
@@ -170,7 +170,8 @@ class StimulatorTest(unittest.TestCase):
                      {"amp": -70., "dur": 100.},
                      {"amp": 50.0, "dur": 150.0} ]
         voltg_stimuli = self.st.inject_VClamp(injparam, self.chosenmodel.cell.soma)
-        self.assertEqual( len(voltg_stimuli ), len(injparam) )
+        self.assertEqual( [voltg_stimuli.amp[0], voltg_stimuli.dur[1], voltg_stimuli.dur[2]],
+                          [injparam[0]["amp"], injparam[1]["dur"], injparam[2]["dur"]] )
         #os.chdir(pwd) # reset to the location of this stimulatorTest.py
 
     #@unittest.skip("reason for skipping")

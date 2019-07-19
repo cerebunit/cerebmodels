@@ -260,19 +260,33 @@ class Stimulator(object):
         **NOTE:** The ``h.VClamp`` function is available in NEURON as `VClamp <https://neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/mechanisms/mech.html#VClamp>`_ by default. 
 
         """
-        no_of_voltages = len(parameters) # number of voltages
-        list_of_voltages = []
-        for i in range(no_of_voltages):
-            list_of_voltages.append( h.VClamp(0.5, sec=injectsite) )
-            for key, value in parameters[i].items():
-                if key in list_of_voltages[i].__dict__:
+        #no_of_voltages = len(parameters) # number of voltages
+        #list_of_voltages = []
+        #for i in range(no_of_voltages):
+        #    list_of_voltages.append( h.VClamp(0.5, sec=injectsite) )
+        #    for key, value in parameters[i].items():
+        #        if key in list_of_voltages[i].__dict__:
                     #setattr(list_of_voltages[i], key+"["+str(i)+"]", value)
-                    list_of_voltages[i]
-                    list_of_voltages[i]
-                    getattr(list_of_voltages[i], key)
+        #            list_of_voltages[i]
+        #            list_of_voltages[i]
+        #            getattr(list_of_voltages[i], key)
+        #        else:
+        #            raise AttributeError( key + " is not an attribute in h.VClamp." )
+        #return list_of_voltages
+        # NOTE: Do not insert several instances of this model at the same location
+        # to make level changes. That is equivalent to independent clamps and they
+        # will have incompatible internal state values.
+        no_of_voltages = len(parameters)
+        clampingvoltages = h.VClamp(0.5, sec=injectsite)
+        for i in range(no_of_voltages):
+            for key, value in parameters[i].items():
+                if key in clampingvoltages.__dict__:
+                    #setattr(clampingvoltages, key, value)
+                    clampattr = getattr(clampingvoltages, key)
+                    clampattr[i] = value
                 else:
                     raise AttributeError( key + " is not an attribute in h.VClamp." )
-        return list_of_voltages
+        return clampingvoltages
 
     def inject_voltage_NEURON(self, voltagetype=None, injparameters=None, neuronsection=None):
         """Sets voltage injection parameters to either ``h.SEClamp``, ``h.VClamp``,

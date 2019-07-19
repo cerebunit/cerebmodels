@@ -25,6 +25,10 @@ class Stimulator(object):
     +----------------------------------+------------------+
     | :py:meth:`inject_current_NEURON` | class method     |
     +----------------------------------+------------------+
+    | :py:meth:`.inject_SEClamp`       | static method    |
+    +----------------------------------+------------------+
+    | :py:meth:`inject_voltage_NEURON` | class method     |
+    +----------------------------------+------------------+
 
     *NOTE:*
 
@@ -198,7 +202,7 @@ class Stimulator(object):
         |                | - Eg: [ {"amp1": 0.0, "dur1": 50.0, "rs" 0.01},              |
         |                |         {"amp2": 10.0, "dur2": 100.0},                       |
         |                |         {"amp3": 20.0, "dur3": 150.0} ]                      |
-        |                |**NOTE** There is not "amp>3" (therefore no "dur>3")          |
+        |                |**NOTE** There is no "amp>3" (therefore no "dur>3")           |
         |                | - To add the electrode/pipette resistance do it just once    |
         |                | with key "rs". This should be the same for all because its   |
         |                | the same setup, just the amplitudes differ.                  |
@@ -214,15 +218,60 @@ class Stimulator(object):
         **NOTE:** The ``h.SEClamp`` function is available in NEURON as `SEClamp <https://neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/mechanisms/mech.html#SEClamp>`_ by default. 
 
         """
+        # NOTE: Do not insert several instances of this model at the same location
+        # to make level changes. That is equivalent to independent clamps and they
+        # will have incompatible internal state values.
+        no_of_voltages = len(parameters)
+        clampingvoltages = h.SEClamp(0.5, sec=injectsite)
+        for i in range(no_of_voltages):
+            for key, value in parameters[i].items():
+                if key in clampingvoltages.__dict__:
+                    setattr(clampingvoltages, key, value)
+                else:
+                    raise AttributeError( key + " is not an attribute in h.SEClamp." )
+        return clampingvoltages
+
+    @staticmethod
+    def inject_VClamp(parameters, injectsite):
+        """Injects SEClamp for `NEURON <https://neuron.yale.edu/neuron/>`_
+
+        **Keyword Arguments:**
+
+        +----------------+--------------------------------------------------------------+
+        | Keys           | Value type                                                   |
+        +================+==============================================================+
+        | ``parameters`` | - list such that each element is a dictionary [ {}, {}, {} ] |
+        |                | - Eg: [ {"amp": 0.0, "dur": 50.0},                           |
+        |                |         {"amp": 10.0, "dur": 100.0},                         |
+        |                |         {"amp": 20.0, "dur": 150.0} ]                        |
+        |                |**NOTE** There is no amp[>2] (therefore no dur[>2])           |
+        |                | - To add the electrode/pipette resistance do it just once    |
+        |                | with key "rs". This should be the same for all because its   |
+        |                | the same setup, just the amplitudes differ.                  |
+        |                | - Since "Clamp is on at 0, off at time dur[0]+dur[1]+dur[2]" |
+        |                |if you don't want to start the simulation with it just set the|
+        |                | first "amp": 0.0                                             |
+        +----------------+--------------------------------------------------------------+
+        | ``injectsite`` | ``neuron`` ``section``, for e.g., ``cell.soma``              |
+        +----------------+--------------------------------------------------------------+
+
+        **Returned values:** list of currents where each element is a ``hoc`` object ``h.VClamp``.
+
+        **NOTE:** The ``h.VClamp`` function is available in NEURON as `VClamp <https://neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/mechanisms/mech.html#VClamp>`_ by default. 
+
+        """
         no_of_voltages = len(parameters) # number of voltages
         list_of_voltages = []
         for i in range(no_of_voltages):
-            list_of_voltages.append( h.SEClamp(0.5, sec=injectsite) )
+            list_of_voltages.append( h.VClamp(0.5, sec=injectsite) )
             for key, value in parameters[i].items():
                 if key in list_of_voltages[i].__dict__:
-                    setattr(list_of_voltages[i], key, value)
+                    #setattr(list_of_voltages[i], key+"["+str(i)+"]", value)
+                    list_of_voltages[i]
+                    list_of_voltages[i]
+                    getattr(list_of_voltages[i], key)
                 else:
-                    raise AttributeError( key + " is not an attribute in h.SEClamp." )
+                    raise AttributeError( key + " is not an attribute in h.VClamp." )
         return list_of_voltages
 
     def inject_voltage_NEURON(self, voltagetype=None, injparameters=None, neuronsection=None):
@@ -258,7 +307,7 @@ class Stimulator(object):
             if voltagetype is "SEClamp" or \
                voltagetype is "VClamp":
                 desiredfunc = self.__getattribute__( "inject_"+voltagetype )
-                stimuli_list = desiredfunc( injparameters, neuronsection )
+                voltagestimuli = desiredfunc( injparameters, neuronsection )
             else:
                 raise ValueError("currenttype must be 'SEClamp', 'VClamp'")
-        return stimuli_list
+        return voltagestimuli

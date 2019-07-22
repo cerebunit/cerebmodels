@@ -121,22 +121,26 @@ class RecorderTest(unittest.TestCase):
         os.chdir(pwd) # reset to the location of this recorderTest.py
 
     #@unittest.skip("reason for skipping")
-    def test_6_stimulus_individual_voltages_NEURON(self):
+    def test_6_stimulus_overall_voltages_NEURON(self):
         #os.chdir("..") # this moves you up to ~/managers
         #os.chdir("..") # you are now in parent /cerebmodels
         os.chdir(rootwd)
         parameters = {"dt": 0.1, "celsius": 20, "tstop": 10, "v_init": 65}
         voltparameters = {"type": ["voltage", "SEClamp"],
-                          "stimlist": [ {'amp1': 0.0, 'dur1': 50.0},
-                                        {'amp2': -70.0, 'dur2': 100.0} ],
+                          "stimlist": [ {'amp1': 0.0, 'dur1': 5.0},
+                                        {'amp2': -70.0, 'dur2': 10.0} ],
                           "tstop": parameters["tstop"] }
         sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
-        stimuli_list = sm.stimulate_model_NEURON(stimparameters = voltparameters,
-                                               modelsite = self.chosenmodel.cell.soma)
-        rec_v_indivs = rc.stimulus_individual_voltages_NEURON(stimuli_list)
+        stimuli = sm.stimulate_model_NEURON(stimparameters = voltparameters,
+                                            modelsite = self.chosenmodel.cell.soma)
         sm.engage_NEURON()
+        rec_v = rc.stimulus_overall_voltages_NEURON(stimuli)
         # check the length of the rec_v = 0:dt:tstop
-        self.assertEqual( len( rec_v_indivs ), len( voltparameters["stimlist"] ) )
+        self.assertEqual( len( rec_v ),
+                          len( range(-1,
+                                     int(parameters["tstop"]/parameters["dt"]) )
+                             )
+                        )
         os.chdir(pwd) # reset to the location of this recorderTest.py
 
 if __name__ == '__main__':

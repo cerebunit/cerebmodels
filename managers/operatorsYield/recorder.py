@@ -129,7 +129,7 @@ class Recorder(object):
         return recorded_currents["stim0"]
         
     @staticmethod
-    def stimulus_individual_voltages_NEURON(stimuli):
+    def stimulus_overall_voltages_NEURON(stimuli, voltclamp="SEC"):
         """Returns a dictionary with keys in the form: "stim0", "stim1", "stim2", and so on ..., each representing an interval of current injection. The value for each key is an array (NEURON's ``h.Vector``) of recorded current injections given to a cell section.
 
         **Arguments:** Pass a list made up of `h.Vector <https://www.neuron.yale.edu/neuron/static/new_doc/programming/math/vector.html>`_. The ``h.Vector``'s representing any of the available current types, like, ``h.IClamp``, ``h.IRamp``, etc ...
@@ -144,12 +144,30 @@ class Recorder(object):
         ``>> injections = rc.stimulus_individual_currents_NEURON(stimuli)``
 
         """
-        no_of_stimuli = len(stimuli)
-        recorded_voltages = {}
-        # record each current
-        for i in range(no_of_stimuli):
-            key = "stim"+str(i)
-            recorded_voltages.update( {key: h.Vector()} )
-            recorded_voltages[key].record( stimuli[i]._ref_v )
-        return recorded_voltages
-
+        clamped_voltages = np.linspace(h.v_init, h.v_init, h.tstop/h.dt + 1)
+        time_axis = np.arange(0, h.tstop+h.dt, h.dt)
+        i = 0
+        if voltclamp=="VC":
+            for t in time_axis:
+                if t < stimuli.dur[0]-h.dt:
+                    clamped_voltages[i] = clamped_voltages[i] + stimuli.amp[0]
+                elif (t >= stimuli.dur[0]-h.dt) and (t < stimuli.dur[1]-h.dt):
+                    clamped_voltages[i] = clamped_voltages[i] + stimuli.amp[1]
+                elif (t >= stimuli.dur[1]-h.dt) and (t < stimuli.dur[2]-h.dt):
+                    clamped_voltages[i] = clamped_voltages[i] + stimuli.amp[2]
+                elif t >= stimuli.dur[2]-h.dt:
+                    clamped_voltages[i] = clamped_voltages[i]
+                i += 1
+        else: #voltclamp=="SEC" #DEFAULT
+            for t in time_axis:
+                if t < stimuli.dur1-h.dt:
+                    clamped_voltages[i] = clamped_voltages[i] + stimuli.amp1
+                elif (t >= stimuli.dur1-h.dt) and (t < stimuli.dur2-h.dt):
+                    clamped_voltages[i] = clamped_voltages[i] + stimuli.amp2
+                elif (t >= stimuli.dur2-h.dt) and (t < stimuli.dur3-h.dt):
+                    clamped_voltages[i] = clamped_voltages[i] + stimuli.amp3
+                elif t >= stimuli.dur3-h.dt:
+                    clamped_voltages[i] = clamped_voltages[i]
+                i += 1
+        return clamped_voltages
+        

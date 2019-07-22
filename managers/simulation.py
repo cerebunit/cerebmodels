@@ -129,12 +129,13 @@ class SimulationManager(object):
         |                     | - value for ``"type"``is a two element list of strings       |
         |                     | - ``<stimulus category> <specific type of that category>``   |
         |                     | - the first element is ALWAYS ``<stimulus category>``        |
-        |                     | - Eg: for current inject on a cell`` ["current", "IClamp"]`` |
+        |                     | - Eg1: for current inject on a cell`` ["current", "IClamp"]``|
         |                     | - value for `` "stimlist"`` is a list with elements as       |
         |                     | dictionary; like [ {}, {}, ... ]                             |
-        |                     | - Eg1: [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},          |
+        |                     | - [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},               |
         |                     | {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]             |
-        |                     | - Eg2: [ {"amp_initial": 0.0, "amp_final": 0.5, "dur": 5.0,  |
+        |                     | - Eg2: for current inject `` ["current", "IRamp"]``          |
+        |                     | - [ {"amp_initial": 0.0, "amp_final": 0.5, "dur": 5.0,       |
         |                     | "delay": 5.0},                                               |
         |                     | {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0,           |
         |                     | "delay": 10.0},                                              |
@@ -142,6 +143,15 @@ class SimulationManager(object):
         |                     | "delay": 15.0},                                              |
         |                     | {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0,           |
         |                     | "delay": 20.0} ]                                             |
+        |                     | - Eg3: injecting voltage in a cell ``["voltage","SEClamp"]`` |
+        |                     | - value for `` "stimlist"`` is a list with elements as       |
+        |                     | dictionary; like [ {}, {}, ... ]                             |
+        |                     | - [ {"amp1": 0., "dur1": 50.}, {"amp2": 10., "dur2": 100.},  |
+        |                     | {"amp3": 0., "dur3": 150.} ]                                 |
+        |                     | - NOTE: unlike current clamps, voltage clamps only support   |
+        |                     |three levels of voltage change, and since voltage clamp begins|
+        |                     | at time 0, off at time dur1+dur2+dur3 if you don't want to   |
+        |                     |start simulation with it just set "amp1" 0.0                  |
         +---------------------+--------------------------------------------------------------+
         | ``modelsite``       | section of the instantiated ``NEURON`` based model where you |
         |                     | would want to stimulate. For eg. ``chosenmodel.cell.soma``   |
@@ -194,8 +204,14 @@ class SimulationManager(object):
                 stimuli_list = st.inject_current_NEURON(
                                            currenttype = stimparameters["type"][1],
                                            injparameters = stimparameters["stimlist"],
-                                           neuronsection = modelsite) 
+                                           neuronsection = modelsite)
                 return stimuli_list
+            elif stimparameters["type"][0] is "voltage":
+                stimuli = st.inject_voltage_NEURON(
+                                           voltagetype = stimparameters["type"][1],
+                                           injparameters = stimparameters["stimlist"],
+                                           neuronsection = modelsite) 
+                return stimuli
 
     @staticmethod
     def lock_and_load_capability(chosenmodel, modelcapability, **kwargs):

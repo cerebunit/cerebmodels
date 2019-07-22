@@ -161,6 +161,27 @@ class SimulationManagerTest(unittest.TestCase):
                           len(currparameters["stimlist"]) )
         os.chdir(pwd) # return to the location of this test file
 
+    #@unittest.skip("reason for skipping")
+    def test_11_stimulate_model_NEURON_voltage(self):
+        os.chdir(rootwd) # move up to load the model
+        # pick the model
+        modelmodule = importlib.import_module("models.cells.modelDummyTest")
+        pickedmodel = getattr(modelmodule,
+                              uu.classesinmodule(modelmodule)[0].__name__)
+        chosenmodel = pickedmodel()
+        #
+        parameters = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}
+        voltparameters = {"type": ["voltage", "SEClamp"],
+                          "stimlist": [ {'amp1': 0., 'dur1': 100.0},
+                                        {'amp2': 20., 'dur2': 150.0} ] }
+        sm.prepare_model_NEURON(parameters=parameters, chosenmodel=chosenmodel)
+        stimuli = sm.stimulate_model_NEURON( stimparameters = voltparameters,
+                                             modelsite = chosenmodel.cell.soma )
+        self.assertEqual( [ stimuli.amp1, stimuli.amp2, stimuli.dur2 ],
+                          [ voltparameters["stimlist"][0]["amp1"],
+                            voltparameters["stimlist"][1]["amp2"],
+                            voltparameters["stimlist"][1]["dur2"] ] )
+        os.chdir(pwd) # return to the location of this test file
 
 if __name__ == '__main__':
     unittest.main()

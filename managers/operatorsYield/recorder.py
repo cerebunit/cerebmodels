@@ -80,6 +80,7 @@ class Recorder(object):
         **Returned value:** {"stim0": ``h.Vector``, "stim1": ``h.Vector``, ..., "stimN": ``h.Vector``} and each respective ``h.Vector`` contains the array of amplitude of the injected current for the respective interval.
 
         **Use case:**
+        For current-clamping scenarios,
 
         ``>> rc = Recorder()``
 
@@ -106,6 +107,7 @@ class Recorder(object):
         **Returned value:** ``h.Vector`` of recorded currents. `More about this data type. <https://www.neuron.yale.edu/neuron/static/new_doc/programming/math/vector.html>`_
 
         **Use case:**
+        For current-clamping scenarios,
 
         ``>> rc = Recorder()``
 
@@ -126,3 +128,28 @@ class Recorder(object):
             recorded_currents["stim0"].add( recorded_currents[key] )
         return recorded_currents["stim0"]
         
+    @staticmethod
+    def stimulus_individual_voltages_NEURON(stimuli):
+        """Returns a dictionary with keys in the form: "stim0", "stim1", "stim2", and so on ..., each representing an interval of current injection. The value for each key is an array (NEURON's ``h.Vector``) of recorded current injections given to a cell section.
+
+        **Arguments:** Pass a list made up of `h.Vector <https://www.neuron.yale.edu/neuron/static/new_doc/programming/math/vector.html>`_. The ``h.Vector``'s representing any of the available current types, like, ``h.IClamp``, ``h.IRamp``, etc ...
+
+        **Returned value:** {"stim0": ``h.Vector``, "stim1": ``h.Vector``, ..., "stimN": ``h.Vector``} and each respective ``h.Vector`` contains the array of amplitude of the injected current for the respective interval.
+
+        **Use case:**
+        For voltage-clamping scenarios,
+
+        ``>> rc = Recorder()``
+
+        ``>> injections = rc.stimulus_individual_currents_NEURON(stimuli)``
+
+        """
+        no_of_stimuli = len(stimuli)
+        recorded_voltages = {}
+        # record each current
+        for i in range(no_of_stimuli):
+            key = "stim"+str(i)
+            recorded_voltages.update( {key: h.Vector()} )
+            recorded_voltages[key].record( stimuli[i]._ref_v )
+        return recorded_voltages
+

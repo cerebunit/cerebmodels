@@ -131,10 +131,10 @@ class Recorder(object):
         return recorded_currents["stim0"]
         
     @staticmethod
-    def stimulus_overall_voltage_NEURON(stimuli, voltclamp="SEC"):
+    def stimulus_overall_voltage_NEURON(stimuli, voltclamp="SEClamp"):
         """Returns an array (NumPy) such that all the amplitude values (in ``h.SEClamp`` or ``h.VClamp`` is combined/flattened into just one. That is, one trace of all the voltage injections (amplitudes).
 
-        **Arguments:** Pass a voltage clamping stimulus, either ``h.SEClamp`` or ``h.VClamp``. The argument is optional. It is the keyword argument __voltclamp__. By default it is "SEC" because for NEURON this is the `recommended voltage clamping method <https://www.neuron.yale.edu/phpBB/viewtopic.php?t=505>`_. However, in those special cases where ``h.VClamp`` is used the user **must** pass the keyword argument ``voltclamp = "VC"``.
+        **Arguments:** Pass a voltage clamping stimulus, either ``h.SEClamp`` or ``h.VClamp``. The argument is optional. It is the keyword argument __voltclamp__. By default it is "SEClamp" because for NEURON this is the `recommended voltage clamping method <https://www.neuron.yale.edu/phpBB/viewtopic.php?t=505>`_. However, in those special cases where ``h.VClamp`` is used the user **must** pass the keyword argument ``voltclamp = "VClamp"``.
 
         **Returned value:** An array of stimulus, voltage amplitudes.
 
@@ -154,7 +154,7 @@ class Recorder(object):
         clamped_voltages = np.linspace(h.v_init, h.v_init, int(h.tstop/h.dt) + 1)
         time_axis = np.arange(0, h.tstop+h.dt, h.dt)
         i = 0
-        if voltclamp=="VC":
+        if voltclamp=="VClamp":
             for t in time_axis:
                 if t < stimuli.dur[0]-h.dt:
                     clamped_voltages[i] = clamped_voltages[i] + stimuli.amp[0]
@@ -165,7 +165,7 @@ class Recorder(object):
                 elif t >= stimuli.dur[2]-h.dt:
                     clamped_voltages[i] = clamped_voltages[i]
                 i += 1
-        else: #voltclamp=="SEC" #DEFAULT
+        else: #voltclamp=="SEClamp" #DEFAULT
             for t in time_axis:
                 if t < stimuli.dur1-h.dt:
                     clamped_voltages[i] = clamped_voltages[i] + stimuli.amp1

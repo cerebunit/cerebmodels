@@ -14,7 +14,9 @@ class DummyCell(object):
 
     def __init__(self):
         self.regions = {'soma': 0.0, # refer Dummy.py to choose regions
-                        'axon': 0.0}
+                        'axon': 0.0,
+                        'channels': {'soma': ['pas'],
+                                     'axon': ['pas']}}
         self.modelscale = "cells"
         self.modelname = "DummyTest"
         #

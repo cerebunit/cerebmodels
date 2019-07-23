@@ -16,9 +16,12 @@ class Dummy(object):
         self.axon = h.Section(name='axon')
         self.axon.nseg = 20 # compartmentalized parameter
         self.axon.diam = 1.0  # um
-        self.soma.L = 1000.0 # um long
+        self.axon.L = 1000.0 # um long
         self.axon.insert('hh')
         self.axon.connect(self.soma,1,0)
+        #
+        self.soma.insert("pas")
+        self.axon.insert("pas")
         
         ### ====== STANDARDIZED FOR cerebmodels =======
         ### ===== mandatory for all NEURON models =====

@@ -201,7 +201,7 @@ class Stimulator(object):
         | Keys           | Value type                                                   |
         +================+==============================================================+
         | ``parameters`` | - list such that each element is a dictionary [ {}, {}, {} ] |
-        |                | - Eg: [ {"amp1": 0.0, "dur1": 50.0, "rs" 0.01},              |
+        |                | - Eg: [ {"amp1": 0.0, "dur1": 50.0, "rs": 1E-6},             |
         |                |         {"amp2": 10.0, "dur2": 100.0},                       |
         |                |         {"amp3": 20.0, "dur3": 150.0} ]                      |
         |                |**NOTE** There is no "amp>3" (therefore no "dur>3")           |
@@ -217,7 +217,10 @@ class Stimulator(object):
 
         **Returned values:** list of currents where each element is a ``hoc`` object ``h.SEClamp``.
 
-        **NOTE:** The ``h.SEClamp`` function is available in NEURON as `SEClamp <https://neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/mechanisms/mech.html#SEClamp>`_ by default. 
+        **NOTE:**
+
+        - The ``h.SEClamp`` function is available in NEURON as `SEClamp <https://neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/mechanisms/mech.html#SEClamp>`_ by default.
+        - By default the electrode resistance (Re but SEClamp attribute is ``rs``) is made very small ``1E-6``. This is because the input resistance (Rin) for the voltmeter (i.e, the measuring circuit) must be very large (i.e, infinite resistance) so that the voltage drop across the voltmeter (given by the voltage divider equation, the resistance is Rin/(Rin+Re)) is as close as possible to the membrane voltage it is supposed to be clamping. By making the electrode resistance very small it is the same as infinite Rin. 
 
         """
         # NOTE: Do not insert several instances of this model at the same location
@@ -225,6 +228,7 @@ class Stimulator(object):
         # will have incompatible internal state values.
         no_of_voltages = len(parameters)
         clampingvoltages = h.SEClamp(0.5, sec=injectsite)
+        clampingvoltages.rs = 1E-6
         for i in range(no_of_voltages):
             for key, value in parameters[i].items():
                 if key in clampingvoltages.__dict__:
@@ -259,7 +263,10 @@ class Stimulator(object):
 
         **Returned values:** a ``hoc`` object ``h.VClamp``.
 
-        **NOTE:** The ``h.VClamp`` function is available in NEURON as `VClamp <https://neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/mechanisms/mech.html#VClamp>`_ by default. 
+        **NOTE:**
+
+        - The ``h.VClamp`` function is available in NEURON as `VClamp <https://neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/mechanisms/mech.html#VClamp>`_ by default. 
+        - By default the electrode resistance (Re but VClamp attribute is ``rstim``) is made very small ``1E-6``. This is because the input resistance (Rin) for the voltmeter (i.e, the measuring circuit) must be very large (i.e, infinite resistance) so that the voltage drop across the voltmeter (given by the voltage divider equation, the resistance is Rin/(Rin+Re)) is as close as possible to the membrane voltage it is supposed to be clamping. By making the electrode resistance very small it is the same as infinite Rin. 
 
         """
         # NOTE: Do not insert several instances of this model at the same location
@@ -267,6 +274,7 @@ class Stimulator(object):
         # will have incompatible internal state values.
         no_of_voltages = len(parameters)
         clampingvoltages = h.VClamp(0.5, sec=injectsite)
+        clampingvoltages.rstim = 1E-6
         for i in range(no_of_voltages):
             for key, value in parameters[i].items():
                 if key in clampingvoltages.__dict__:

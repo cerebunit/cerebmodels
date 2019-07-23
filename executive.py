@@ -128,17 +128,19 @@ class ExecutiveControl(object):
         # NOTE: although it is convenient to use self.chosenmodel
         # to the user having explicitly choose onmodel as an argument is clearer
         uu.check_not_None_in_arg({'parameters': parameters, 'onmodel': onmodel})
+        stimtype = (lambda stimpar: None if stimparameters is None else stimparameters["type"])
         self.simtime = datetime.datetime.now()
         if onmodel.modelscale is "cells":
             sm.prepare_model_NEURON( parameters=parameters, chosenmodel=onmodel,
                                      modelcapability = capabilities['model'],
                                      cerebunitcapability = capabilities['vtest'] )
-            stimuli_list = sm.stimulate_model_NEURON(
+            stimuli_clamp = sm.stimulate_model_NEURON(
                                           stimparameters = stimparameters,
                                           modelsite = stimloc )
-            self.recordings["time"], self.recordings["response"], rec_i_indivs = \
+            self.recordings["time"], self.recordings["response"], rec_clamp_indivs = \
                     rm.prepare_recording_NEURON( onmodel,
-                                                      stimuli = stimuli_list )
+                                                 stimuli = stimuli_clamp,
+                                                 stimtype = stimtype )
             if mode == "raw":
                 sm.engage_NEURON()
             elif mode == "capability":
@@ -147,7 +149,7 @@ class ExecutiveControl(object):
                                    parameters=parameters, stimparameters=stimparameters,
                                    stimloc=stimloc, onmodel=onmodel, mode="capability" )
             self.recordings["stimulus"] = \
-                    rm.postrun_record_NEURON( injectedcurrents = rec_i_indivs )
+                    rm.postrun_record_NEURON( injectedstimuli = rec_clamp_indivs )
         # save the parameters as attributes
         self.chosenmodel = onmodel
         self.parameters = parameters

@@ -51,7 +51,7 @@ class ExecutiveControlTest(unittest.TestCase):
                                               'vtest': None} ),
                           pickedmodel )
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_5_launch_model_NEURON_nostimulus_raw(self):
         pickedmodel = self.ec.choose_model( modelscale="cells",
                                             modelname="PC2015Masoli" )
@@ -61,7 +61,7 @@ class ExecutiveControlTest(unittest.TestCase):
                               onmodel = pickedmodel),
                           pickedmodel )
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_6_save_response(self):
         pickedmodel = self.ec.choose_model( modelscale="cells",
                                             modelname="PC2015Masoli" )

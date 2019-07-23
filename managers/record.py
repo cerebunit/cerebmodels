@@ -138,6 +138,7 @@ class RecordManager(object):
                 for key in chosenmodel.regions.keys(): # for all the desired section
                     section = getattr(chosenmodel.cell, key)
                     volts.append( rc.response_voltage_NEURON(section) )
+                #print(len(volts))
                 volt_record = cls.create_response_dictionary(
                                     list(chosenmodel.regions.keys()), volts )
                 return [ time_record, volt_record, stimuli ] 

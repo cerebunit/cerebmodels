@@ -104,7 +104,6 @@ class RecordManagerTest(unittest.TestCase):
         sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
         vstimuli = sm.stimulate_model_NEURON(stimparameters = injparameters,
                                              modelsite = self.chosenmodel.cell.soma)
-        print(vstimuli)
         rec_t, rec_v, rec_v_stim = rm.prepare_recording_NEURON(
                                                          self.chosenmodel,
                                                          stimuli = vstimuli,
@@ -178,14 +177,11 @@ class RecordManagerTest(unittest.TestCase):
                                                          stimuli = vstimuli,
                                                          stimtype = injparameters["type"] )
         sm.engage_NEURON()
-        rec_v = rm.postrun_record_NEURON( injectedstimuli = rec_v_indivs,
-                                          stimtype = injparameters["type"] )
+        rec_v_stim = rm.postrun_record_NEURON( injectedstimuli = rec_v_indivs,
+                                               stimtype = injparameters["type"] )
         total_iterations = len( range(-1, int(parameters["tstop"]/parameters["dt"])) )
-        #print(len(rec_v), total_iterations, len(rec_t), len(rec_v[self.regionslist_str[0]]))
-        #print(len(rec_v), self.regionslist_str)
-        #self.assertEqual( len(rec_t) + len(rec_v[self.regionslist_str[0]]) + len(rec_v),
-        #                  3*total_iterations )
-        self.assertEqual( len(rec_t) + len(rec_v) + len(rec_v), 3*total_iterations )
+        self.assertEqual( len(rec_t) + len(rec_v[self.regionslist_str[0]]) + len(rec_v_stim),
+                          3*total_iterations )
         os.chdir(pwd) # reset to the location of this managerRecordTest.py
 
 if __name__ == '__main__':

@@ -19,6 +19,8 @@ class Recorder(object):
     +-------------------------------------------------+------------------------+
     | :py:meth:`.stimulus_overall_current_NEURON`     | static method          |
     +-------------------------------------------------+------------------------+
+    | :py:meth:`.stimulus_overall_voltage_NEURON`     | static method          |
+    +-------------------------------------------------+------------------------+
 
     """
 
@@ -129,22 +131,27 @@ class Recorder(object):
         return recorded_currents["stim0"]
         
     @staticmethod
-    def stimulus_overall_voltages_NEURON(stimuli, voltclamp="SEC"):
-        """Returns a dictionary with keys in the form: "stim0", "stim1", "stim2", and so on ..., each representing an interval of current injection. The value for each key is an array (NEURON's ``h.Vector``) of recorded current injections given to a cell section.
+    def stimulus_overall_voltage_NEURON(stimuli, voltclamp="SEC"):
+        """Returns an array (NumPy) such that all the amplitude values (in ``h.SEClamp`` or ``h.VClamp`` is combined/flattened into just one. That is, one trace of all the voltage injections (amplitudes).
 
-        **Arguments:** Pass a list made up of `h.Vector <https://www.neuron.yale.edu/neuron/static/new_doc/programming/math/vector.html>`_. The ``h.Vector``'s representing any of the available current types, like, ``h.IClamp``, ``h.IRamp``, etc ...
+        **Arguments:** Pass a voltage clamping stimulus, either ``h.SEClamp`` or ``h.VClamp``. The argument is optional. It is the keyword argument __voltclamp__. By default it is "SEC" because for NEURON this is the `recommended voltage clamping method <https://www.neuron.yale.edu/phpBB/viewtopic.php?t=505>`_. However, in those special cases where ``h.VClamp`` is used the user **must** pass the keyword argument ``voltclamp = "VC"``.
 
-        **Returned value:** {"stim0": ``h.Vector``, "stim1": ``h.Vector``, ..., "stimN": ``h.Vector``} and each respective ``h.Vector`` contains the array of amplitude of the injected current for the respective interval.
+        **Returned value:** An array of stimulus, voltage amplitudes.
 
         **Use case:**
-        For voltage-clamping scenarios,
+        For current-clamping scenarios,
 
         ``>> rc = Recorder()``
 
-        ``>> injections = rc.stimulus_individual_currents_NEURON(stimuli)``
+        ``>> overallinjection = rc.stimulus_overall_voltage_NEURON(injections)``
+
+        *NOTE:*
+
+        * This method should only be called AFTER ``h.run()``
+        * When the amplitude is 0 the corresponding array value is equal to ``h.v_init``
 
         """
-        clamped_voltages = np.linspace(h.v_init, h.v_init, h.tstop/h.dt + 1)
+        clamped_voltages = np.linspace(h.v_init, h.v_init, int(h.tstop/h.dt) + 1)
         time_axis = np.arange(0, h.tstop+h.dt, h.dt)
         i = 0
         if voltclamp=="VC":

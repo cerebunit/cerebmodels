@@ -121,7 +121,7 @@ class RecorderTest(unittest.TestCase):
         os.chdir(pwd) # reset to the location of this recorderTest.py
 
     #@unittest.skip("reason for skipping")
-    def test_6_stimulus_overall_voltages_NEURON(self):
+    def test_6_stimulus_overall_voltage_NEURON(self):
         #os.chdir("..") # this moves you up to ~/managers
         #os.chdir("..") # you are now in parent /cerebmodels
         os.chdir(rootwd)
@@ -134,7 +134,7 @@ class RecorderTest(unittest.TestCase):
         stimuli = sm.stimulate_model_NEURON(stimparameters = voltparameters,
                                             modelsite = self.chosenmodel.cell.soma)
         sm.engage_NEURON()
-        rec_v = rc.stimulus_overall_voltages_NEURON(stimuli)
+        rec_v = rc.stimulus_overall_voltage_NEURON(stimuli)
         # check the length of the rec_v = 0:dt:tstop
         self.assertEqual( len( rec_v ),
                           len( range(-1,

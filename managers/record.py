@@ -45,12 +45,15 @@ class RecordManager(object):
         return x
 
     @classmethod
-    def prepare_recording_NEURON(cls, chosenmodel, stimuli=None):
+    def prepare_recording_NEURON(cls, chosenmodel, stimuli=None, stimtype=None):
         """Prepares recording for time, voltage and stimulus (optional).
 
         **Argument:** instantiated NEURON based model.
 
-        **Keyword argument** (optional): with key "stimuli" whose value is a list. For e.g. [h.IClamp(0.5,sec=soma), h.IClamp(0.5,sec=soma)]
+        **Keyword argument** (optional):
+
+        - with key "stimuli" whose value is a list. For e.g. [h.IClamp(0.5,sec=soma), h.IClamp(0.5,sec=soma)]
+        - with key "stimtype" whose value is a list of the form ``["current", "IRamp"]``. Notice that this is the value of the key "type" in stimulation parameter that is passed in ``SimulationManager.stimulate_model_NEURON``. Note that, although optional if the key "stimuli" is passed then "stimtype" **must** also be passed.
 
         **Returned value:** Three elements in the following order
 
@@ -63,7 +66,9 @@ class RecordManager(object):
         |        |                     |- region-name for key whose value is          |
         |        |                     |- key value is list; response from the region |
         +--------+---------------------+----------------------------------------------+
-        | third  | recorded injections |- list of individual injections if stimulated |
+        | third  | recorded injections |- list of individual current injections if    |
+        |        |                     |stimulated (current clamp)                    |
+        |        |                     |- empty list ``[]`` for voltage clamp stimulus|
         |        |                     |- else, string "Model is not stimulated"      |
         +--------+---------------------+----------------------------------------------+
 
@@ -102,33 +107,51 @@ class RecordManager(object):
 
         ::
 
-            rec_t, rec_v, rec_injs = rm.prepare_recording_NEURON(chosenmodel, stimuli=currents)
+            rec_t, rec_v, rec_injs = rm.prepare_recording_NEURON(chosenmodel, stimuli=currents,
+                                                                 stimtype="current-clamp")
 
         *NOTE:*
 
-        * ``rec_injs`` is a dictionary of individual injections
+        * ``rec_injs`` is a dictionary of individual current injections
         * it is not the final desired form
         * the desired single array of current injection trace is achieved only after putting the individual currents together
         * the appending of individual currents is not done during the preparatory stage; it is done after ``h.run()`` is called
+        * however, for voltage injections (i.e, voltage clamp), ``rec_injs`` is just an empty list ``[]``
 
         """
 
         time_record = rc.time_NEURON() # record time
-        volts = []         # record voltage
-        for key in chosenmodel.regions.keys(): # for all the desired section
-            section = getattr(chosenmodel.cell, key)
-            volts.append( rc.response_voltage_NEURON(section) )
-        volt_record = cls.create_response_dictionary(
-                                    list(chosenmodel.regions.keys()), volts )
-        if (stimuli is not None and                    # record stimulus
+        if (stimuli is not None and    # record stimulus
+            stimtype is not None and
             stimuli != "Model is not stimulated"): # if model is stimulated
-            currents_record = rc.stimulus_individual_currents_NEURON( stimuli )
-            return [ time_record, volt_record, currents_record ]
+            if stimtype[0]=="current":
+                volts = []         # record voltage
+                for key in chosenmodel.regions.keys(): # for all the desired section
+                    section = getattr(chosenmodel.cell, key)
+                    volts.append( rc.response_voltage_NEURON(section) )
+                volt_record = cls.create_response_dictionary(
+                                    list(chosenmodel.regions.keys()), volts )
+                currents_record = rc.stimulus_individual_currents_NEURON( stimuli )
+                return [ time_record, volt_record, currents_record ]
+            elif stimtype[0]=="voltage":
+                volts = []         # record voltage
+                for key in chosenmodel.regions.keys(): # for all the desired section
+                    section = getattr(chosenmodel.cell, key)
+                    volts.append( rc.response_voltage_NEURON(section) )
+                volt_record = cls.create_response_dictionary(
+                                    list(chosenmodel.regions.keys()), volts )
+                return [ time_record, volt_record, stimuli ] 
         else:
+            volts = []         # record voltage
+            for key in chosenmodel.regions.keys(): # for all the desired section
+                section = getattr(chosenmodel.cell, key)
+                volts.append( rc.response_voltage_NEURON(section) )
+            volt_record = cls.create_response_dictionary(
+                                    list(chosenmodel.regions.keys()), volts )
             return [ time_record, volt_record, "Model is not stimulated"]
 
     @staticmethod
-    def postrun_record_NEURON(injectedcurrents=None):
+    def postrun_record_NEURON(injectedstimuli=None, stimtype=None):
         """Records variable values after the simulator has been engaged.
 
         **Keyword arguments (optional):** This method can run without any arguments but optionally one can pass an argument with key "injectedcurrents" whose value type is a list; this is the list of ``hoc.objects`` of individual currents returned from :py:meth`.prepare_recording_NEURON`.
@@ -160,12 +183,15 @@ class RecordManager(object):
         Now pass the list of ``hoc.objects`` of individual currents
 
         ::
-            rec_i = rm.postrun_record_NEURON( injectedcurrents = stimuli_list )
+            rec_i = rm.postrun_record_NEURON( injectedstimuli = stimuli_list )
 
         """
 
-        if ( injectedcurrents is None or
-             injectedcurrents == "Model is not stimulated" ):
+        if ( injectedstimuli is None or
+             injectedstimuli == "Model is not stimulated" ):
             return "Model is not stimulated"
         else:
-            return rc.stimulus_overall_current_NEURON( injectedcurrents )
+            if stimtype[0]=="current":
+                return rc.stimulus_overall_current_NEURON( injectedstimuli )
+            elif stimtype[0]=="voltage":
+                return rc.stimulus_overall_voltage_NEURON( injectedstimuli, voltclamp=stimtype[1] )

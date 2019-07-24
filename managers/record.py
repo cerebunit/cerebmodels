@@ -23,7 +23,7 @@ class RecordManager(object):
         pass
 
     @staticmethod
-    def create_regionslist_str(chosenmodel, without=None):
+    def create_regionkeylist_responselist(chosenmodel, without=None):
         """Returns a list of strings of region names
 
         **Arguments:**
@@ -37,12 +37,20 @@ class RecordManager(object):
         +--------------------+------------------------------+
 
         """
+        responselist = []
         strip_channels_key = \
          lambda keyslist: keyslist.remove("channels") if "channels" in keyslist else keyslist
-        x = list(chosenmodel.regions.keys())
-        if without=="channels":
-            strip_channels_key(x)
-        return x
+        regionkeylist = list(chosenmodel.regions.keys())
+        for akey in chosenmodel.regions.keys(): # for all the desired section
+            if akey == without:
+                strip_channels_key(regionkeylist)
+                # replace with current response recording
+                #section = getattr(chosenmodel.cell, without)
+                #responselist.append( rc.response_voltage_NEURON( section ) )
+            else:
+                section = getattr(chosenmodel.cell, akey)
+                responselist.append( rc.response_voltage_NEURON( section ) )
+        return [regionkeylist, responselist]
 
     @staticmethod
     def create_response_dictionary(regionslist_str, responselist_num):
@@ -142,13 +150,11 @@ class RecordManager(object):
 
         """
         time_record = rc.time_NEURON() # record time
-        strip_channels_key = \
-         lambda keyslist: keyslist.remove("channels") if "channels" in keyslist else keyslist
         if (stimuli is not None and    # record stimulus
             stimtype is not None and
             stimuli != "Model is not stimulated"): # if model is stimulated
-            if stimtype[0]=="current":
-                volts = []         # record voltage
+            if stimtype[0]=="current": # record only voltage
+                volts = []
                 for key in chosenmodel.regions.keys(): # for all the desired section
                     if key != "channels":
                         section = getattr(chosenmodel.cell, key)
@@ -161,27 +167,15 @@ class RecordManager(object):
                                     volts )
                 currents_record = rc.stimulus_individual_currents_NEURON( stimuli )
                 return [ time_record, volt_record, currents_record ]
-            elif stimtype[0]=="voltage":
-                volts = []         # record voltage
-                for key in chosenmodel.regions.keys(): # for all the desired section
-                    section = getattr(chosenmodel.cell, key)
-                    volts.append( rc.response_voltage_NEURON(section) )
-                #print(len(volts))
-                volt_record = cls.create_response_dictionary(
-                                    strip_channels_key(list(chosenmodel.regions.keys())),
-                                    volts )
-                return [ time_record, volt_record, stimuli ] 
-        else:
-            volts = []         # record voltage
-            for key in chosenmodel.regions.keys(): # for all the desired section
-                if key != "channels":
-                    section = getattr(chosenmodel.cell, key)
-                    volts.append( rc.response_voltage_NEURON(section) )
-                    regionkeylist = cls.create_regionslist_str(chosenmodel,
-                                                               without="channels")
-            volt_record = cls.create_response_dictionary(
-                                    regionkeylist,
-                                    volts )
+            elif stimtype[0]=="voltage": # record current
+                [regionkeylist, volts] = \
+                    cls.create_regionkeylist_responselist( chosenmodel, without="channels" )
+                volt_record = cls.create_response_dictionary( regionkeylist, volts )
+                return [ time_record, volt_record, "Model is not stimulated"]
+        else: # record voltage & currents if possible when no stimulus is given
+            [regionkeylist, volts] = \
+                cls.create_regionkeylist_responselist( chosenmodel, without="channels" )
+            volt_record = cls.create_response_dictionary( regionkeylist, volts )
             return [ time_record, volt_record, "Model is not stimulated"]
 
     @staticmethod

@@ -23,6 +23,28 @@ class RecordManager(object):
         pass
 
     @staticmethod
+    def create_regionslist_str(chosenmodel, without=None):
+        """Returns a list of strings of region names
+
+        **Arguments:**
+
+        +--------------------+------------------------------+
+        | Argument           |                              |
+        +====================+==============================+
+        | first argument     | instantiated NEURON model    |
+        +--------------------+------------------------------+
+        | without (optional) | None (default) or "channels" |
+        +--------------------+------------------------------+
+
+        """
+        strip_channels_key = \
+         lambda keyslist: keyslist.remove("channels") if "channels" in keyslist else keyslist
+        x = list(chosenmodel.regions.keys())
+        if without=="channels":
+            strip_channels_key(x)
+        return x
+
+    @staticmethod
     def create_response_dictionary(regionslist_str, responselist_num):
         """Returns a dictionary whose value represent model response
 
@@ -119,18 +141,24 @@ class RecordManager(object):
         * however, for voltage injections (i.e, voltage clamp), ``rec_injs`` is just an empty list ``[]``
 
         """
-
         time_record = rc.time_NEURON() # record time
+        strip_channels_key = \
+         lambda keyslist: keyslist.remove("channels") if "channels" in keyslist else keyslist
         if (stimuli is not None and    # record stimulus
             stimtype is not None and
             stimuli != "Model is not stimulated"): # if model is stimulated
             if stimtype[0]=="current":
                 volts = []         # record voltage
                 for key in chosenmodel.regions.keys(): # for all the desired section
-                    section = getattr(chosenmodel.cell, key)
-                    volts.append( rc.response_voltage_NEURON(section) )
+                    if key != "channels":
+                        section = getattr(chosenmodel.cell, key)
+                        volts.append( rc.response_voltage_NEURON(section) )
+                x = list(chosenmodel.regions.keys())
+                strip_channels_key(x)
+                print( x )
                 volt_record = cls.create_response_dictionary(
-                                    list(chosenmodel.regions.keys()), volts )
+                                    strip_channels_key(list(chosenmodel.regions.keys())),
+                                    volts )
                 currents_record = rc.stimulus_individual_currents_NEURON( stimuli )
                 return [ time_record, volt_record, currents_record ]
             elif stimtype[0]=="voltage":
@@ -140,15 +168,20 @@ class RecordManager(object):
                     volts.append( rc.response_voltage_NEURON(section) )
                 #print(len(volts))
                 volt_record = cls.create_response_dictionary(
-                                    list(chosenmodel.regions.keys()), volts )
+                                    strip_channels_key(list(chosenmodel.regions.keys())),
+                                    volts )
                 return [ time_record, volt_record, stimuli ] 
         else:
             volts = []         # record voltage
             for key in chosenmodel.regions.keys(): # for all the desired section
-                section = getattr(chosenmodel.cell, key)
-                volts.append( rc.response_voltage_NEURON(section) )
+                if key != "channels":
+                    section = getattr(chosenmodel.cell, key)
+                    volts.append( rc.response_voltage_NEURON(section) )
+                    regionkeylist = cls.create_regionslist_str(chosenmodel,
+                                                               without="channels")
             volt_record = cls.create_response_dictionary(
-                                    list(chosenmodel.regions.keys()), volts )
+                                    regionkeylist,
+                                    volts )
             return [ time_record, volt_record, "Model is not stimulated"]
 
     @staticmethod

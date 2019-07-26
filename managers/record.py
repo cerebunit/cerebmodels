@@ -1,4 +1,5 @@
 # ../managers/record.py
+import re
 
 from managers.operatorsYield.recorder import Recorder as rc
 
@@ -37,19 +38,33 @@ class RecordManager(object):
         +--------------------+------------------------------+
 
         """
-        responselist = []
-        strip_channels_key = \
-         lambda keyslist: keyslist.remove("channels") if "channels" in keyslist else keyslist
         regionkeylist = list(chosenmodel.regions.keys())
-        for akey in chosenmodel.regions.keys(): # for all the desired section
-            if akey == without:
-                strip_channels_key(regionkeylist)
-            else:
+        responselist = []
+        (lambda keyslist: keyslist.remove("channels")
+                          if "channels" in keyslist else keyslist)(regionkeylist)
+        record_voltage = \
+         lambda chosenmodel, regionkey, responselist: \
+            responselist.append( rc.response_voltage_NEURON(
+                                               getattr(chosenmodel.cell, regionkey) ) )
+        record_current = \
+         lambda section, channelkey, responselist: \
+            responselist.append( rc.response_current_NEURON(
+                                               getattr(section(0.5), channelkey) ) )
+        if without is None: # record every thing
+            for akey in chosenmodel.regions.keys(): # for all the desired section
                 if akey != "channels":
-                    section = getattr(chosenmodel.cell, akey)
-                    responselist.append( rc.response_voltage_NEURON( section ) )
-                else:
-                    pass
+                    record_voltage(chosenmodel, akey, responselist)
+                elif akey == "channels":
+                    channels = chosenmodel.regions[akey]
+                    for sec in channels.keys():
+                        section = getattr(chosenmodel.cell, sec)
+                        for achan in channels[sec]:
+                            regionkeylist.append("channels_"+sec+"_"+achan)
+                            record_current(section, achan, responselist)
+        elif without == "channels": # record only voltages
+            for akey in chosenmodel.regions.keys(): # for all the desired section
+                if akey != "channels":
+                    record_voltage(chosenmodel, akey, responselist)
         return [regionkeylist, responselist]
 
     @staticmethod
@@ -70,8 +85,22 @@ class RecordManager(object):
 
         """
         x = {}
-        [ x.update({regionslist_str[i]: responselist_num[i]})
-                                    for i in range(len(regionslist_str)) ]
+        #[ x.update({regionslist_str[i]: responselist_num[i]})
+        #                            for i in range(len(regionslist_str)) ]
+        for i in range(len(regionslist_str)):
+            str_list = re.split("_", regionslist_str[i])
+            str_no = len(str_list)
+            if str_no==1:
+                x.update({str_list[0]: responselist_num[i]})
+            else:
+                node = {str_list[-1]: responselist_num[i]}
+                leaf = {}
+                for j in reversed(range(str_no-1)):
+                    if j != 0: # contruct the dictionary which will be the final value
+                        leaf.update( {str_list[j]: node} ) # leaf = {str_list[-2]: node}
+                    else: # assign constructed dictionary to the first in string list
+                        x.update({str_list[j]: node})
+                    node = leaf # set current leaf as node moving up the tree
         return x
 
     @classmethod
@@ -164,8 +193,8 @@ class RecordManager(object):
                     cls.create_regionkeylist_responselist( chosenmodel )
                 volts_currents_record = \
                     cls.create_response_dictionary( regionkeylist, volts_currents )
-                stim_record = []
-                return [ time_record, volt_record, stim_record ]
+                stim_voltages = stimuli
+                return [ time_record, volts_currents_record, stim_voltages ]
         else: # record voltage & currents if possible when no stimulus is given
             [regionkeylist, volts] = \
                 cls.create_regionkeylist_responselist( chosenmodel, without="channels" )
@@ -216,4 +245,5 @@ class RecordManager(object):
             if stimtype[0]=="current":
                 return rc.stimulus_overall_current_NEURON( injectedstimuli )
             elif stimtype[0]=="voltage":
-                return rc.stimulus_overall_voltage_NEURON( injectedstimuli, voltclamp=stimtype[1] )
+                return rc.stimulus_overall_voltage_NEURON( injectedstimuli,
+                                                           voltclamp=stimtype[1] )

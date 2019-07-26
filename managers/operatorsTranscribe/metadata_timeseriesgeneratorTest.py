@@ -200,8 +200,8 @@ class TimeseriesGeneratorTest(unittest.TestCase):
                                   recordings=recordings,
                                   runtimeparameters=runtimeparam,
                                   stimparameters=stimparameters)
-        #print(respmd.keys())
-        print(self.chosenmodel.regions.keys())
+        print(respmd.keys())
+        #print(self.chosenmodel.regions.keys())
         #a = all(boolean == True for boolean in
         #                        respmd["soma"]["data"] == recordings["response"]["soma"])
         #b = all(boolean == True for boolean in

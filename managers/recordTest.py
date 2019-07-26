@@ -33,7 +33,7 @@ class RecordManagerTest(unittest.TestCase):
         # pick the model
         parameters = {"dt": 0.1, "celsius": 30, "tstop": 10, "v_init": 65}
         sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
-        rec_t, rec_v, x = rm.prepare_recording_NEURON(self.chosenmodel)
+        rec_t, rec_v, rec_reg, x = rm.prepare_recording_NEURON(self.chosenmodel)
         sm.engage_NEURON()
         total_iterations = len( range(-1, int(parameters["tstop"]/parameters["dt"])) )
         self.assertEqual( len(rec_t) + len(rec_v["soma"]),#len(rec_v[self.regionslist_str[0]]),
@@ -46,7 +46,7 @@ class RecordManagerTest(unittest.TestCase):
         # pick the model
         parameters = {"dt": 0.1, "celsius": 30, "tstop": 10, "v_init": 65}
         sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
-        rec_t, rec_v, x = rm.prepare_recording_NEURON(self.chosenmodel)
+        rec_t, rec_v, rec_reg, x = rm.prepare_recording_NEURON(self.chosenmodel)
         sm.engage_NEURON()
         total_iterations = len( range(-1, int(parameters["tstop"]/parameters["dt"])) )
         self.assertEqual( len(rec_t) + len(rec_v["soma"]) #len(rec_v[self.regionslist_str[0]])
@@ -61,8 +61,8 @@ class RecordManagerTest(unittest.TestCase):
         parameters = {"dt": 0.1, "celsius": 30, "tstop": 10, "v_init": 65}
         sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
         stimulate_not = sm.stimulate_model_NEURON()
-        rec_t, rec_v, x = rm.prepare_recording_NEURON(self.chosenmodel,
-                                                      stimuli = stimulate_not)
+        rec_t, rec_v, rec_reg, x = rm.prepare_recording_NEURON(self.chosenmodel,
+                                                               stimuli = stimulate_not)
         sm.engage_NEURON()
         total_iterations = len( range(-1, int(parameters["tstop"]/parameters["dt"])) )
         self.assertEqual( len(rec_t) + len(rec_v["soma"]),#len(rec_v[self.regionslist_str[0]]),
@@ -81,10 +81,10 @@ class RecordManagerTest(unittest.TestCase):
         sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
         stimuli_list = sm.stimulate_model_NEURON(stimparameters = currparameters,
                                                modelsite = self.chosenmodel.cell.soma)
-        rec_t, rec_v, rec_i_indivs = rm.prepare_recording_NEURON(
-                                                         self.chosenmodel,
-                                                         stimuli = stimuli_list,
-                                                         stimtype = currparameters["type"] )
+        rec_t, rec_v, rec_reg, rec_i_indivs = rm.prepare_recording_NEURON(
+                                                           self.chosenmodel,
+                                                           stimuli = stimuli_list,
+                                                           stimtype = currparameters["type"] )
         sm.engage_NEURON()
         total_iterations = len( range(-1, int(parameters["tstop"]/parameters["dt"])) )
         self.assertEqual( len(rec_t) + len(rec_v["soma"]) #len(rec_v[self.regionslist_str[0]])
@@ -104,7 +104,7 @@ class RecordManagerTest(unittest.TestCase):
         sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
         vstimuli = sm.stimulate_model_NEURON(stimparameters = injparameters,
                                              modelsite = self.chosenmodel.cell.soma)
-        rec_t, rec_v, rec_v_stim = rm.prepare_recording_NEURON(
+        rec_t, rec_v, rec_reg, rec_v_stim = rm.prepare_recording_NEURON(
                                                          self.chosenmodel,
                                                          stimuli = vstimuli,
                                                          stimtype = injparameters["type"] )
@@ -127,7 +127,7 @@ class RecordManagerTest(unittest.TestCase):
         parameters = {"dt": 0.1, "celsius": 30, "tstop": 35, "v_init": 65}
         sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
         stimuli_list = sm.stimulate_model_NEURON()
-        rec_t, rec_v, rec_i_indivs = rm.prepare_recording_NEURON(
+        rec_t, rec_v, rec_reg, rec_i_indivs = rm.prepare_recording_NEURON(
                                                          self.chosenmodel,
                                                          stimuli = stimuli_list )
         sm.engage_NEURON()
@@ -149,7 +149,7 @@ class RecordManagerTest(unittest.TestCase):
         sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
         stimuli_list = sm.stimulate_model_NEURON(stimparameters = currparameters,
                                                modelsite = self.chosenmodel.cell.soma)
-        rec_t, rec_v, rec_i_indivs = rm.prepare_recording_NEURON(
+        rec_t, rec_v, rec_reg, rec_i_indivs = rm.prepare_recording_NEURON(
                                                          self.chosenmodel,
                                                          stimuli = stimuli_list,
                                                          stimtype = currparameters["type"] )
@@ -175,7 +175,7 @@ class RecordManagerTest(unittest.TestCase):
         sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
         vstimuli = sm.stimulate_model_NEURON(stimparameters = injparameters,
                                              modelsite = self.chosenmodel.cell.soma)
-        rec_t, rec_v, rec_v_stim = rm.prepare_recording_NEURON(
+        rec_t, rec_v, rec_reg, rec_v_stim = rm.prepare_recording_NEURON(
                                                          self.chosenmodel,
                                                          stimuli = vstimuli,
                                                          stimtype = injparameters["type"] )

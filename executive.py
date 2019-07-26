@@ -150,6 +150,7 @@ class ExecutiveControl(object):
                                    stimloc=stimloc, onmodel=onmodel, mode="capability" )
             self.recordings["stimulus"] = \
                     rm.postrun_record_NEURON( injectedstimuli = rec_clamp_indivs )
+                                              stimtype = stimtype )
         # save the parameters as attributes
         self.chosenmodel = onmodel
         self.parameters = parameters

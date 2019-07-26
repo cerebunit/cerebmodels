@@ -102,7 +102,7 @@ class RecordManager(object):
                     for sec in channels.keys(): # keys in the dictionary are section names
                         section = getattr(chosenmodel.cell, sec) # get h.Section()
                         for achan in channels[sec]: # get each channel name in list
-                            regionkeylist.append( "channel_"+sec+"_"+achan )#NOTE: singular
+                            regionkeylist.append( akey+"_"+sec+"_"+achan )
                             record_current(section, achan, responselist)
         elif without == "channels": # record only voltages
             for akey in chosenmodel.regions.keys(): # for all the desired section
@@ -133,7 +133,7 @@ class RecordManager(object):
         for i in range(len(regionslist_str)):
             str_list = re.split("_", regionslist_str[i])
             str_no = len(str_list)
-            if str_no==1:
+            if str_no==1: # cell sections are section_name: array/list as value
                 x.update({str_list[0]: responselist_num[i]})
             else:
                 node = {str_list[-1]: responselist_num[i]}
@@ -141,9 +141,12 @@ class RecordManager(object):
                 for j in reversed(range(str_no-1)):
                     if j != 0: # contruct the dictionary which will be the final value
                         leaf.update( {str_list[j]: node} ) # leaf = {str_list[-2]: node}
-                    else: # assign constructed dictionary to the first in string list
-                        x.update({str_list[j]: node})
-                    node = leaf # set current leaf as node moving up the tree
+                        node = leaf # set current leaf as node moving up the tree
+                # assign constructed dictionary to the first in string list
+                if str_list[0] in x.keys(): # if the root key already exists
+                    x[str_list[0]].update(node) # update the its dictionary value
+                else: # if the key does not exist create it with node as its value
+                    x.update({str_list[0]: node})
         return x
 
     @classmethod

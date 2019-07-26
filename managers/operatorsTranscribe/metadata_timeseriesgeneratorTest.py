@@ -33,9 +33,10 @@ class TimeseriesGeneratorTest(unittest.TestCase):
         rec_t = [ t*runtimeparam["dt"]
                   for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
         rec_v_axon = numpy.random.rand(1,len(rec_t))[0]
-        rec_stim = "not stimulated" # != response["stimulus"]
+        rec_stim = "Model is not stimulated" # response["stimulus"]
         stimtype = None # stimparameters["type"] = ["current", "IClamp"]
-        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
+        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0,
+        #                             'channels': {'soma': ['pas'], 'axon': ['pas']}}
         ts_response = tg.cellrecordings_response(self.chosenmodel, "axon", rec_t,
                                                  rec_v_axon, rec_stim, stimtype, runtimeparam)
         self.assertEqual( [ts_response["name"], ts_response["data"], ts_response["comments"]],
@@ -49,7 +50,8 @@ class TimeseriesGeneratorTest(unittest.TestCase):
         rec_v_soma = numpy.random.rand(1,len(rec_t))[0]
         rec_stim = numpy.random.rand(1,len(rec_t))[0] # = response["stimulus"]
         stimtype = ["current", "IClamp"]
-        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
+        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0,
+        #                             'channels': {'soma': ['pas'], 'axon': ['pas']}}
         ts_response = tg.cellrecordings_response(self.chosenmodel, "soma", rec_t,
                                                  rec_v_soma, rec_stim, stimtype, runtimeparam)
         self.assertNotEqual( [ts_response["name"], ts_response["data"], ts_response["comments"]],
@@ -60,36 +62,20 @@ class TimeseriesGeneratorTest(unittest.TestCase):
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         rec_t = [ t*runtimeparam["dt"]
                   for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
-        rec_i_channels_soma_pas = numpy.random.rand(1,len(rec_t))[0]
+        rec_i_channel_soma_pas = numpy.random.rand(1,len(rec_t))[0]
         rec_stim = numpy.random.rand(1,len(rec_t))[0] # = response["stimulus"]
         stimtype = ["voltage", "SEClamp"]
-        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
-        ts_response = tg.cellrecordings_response(self.chosenmodel, "channels_soma_pas", rec_t,
-                                                 rec_i_channels_soma_pas, rec_stim, stimtype,
+        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0,
+        #                             'channels': {'soma': ['pas'], 'axon': ['pas']}}
+        ts_response = tg.cellrecordings_response(self.chosenmodel, "channel_soma_pas", rec_t,
+                                                 rec_i_channel_soma_pas, rec_stim, stimtype,
                                                  runtimeparam)
         self.assertEqual( [ts_response["name"], ts_response["data"], ts_response["comments"]],
-                          ["DummyTest_channels_soma_pas", rec_i_channels_soma_pas,
+                          ["DummyTest_channel_soma_pas", rec_i_channel_soma_pas,
                            "current response with SEClamp"] )
 
-    @unittest.skip("reason for skipping")
-    def test_3_recordings_cell_current_stimulus(self):
-        runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
-        stimparameters = {"type": ["current", "IClamp"],
-                          "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
-                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
-                          "tstop": runtimeparam["tstop"]}
-        rec_t = [ t*runtimeparam["dt"]
-                  for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
-        rec_i = numpy.random.rand(1,len(rec_t))[0]
-        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
-        ts_stimulus = tg.recordings_cell_currentstimulus(self.chosenmodel,
-                                       rec_t, rec_i, runtimeparam, stimparameters)
-        self.assertEqual( [ts_stimulus["name"], ts_stimulus["comments"]],
-                          ["DummyTest_stimulus", "current injection, IClamp"] )
-
-    @unittest.skip("reason for skipping")
+    #@unittest.skip("reason for skipping")
     def test_4_recordings_cellstimulus_current(self):
-        # this is basically the same as test_3_recordings_cell_current_stimulus
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         stimparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
@@ -97,76 +83,42 @@ class TimeseriesGeneratorTest(unittest.TestCase):
                           "tstop": runtimeparam["tstop"]}
         rec_t = [ t*runtimeparam["dt"]
                   for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
-        rec_i = numpy.random.rand(1,len(rec_t))[0]
-        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
-        ts_stimulus = tg.recordings_cellstimulus(self.chosenmodel,
-                                       rec_t, rec_i, runtimeparam, stimparameters)
+        rec_i_stim = numpy.random.rand(1,len(rec_t))[0]
+        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0,
+        #                             'channels': {'soma': ['pas'], 'axon': ['pas']}}
+        ts_stimulus = tg.recordings_cell_stimulus(self.chosenmodel, rec_t, rec_i_stim,
+                                                 runtimeparam, stimparameters)
         self.assertEqual( [ts_stimulus["name"], ts_stimulus["comments"]],
                           ["DummyTest_stimulus", "current injection, IClamp"] )
 
-    @unittest.skip("reason for skipping")
-    def test_5_forcellrecordings_nostimulus(self):
-        runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
-        rec_t = [ t*runtimeparam["dt"]
-                  for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
-        rec_v = numpy.random.rand(2,len(rec_t))
-        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
-        recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1]}}
-                     #"stimulus": "Model is not stimulated"} not needed for this test
-        response = tg.forcellrecordings_nostimulus(self.chosenmodel,
-                                                         recordings, runtimeparam)
-        self.assertEqual( [response["soma"]["name"], response["axon"]["name"],
-                           response["soma"]["comments"]],
-                          ["DummyTest_soma", "DummyTest_axon",
-                           "voltage response without stimulation"] )
-
-    @unittest.skip("reason for skipping")
-    def test_6_forcellrecordings_stimulus(self):
-        runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
-        stimparameters = {"type": ["current", "IClamp"],
-                          "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
-                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
+    #@unittest.skip("reason for skipping")
+    def test_5_recordings_cellstimulus_voltage(self):
+        runtimeparam = {"dt": 0.1, "celsius": 30, "tstop": 35, "v_init": 65}
+        stimparameters = {"type": ["voltage", "SEClamp"],
+                          "stimlist": [ {'amp1': 0., 'dur1': 10.0},
+                                        {'amp2': -70.0, 'dur2': 20.0} ],
                           "tstop": runtimeparam["tstop"]}
         rec_t = [ t*runtimeparam["dt"]
                   for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
-        rec_i = numpy.random.rand(1,len(rec_t))[0]
-        rec_v = numpy.random.rand(2,len(rec_t))
-        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
-        recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1]},
-                      "stimulus": rec_i}
-        response = tg.forcellrecordings_stimulus(self.chosenmodel, recordings,
-                                                       runtimeparam, stimparameters)
-        self.assertEqual( [response["soma"]["name"], response["axon"]["data"],
-                           response["soma"]["comments"]],
-                          ["DummyTest_soma", recordings["response"]["axon"],
-                           "voltage response with stimulation"] )
+        rec_v_stim = numpy.random.rand(1,len(rec_t))[0]
+        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0,
+        #                             'channels': {'soma': ['pas'], 'axon': ['pas']}}
+        ts_stimulus = tg.recordings_cell_stimulus(self.chosenmodel, rec_t, rec_v_stim,
+                                                 runtimeparam, stimparameters)
+        self.assertEqual( [ts_stimulus["name"], ts_stimulus["comments"]],
+                          ["DummyTest_stimulus", "voltage injection, SEClamp"] )
 
-    @unittest.skip("reason for skipping")
-    def test_7_forcellrecording_None(self):
-        runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
-        #stimparameters = {"type": ["current", "IClamp"],
-        #                  "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
-        #                                {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
-        #                  "tstop": runtimeparam["tstop"]}
-        rec_t = [ t*runtimeparam["dt"]
-                  for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
-        rec_i = numpy.random.rand(1,len(rec_t))[0]
-        rec_v = numpy.random.rand(2,len(rec_t))
-        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
-        recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1]},
-                      "stimulus": rec_i}
-        self.assertRaises(ValueError, tg.forcellrecording,
-                          chosenmodel=self.chosenmodel, recordings=recordings,
-                          runtimeparameters=runtimeparam)
-
-    @unittest.skip("reason for skipping")
-    def test_8_forcellrecording_nostimulus(self):
+    #@unittest.skip("reason for skipping")
+    def test_6_forcellrecording_nostimulus(self):
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         rec_t = [ t*runtimeparam["dt"]
                   for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
-        rec_v = numpy.random.rand(2,len(rec_t))
-        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
-        recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1]},
+        rec_v = numpy.random.rand(4,len(rec_t))
+        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0,
+        #                             'channels': {'soma': ['pas'], 'axon': ['pas']}}
+        recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1],
+                                                  "channels": {"soma":[rec_v[2]],
+                                                               "axon":[rec_v[3]]}},
                      "stimulus": "Model is not stimulated"}
         respmd = tg.forcellrecording(chosenmodel=self.chosenmodel,
                                            recordings=recordings,
@@ -176,8 +128,8 @@ class TimeseriesGeneratorTest(unittest.TestCase):
                           ["DummyTest_soma", "DummyTest_axon",
                            "voltage response without stimulation"] )
 
-    @unittest.skip("reason for skipping")
-    def test_9_forcellrecording_stimulus(self):
+    #@unittest.skip("reason for skipping")
+    def test_7_forcellrecording_stimulus(self):
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         stimparameters = {"type": ["current", "IClamp"],
                           "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
@@ -185,60 +137,83 @@ class TimeseriesGeneratorTest(unittest.TestCase):
                           "tstop": runtimeparam["tstop"]}
         rec_t = [ t*runtimeparam["dt"]
                   for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
-        rec_i = numpy.random.rand(1,len(rec_t))[0]
-        rec_v = numpy.random.rand(2,len(rec_t))
-        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
-        recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1]},
-                      "stimulus": rec_i}
+        rec_stim = numpy.random.rand(1,len(rec_t))[0]
+        rec_v = numpy.random.rand(4,len(rec_t))
+        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0,
+        #                             'channels': {'soma': ['pas'], 'axon': ['pas']}}
+        recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1],
+                                                  "channels": {"soma":[rec_v[2]],
+                                                               "axon":[rec_v[3]]}},
+                     "stimulus": rec_stim}
         respmd = tg.forcellrecording(chosenmodel=self.chosenmodel,
                                            recordings=recordings,
                                            runtimeparameters=runtimeparam,
                                            stimparameters=stimparameters)
-        self.assertEqual( [respmd["soma"]["name"], respmd["axon"]["data"],
-                           respmd["axon"]["comments"]],
-                          ["DummyTest_soma", recordings["response"]["axon"],
-                           "voltage response with stimulation"] )
+        a = all(boolean == True for boolean in
+                                respmd["axon"]["data"]==recordings["response"]["axon"])
+        self.assertEqual( [respmd["soma"]["name"], a, respmd["axon"]["comments"]],
+                          ["DummyTest_soma", True, "voltage response with IClamp"] )
 
-    @unittest.skip("reason for skipping")
-    def test_10_forrecording_None(self):
+    #@unittest.skip("reason for skipping")
+    def test_8_forrecording_None(self):
         self.assertRaises(ValueError, tg.forrecording,)
 
-    @unittest.skip("reason for skipping")
-    def test_11_forrecording_cellular_nostimulus(self):
+    #@unittest.skip("reason for skipping")
+    def test_9_forrecording_cellular_nostimulus(self):
         runtimeparam = {"dt": 0.1, "celsius": 30, "tstop": 1, "v_init": 65}
         rec_t = [ t*runtimeparam["dt"]
                   for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
-        rec_v = numpy.random.rand(2,len(rec_t))
-        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
-        recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1]},
+        rec_v = numpy.random.rand(4,len(rec_t))
+        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0,
+        #                             'channels': {'soma': ['pas'], 'axon': ['pas']}}
+        recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1],
+                                                  "channels": {"soma":[rec_v[2]],
+                                                               "axon":[rec_v[3]]}},
                      "stimulus": "Model is not stimulated"}
         respmd = tg.forrecording(chosenmodel=self.chosenmodel,
                                       recordings=recordings,
                                       runtimeparameters=runtimeparam)
         #print respmd # what does it looke like?
-        self.assertEqual( [respmd["soma"]["name"], respmd["axon"]["name"]],
-                          ["DummyTest_soma", "DummyTest_axon"] )
+        self.assertEqual( [respmd["soma"]["name"], respmd["axon"]["name"],
+                           respmd["soma"]["comments"]],
+                          ["DummyTest_soma", "DummyTest_axon",
+                           "voltage response without stimulation"] )
 
-    @unittest.skip("reason for skipping")
-    def test_12_forrecording_cellular_stimulus(self):
-        runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
-        stimparameters = {"type": ["current", "IClamp"],
-                          "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
-                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
+    #@unittest.skip("reason for skipping")
+    def test_10_forrecording_cellular_stimulus(self):
+        runtimeparam = {"dt": 0.1, "celsius": 30, "tstop": 35, "v_init": 65}
+        stimparameters = {"type": ["voltage", "SEClamp"],
+                          "stimlist": [ {'amp1': 0., 'dur1': 10.0},
+                                        {'amp2': -70.0, 'dur2': 20.0} ],
                           "tstop": runtimeparam["tstop"]}
         rec_t = [ t*runtimeparam["dt"]
                   for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
-        rec_i = numpy.random.rand(1,len(rec_t))[0]
-        rec_v = numpy.random.rand(2,len(rec_t))
-        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
-        recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1]},
-                      "stimulus": rec_i}
-        respmd = tg.forrecording(chosenmodel=self.chosenmodel,
-                                       recordings=recordings,
-                                       runtimeparameters=runtimeparam,
-                                       stimparameters=stimparameters)
-        self.assertEqual( [respmd["soma"]["name"], respmd["axon"]["data"]],
-                          ["DummyTest_soma", recordings["response"]["axon"]] )
+        rec_stim = numpy.random.rand(1,len(rec_t))[0]
+        rec_v = numpy.random.rand(4,len(rec_t))
+        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0,
+        #                             'channels': {'soma': ['pas'], 'axon': ['pas']}}
+        recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1],
+                                                  "channels": {"soma":[rec_v[2]],
+                                                               "axon":[rec_v[3]]}},
+                     "stimulus": rec_stim}
+        respmd = tg.forrecording( chosenmodel=self.chosenmodel,
+                                  recordings=recordings,
+                                  runtimeparameters=runtimeparam,
+                                  stimparameters=stimparameters)
+        #print(respmd.keys())
+        print(self.chosenmodel.regions.keys())
+        #a = all(boolean == True for boolean in
+        #                        respmd["soma"]["data"] == recordings["response"]["soma"])
+        #b = all(boolean == True for boolean in
+        #                        respmd["channel_soma_pas"]["data"] ==
+        #                        recordings["response"]["channels"]["soma"][0])
+        #c = all(boolean == False for boolean in
+        #                         respmd["channel_soma_pas"]["data"] ==
+        #                         recordings["response"]["soma"])
+        #self.assertEqual( [respmd["soma"]["name"], respmd["channel_soma_pas"]["name"], a, b, c,
+        #                   respmd["axon"]["comments"]],
+        #                  ["DummyTest_soma", "DummyTest_channel_soma_pas", True, True, False,
+        #                   "current response with SEClamp"] )
 
 if __name__ == '__main__':
     unittest.main()

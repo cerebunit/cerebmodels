@@ -7,15 +7,17 @@ class RecordManager(object):
     """
     **Available methods:**
 
-    +----------------------------------------+-----------------------+
-    | Method name                            | Method type           |
-    +========================================+=======================+
-    | :py:meth:`.prepare_recording_NEURON`   | class method          |
-    +----------------------------------------+-----------------------+
-    | :py:meth:`.create_response_dictionary` | static method         |
-    +----------------------------------------+-----------------------+
-    | :py:meth:`.postrun_record_NEURON`      | static method         |
-    +----------------------------------------+-----------------------+
+    +-----------------------------------------------+-----------------------+
+    | Method name                                   | Method type           |
+    +===============================================+=======================+
+    | :py:meth:`.create_regionkeylist_responselist` | static method         |
+    +-----------------------------------------------+-----------------------+
+    | :py:meth:`.create_response_dictionary`        | static method         |
+    +-----------------------------------------------+-----------------------+
+    | :py:meth:`.prepare_recording_NEURON`          | class method          |
+    +-----------------------------------------------+-----------------------+
+    | :py:meth:`.postrun_record_NEURON`             | static method         |
+    +-----------------------------------------------+-----------------------+
 
     """
 
@@ -25,7 +27,7 @@ class RecordManager(object):
 
     @staticmethod
     def create_regionkeylist_responselist(chosenmodel, without=None):
-        """Returns a list of strings of region names
+        """Returns a list of strings of region names and a list of response
 
         **Arguments:**
 
@@ -37,29 +39,69 @@ class RecordManager(object):
         | without (optional) | None (default) or "channels" |
         +--------------------+------------------------------+
 
+        **Returned values:** list of strings of region names (region_key_list) and a list of response (response_list). The contents of these two lists will depending on at least three cases. But before considering the cases it should be noted that the list of strings of region names may not be exactly the sames as those in chosenmodel.regions.keys().
+
+        For instance for a cellular model, the chosenmodel.regions will be like
+
+        ::
+
+           { "soma": 0.0, "axon": 0.0 }
+
+        or
+
+        ::
+
+           { "soma": 0.0, "axon": 0.0,
+             "channels": { "soma": ["pas", "ca", "k"],
+                           "axon": ["pas"] } }
+
+        In the first case the ``chosenmodel.regions.keys()`` will  be taken as the region_key_list. That is, ``region_key_list = ["soma", "axon"]``. However, for the second case although initially ``region_key_list = ["soma", "axon", "channels"]`` the element "channels" will be removed resulting in the __transitory value__ ``region_key_list = ["soma", "axon"]``. Now, depending on the cases discussed below the list of region keys may change.
+
+        * case-1: ``without = "channels"``
+
+           - records only the voltage response (i.e section responses)
+           - region_key_list will be the list of sections (w/o "channels" if the model regions has it). Thus, ``region_key_list = [ "secA_name", "secB_name", "secC_name" ]``.
+           - response_list will be the list of voltage responses from section in corresponding indices of region_key_list. Thus, ``response_list = [ h.Vector of secA, h.Vector of secB, h.Vector of secC ]``.
+
+        * cases when no without is assigned, i.e. ``without = None`` (DEFAULT)
+
+          * case-2: ``chosenmodel.regions`` does not have "channels"
+
+             - records only voltage response
+             - region_key_list and response_list outputs will be similar to those of case-1
+
+          * case-3: ``chosenmodel.regions`` has "channels"
+
+             - records voltage response for regions that are section
+             - records current response from channels in a section
+             - region_key_list will be of the form ``[ "secA", "secB", "channels_secA_chnlx", "channels_secA_chnly", "channels_secB_chnly"]``.
+             - response_list will be the list of responses (voltages and currents) from sections and channels in corresponding indices of region_key_list.
+
         """
-        regionkeylist = list(chosenmodel.regions.keys())
-        responselist = []
-        (lambda keyslist: keyslist.remove("channels")
+        regionkeylist = list(chosenmodel.regions.keys())# Initial keys list of model.regions
+        responselist = []                               # placeholder for response
+        (lambda keyslist: keyslist.remove("channels")   # removes "channels" in regionkeylist
                           if "channels" in keyslist else keyslist)(regionkeylist)
+        # Lambda function for appending section voltage response into responselist
         record_voltage = \
          lambda chosenmodel, regionkey, responselist: \
             responselist.append( rc.response_voltage_NEURON(
                                                getattr(chosenmodel.cell, regionkey) ) )
+        # Lambda function for appending channel current response into responselist
         record_current = \
          lambda section, channelkey, responselist: \
             responselist.append( rc.response_current_NEURON(
                                                getattr(section(0.5), channelkey) ) )
         if without is None: # record every thing
             for akey in chosenmodel.regions.keys(): # for all the desired section
-                if akey != "channels":
+                if akey != "channels": # if key refers to a section record voltage response
                     record_voltage(chosenmodel, akey, responselist)
-                elif akey == "channels":
-                    channels = chosenmodel.regions[akey]
-                    for sec in channels.keys():
-                        section = getattr(chosenmodel.cell, sec)
-                        for achan in channels[sec]:
-                            regionkeylist.append("channels_"+sec+"_"+achan)
+                elif akey == "channels": # if key refers to a channer record current response
+                    channels = chosenmodel.regions[akey] # dict value of .regions["channels"]
+                    for sec in channels.keys(): # keys in the dictionary are section names
+                        section = getattr(chosenmodel.cell, sec) # get h.Section()
+                        for achan in channels[sec]: # get each channel name in list
+                            regionkeylist.append( akey+"_"+sec+"_"+achan )
                             record_current(section, achan, responselist)
         elif without == "channels": # record only voltages
             for akey in chosenmodel.regions.keys(): # for all the desired section
@@ -116,20 +158,20 @@ class RecordManager(object):
 
         **Returned value:** Three elements in the following order
 
-        +--------+---------------------+----------------------------------------------+
-        | order  | content             | value type                                   |
-        +========+=====================+==============================================+
-        | first  | recorded time       | list                                         |
-        +--------+---------------------+----------------------------------------------+
-        | second | recorded response   |- dictionary                                  |
-        |        |                     |- region-name for key whose value is          |
-        |        |                     |- key value is list; response from the region |
-        +--------+---------------------+----------------------------------------------+
-        | third  | recorded injections |- list of individual current injections if    |
-        |        |                     |stimulated (current clamp)                    |
-        |        |                     |- empty list ``[]`` for voltage clamp stimulus|
-        |        |                     |- else, string "Model is not stimulated"      |
-        +--------+---------------------+----------------------------------------------+
+        +--------+---------------------+-----------------------------------------------+
+        | order  | content             | value type                                    |
+        +========+=====================+===============================================+
+        | first  | recorded time       | list                                          |
+        +--------+---------------------+-----------------------------------------------+
+        | second | recorded response   |- dictionary                                   |
+        |        |                     |- region-name for key whose value is           |
+        |        |                     |- key value is list; response from the region  |
+        +--------+---------------------+-----------------------------------------------+
+        | third  | recorded injections |- list of individual current injections if     |
+        |        |                     |stimulated (current clamp)                     |
+        |        |                     |- stimuli (argument) for voltage clamp stimulus|
+        |        |                     |- else, string "Model is not stimulated"       |
+        +--------+---------------------+-----------------------------------------------+
 
         **Use case:**
 

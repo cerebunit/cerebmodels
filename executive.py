@@ -137,7 +137,8 @@ class ExecutiveControl(object):
             stimuli_clamp = sm.stimulate_model_NEURON(
                                           stimparameters = stimparameters,
                                           modelsite = stimloc )
-            self.recordings["time"], self.recordings["response"], rec_clamp_indivs = \
+            self.recordings["time"], self.recordings["response"], \
+            self.recording["regions"], rec_clamp_indivs = \
                     rm.prepare_recording_NEURON( onmodel,
                                                  stimuli = stimuli_clamp,
                                                  stimtype = stimtype )

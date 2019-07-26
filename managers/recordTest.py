@@ -182,7 +182,12 @@ class RecordManagerTest(unittest.TestCase):
         sm.engage_NEURON()
         rec_v_stim = rm.postrun_record_NEURON( injectedstimuli = rec_v_stim,
                                                stimtype = injparameters["type"] )
+        print(len(rec_t), len(rec_v), len(rec_v["soma"]), len(rec_reg))
+        print(len(rec_v["channels"]))
+        print(len(rec_v["channels"]["soma"]))
+        print(len(rec_v["channels"]["soma"]["pas"]))
         total_iterations = len( range(-1, int(parameters["tstop"]/parameters["dt"])) )
+        #print(len(rec_v), len(rec_reg))
         self.assertEqual( len(rec_t) + len(rec_v["soma"])#len(rec_v[self.regionslist_str[0]])
                                      + len(rec_v_stim),
                           3*total_iterations )

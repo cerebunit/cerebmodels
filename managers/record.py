@@ -232,17 +232,20 @@ class RecordManager(object):
                 [regionkeylist, volts] = \
                     cls.create_regionkeylist_responselist( chosenmodel, without="channels" )
                 response_record = cls.create_response_dictionary( regionkeylist, volts )
+                #response_record = volts
                 stim_record = rc.stimulus_individual_currents_NEURON( stimuli )
             elif stimtype[0]=="voltage": # record current
                 [regionkeylist, volts_currents] = \
                     cls.create_regionkeylist_responselist( chosenmodel )
                 response_record = \
                     cls.create_response_dictionary( regionkeylist, volts_currents )
+                #response_record = volts_currents
                 stim_record = stimuli
         else: # record voltage & currents if possible when no stimulus is given
             [regionkeylist, volts] = \
                 cls.create_regionkeylist_responselist( chosenmodel, without="channels" )
             response_record = cls.create_response_dictionary( regionkeylist, volts )
+            #response_record = volts
             stim_record = "Model is not stimulated"
         return [ time_record, response_record, regionkeylist, stim_record]
 

@@ -20,8 +20,7 @@ class TimeseriesGenerator(object):
 
     """
     @staticmethod
-    def cellrecordings_response( model, cellregion, rec_t, rec_response,
-                                 rec_stim, stimtype, parameters):
+    def cellrecordings_response( model, cellregion, recordings, stimtype, parameters):
         """Creates a generic time-series (response) metadata for cells. This method is called by :py:meth:`.forcellrecordings_nostimulus` and :py:meth:`.forcellrecordings_stimulus`.
 
         **Arguments:**
@@ -67,10 +66,21 @@ class TimeseriesGenerator(object):
         * but ``recordings["stimulus"]`` = ``array`` = ``specific_rec_stim``
 
         """
-        region_list = re.split("_", cellregion)
-        unit = (lambda strlist: "mV" if len(strlist)==1 else "mA/cm**2")(region_list)
+        str_list = re.split("_", cellregion)
+        unit = (lambda strlist: "mV" if len(strlist)==1 else "mA/cm**2")(str_list)
         response_type = lambda unit: "voltage" if unit=="mV" else "current"
-        if (type(rec_stim) is str) and (rec_stim=="Model is not stimulated"):
+        str_no = len(str_list)
+        recorded_response = recordings["response"]
+        # Extract recorded response for given region
+        if str_no==1:
+            rec_response = recorded_response[cellregion]
+        else:
+            rec_response = recorded_response[ str_list[0] ]
+            for i in range(1, str_no):
+                rec_response = rec_response[ str_list[i] ]
+        #
+        if ( (type(recordings["stimulus"]) is str) and
+             (recordings["stimulus"]=="Model is not stimulated") ):
             comments = response_type(unit) +" response without stimulation"
         else:
             comments = response_type(unit) +" response with "+ stimtype[1]
@@ -78,13 +88,13 @@ class TimeseriesGenerator(object):
                 "data": rec_response, "unit": unit,
                 "resolution": float(parameters["dt"]),
                 "conversion": 1000.0, #1000=>1ms
-                "timestamps": rec_t, #"starting_time": 0.0,
+                "timestamps": recordings["time"], #"starting_time": 0.0,
                 #"rate": 1/parameters["dt"], # NWB suggests using Hz but frequency != rate
                 "comments": comments,
                 "description": "whole single array of voltage response from "+cellregion+" of "+ model.modelname}
         
     @staticmethod
-    def recordings_cell_stimulus(model, rec_t, rec_stim, parameters, stimparameters):
+    def recordings_cell_stimulus(model, recordings, parameters, stimparameters):
         """Creates a time-series (response) metadata for stimulated cells. This method is called by :py:meth`.recordings_cellstimulus`.
 
         **Arguments:**
@@ -145,9 +155,9 @@ class TimeseriesGenerator(object):
         unit = lambda stimtype: "nA" if stimtype=="current" else "mV" 
         return {"name": model.modelname+"_stimulus",
                 #"source": stimparameters["type"][1], # No longer used in NWB2.0
-                "data": rec_stim, "unit": unit(stimparameters["type"][0]),
+                "data": recordings["stimulus"], "unit": unit(stimparameters["type"][0]),
                 "resolution": float(parameters["dt"]), "conversion": 1000.0, #1000=>1ms
-                "timestamps": rec_t, #"starting_time": 0.0,
+                "timestamps": recordings["time"], #"starting_time": 0.0,
                 #"rate": 1/parameters["dt"], # NWB suggests using Hz but frequency != rate
                 "comments": stimparameters["type"][0] +" injection, "+stimparameters["type"][1],
                 "description": "whole single array of stimulus"}
@@ -245,9 +255,8 @@ class TimeseriesGenerator(object):
         update_y = \
           lambda y, chosenmodel, recordings, stimtype, runtimeparameters: \
              [ y.update( {region: cls.cellrecordings_response( chosenmodel, region,
-                                       recordings["time"], recordings["response"][region],
-                                       recordings["stimulus"], stimtype, runtimeparameters)})
-               for region in chosenmodel.regions.keys() ]
+                                       recordings, stimtype, runtimeparameters)})
+               for region in recordings["regions"] ]
         #if npd.equal(recordings["stimulus"], "Model is not stimulated").item((0)):
         # str because recordings has numpy array as dictionary values resulting in
         # numpy FutureWarning bug as it expects this to be an array as well

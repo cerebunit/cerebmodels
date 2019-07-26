@@ -33,27 +33,45 @@ class TimeseriesGeneratorTest(unittest.TestCase):
         rec_t = [ t*runtimeparam["dt"]
                   for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
         rec_v_axon = numpy.random.rand(1,len(rec_t))[0]
-        specific_rec_i = "not stimulated" # != response["stimulus"]
+        rec_stim = "not stimulated" # != response["stimulus"]
+        stimtype = None # stimparameters["type"] = ["current", "IClamp"]
         # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
-        ts_response = tg.cellrecordings_response(self.chosenmodel,
-                              "axon", rec_t, specific_rec_i, rec_v_axon, runtimeparam)
+        ts_response = tg.cellrecordings_response(self.chosenmodel, "axon", rec_t,
+                                                 rec_v_axon, rec_stim, stimtype, runtimeparam)
         self.assertEqual( [ts_response["name"], ts_response["data"], ts_response["comments"]],
                           ["DummyTest_axon", rec_v_axon, "voltage response without stimulation"] )
 
     #@unittest.skip("reason for skipping")
-    def test_2_cellrecordings_response_stimulus(self):
+    def test_2_cellrecordings_response_currentstimulus(self):
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         rec_t = [ t*runtimeparam["dt"]
                   for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
         rec_v_soma = numpy.random.rand(1,len(rec_t))[0]
-        rec_i = numpy.random.rand(1,len(rec_t))[0] # = response["stimulus"]
+        rec_stim = numpy.random.rand(1,len(rec_t))[0] # = response["stimulus"]
+        stimtype = ["current", "IClamp"]
         # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
-        ts_response = tg.cellrecordings_response(self.chosenmodel,
-                              "soma", rec_t, rec_i, rec_v_soma, runtimeparam)
+        ts_response = tg.cellrecordings_response(self.chosenmodel, "soma", rec_t,
+                                                 rec_v_soma, rec_stim, stimtype, runtimeparam)
         self.assertNotEqual( [ts_response["name"], ts_response["data"], ts_response["comments"]],
                              ["DummyTest_soma", rec_v_soma, "voltage response without stimulation"] )
 
     #@unittest.skip("reason for skipping")
+    def test_3_cellrecordings_response_voltagestimulus(self):
+        runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
+        rec_t = [ t*runtimeparam["dt"]
+                  for t in range( int( runtimeparam["tstop"]/runtimeparam["dt"] ) ) ]
+        rec_i_channels_soma_pas = numpy.random.rand(1,len(rec_t))[0]
+        rec_stim = numpy.random.rand(1,len(rec_t))[0] # = response["stimulus"]
+        stimtype = ["voltage", "SEClamp"]
+        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
+        ts_response = tg.cellrecordings_response(self.chosenmodel, "channels_soma_pas", rec_t,
+                                                 rec_i_channels_soma_pas, rec_stim, stimtype,
+                                                 runtimeparam)
+        self.assertEqual( [ts_response["name"], ts_response["data"], ts_response["comments"]],
+                          ["DummyTest_channels_soma_pas", rec_i_channels_soma_pas,
+                           "current response with SEClamp"] )
+
+    @unittest.skip("reason for skipping")
     def test_3_recordings_cell_current_stimulus(self):
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         stimparameters = {"type": ["current", "IClamp"],
@@ -69,7 +87,7 @@ class TimeseriesGeneratorTest(unittest.TestCase):
         self.assertEqual( [ts_stimulus["name"], ts_stimulus["comments"]],
                           ["DummyTest_stimulus", "current injection, IClamp"] )
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_4_recordings_cellstimulus_current(self):
         # this is basically the same as test_3_recordings_cell_current_stimulus
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
@@ -86,7 +104,7 @@ class TimeseriesGeneratorTest(unittest.TestCase):
         self.assertEqual( [ts_stimulus["name"], ts_stimulus["comments"]],
                           ["DummyTest_stimulus", "current injection, IClamp"] )
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_5_forcellrecordings_nostimulus(self):
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         rec_t = [ t*runtimeparam["dt"]
@@ -102,7 +120,7 @@ class TimeseriesGeneratorTest(unittest.TestCase):
                           ["DummyTest_soma", "DummyTest_axon",
                            "voltage response without stimulation"] )
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_6_forcellrecordings_stimulus(self):
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         stimparameters = {"type": ["current", "IClamp"],
@@ -123,7 +141,7 @@ class TimeseriesGeneratorTest(unittest.TestCase):
                           ["DummyTest_soma", recordings["response"]["axon"],
                            "voltage response with stimulation"] )
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_7_forcellrecording_None(self):
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         #stimparameters = {"type": ["current", "IClamp"],
@@ -141,7 +159,7 @@ class TimeseriesGeneratorTest(unittest.TestCase):
                           chosenmodel=self.chosenmodel, recordings=recordings,
                           runtimeparameters=runtimeparam)
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_8_forcellrecording_nostimulus(self):
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         rec_t = [ t*runtimeparam["dt"]
@@ -158,7 +176,7 @@ class TimeseriesGeneratorTest(unittest.TestCase):
                           ["DummyTest_soma", "DummyTest_axon",
                            "voltage response without stimulation"] )
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_9_forcellrecording_stimulus(self):
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         stimparameters = {"type": ["current", "IClamp"],
@@ -181,11 +199,11 @@ class TimeseriesGeneratorTest(unittest.TestCase):
                           ["DummyTest_soma", recordings["response"]["axon"],
                            "voltage response with stimulation"] )
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_10_forrecording_None(self):
         self.assertRaises(ValueError, tg.forrecording,)
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_11_forrecording_cellular_nostimulus(self):
         runtimeparam = {"dt": 0.1, "celsius": 30, "tstop": 1, "v_init": 65}
         rec_t = [ t*runtimeparam["dt"]
@@ -201,7 +219,7 @@ class TimeseriesGeneratorTest(unittest.TestCase):
         self.assertEqual( [respmd["soma"]["name"], respmd["axon"]["name"]],
                           ["DummyTest_soma", "DummyTest_axon"] )
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_12_forrecording_cellular_stimulus(self):
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         stimparameters = {"type": ["current", "IClamp"],

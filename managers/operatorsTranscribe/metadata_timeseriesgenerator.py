@@ -1,5 +1,6 @@
 # ~/managers/operatorsTranscribe/metadata_timeseriesgenerator.py
 #import numpy.core.defchararray as npd
+import re
 
 class TimeseriesGenerator(object):
     """
@@ -8,8 +9,6 @@ class TimeseriesGenerator(object):
     +---------------------------------------------+-------------------------+
     | Method name                                 | Method type             |
     +=============================================+=========================+
-    | :py:meth:`.forrecording`                    | class method            |
-    +---------------------------------------------+-------------------------+
     | :py:meth:`.recordings_cellstimulus`         | class method            |
     +---------------------------------------------+-------------------------+
     | :py:meth:`.forcellrecordings_nostimulus`    | class method            |
@@ -27,28 +26,33 @@ class TimeseriesGenerator(object):
 
     """
     @staticmethod
-    def cellrecordings_response(model, cellregion, rec_t, specific_rec_i, rec_v, parameters):
+    def cellrecordings_response( model, cellregion, rec_t, rec_response,
+                                 rec_stim, stimtype, parameters):
         """Creates a generic time-series (response) metadata for cells. This method is called by :py:meth:`.forcellrecordings_nostimulus` and :py:meth:`.forcellrecordings_stimulus`.
 
         **Arguments:**
 
-        +---------------+------------------------------------------------------------+
-        | Arguments     | Value type                                                 |
-        +===============+============================================================+
-        | first         | instantiated model                                         |
-        +---------------+------------------------------------------------------------+
-        | second        | string for cellregion; "soma", "axon", etc ...             |
-        +---------------+------------------------------------------------------------+
-        | third         | array; eg: recordings["time"] = rec_t                      |
-        +---------------+------------------------------------------------------------+
-        | fourth        | array; eg: recordings["response"][cellregion] = rec_v      |
-        +---------------+------------------------------------------------------------+
-        | fifth         | - string "not stimulated" or                               |
-        |               | - array; eg: recordings["stimulus"] = rec_i                |
-        +---------------+------------------------------------------------------------+
-        | sixth         | - dictionary for runtime parameters                        |
-        |               | - keys: ``"dt"``, ``"celsius"``, ``"tstop"``, ``"v_init"`` |
-        +---------------+------------------------------------------------------------+
+        +---------------+--------------------------------------------------------------+
+        | Arguments     | Value type                                                   |
+        +===============+==============================================================+
+        | first         | instantiated model                                           |
+        +---------------+--------------------------------------------------------------+
+        | second        | string for cellregion; "soma", "axon", etc ...               |
+        +---------------+--------------------------------------------------------------+
+        | third         | array; eg: recordings["time"] = rec_t                        |
+        +---------------+--------------------------------------------------------------+
+        | fourth        | array; eg: recordings["response"][cellregion] = rec_response |
+        +---------------+--------------------------------------------------------------+
+        | fifth         | - string "not stimulated" or                                 |
+        |               | - array; eg: recordings["stimulus"] = rec_stim               |
+        +---------------+--------------------------------------------------------------+
+        | sixth         | - None or string; eg: stimparameters["type"]                 |
+        |               | - stimparameters["type"] = ["current", "IClamp"]             |
+        |               | - stimparameters["type"] = ["voltage", "SEClamp"]            |
+        +---------------+--------------------------------------------------------------+
+        | seventh       | - dictionary for runtime parameters                          |
+        |               | - keys: ``"dt"``, ``"celsius"``, ``"tstop"``, ``"v_init"``   |
+        +---------------+--------------------------------------------------------------+
 
         **Returned value:** Is is a dictionary of the form
 
@@ -65,23 +69,39 @@ class TimeseriesGenerator(object):
 
         *NOTE:*
 
-        * ``recordings["stimulus"] = ``"Model is not stimulated"`` ``!= specific_rec_i``
-        * but ``recordings["stimulus"]`` = ``array`` = ``specific_rec_i``
+        * ``recordings["stimulus"] = ``"Model is not stimulated"`` ``!= specific_rec_stim``
+        * but ``recordings["stimulus"]`` = ``array`` = ``specific_rec_stim``
 
         """
-        if (type(specific_rec_i) is str) and (specific_rec_i=="not stimulated"):
-            comments = "voltage response without stimulation"
+        #if (type(specific_rec_stim) is str) and (specific_rec_stim=="not stimulated"):
+        #    comments = "voltage response without stimulation"
+        #if rec_stim == "not stimulated":
+        #    return {"name": model.modelname+"_"+cellregion, # "source": cellregion, # No longer NWB2.0
+        #            "data": rec_response, "unit": "mV",
+        #            "resolution": float(parameters["dt"]),
+        #            "conversion": 1000.0, #1000=>1ms
+        #            "timestamps": rec_t, #"starting_time": 0.0,
+                    #"rate": 1/parameters["dt"], # NWB suggests using Hz but frequency != rate
+        #            "comments": "voltage response without stimulation",
+        #            "description": "whole single array of voltage response from "+cellregion+" of "+ model.modelname}
+        #else:
+        #    comments = "voltage response with stimulation"
+        region_list = re.split("_", cellregion)
+        unit = (lambda strlist: "mV" if len(strlist)==1 else "mA/cm**2")(region_list)
+        response_type = lambda unit: "voltage" if unit=="mV" else "current"
+        if (type(rec_stim) is str) and (rec_stim=="not stimulated"):
+            comments = response_type(unit) +" response without stimulation"
         else:
-            comments = "voltage response with stimulation"
-
+            comments = response_type(unit) +" response with "+ stimtype[1]
         return {"name": model.modelname+"_"+cellregion, # "source": cellregion, # No longer NWB2.0
-                "data": rec_v, "unit": "mV", "resolution": float(parameters["dt"]),
+                "data": rec_response, "unit": unit,
+                "resolution": float(parameters["dt"]),
                 "conversion": 1000.0, #1000=>1ms
                 "timestamps": rec_t, #"starting_time": 0.0,
                 #"rate": 1/parameters["dt"], # NWB suggests using Hz but frequency != rate
                 "comments": comments,
                 "description": "whole single array of voltage response from "+cellregion+" of "+ model.modelname}
-
+        
     @staticmethod
     def recordings_cell_currentstimulus(model, rec_t, rec_i, parameters, stimparameters):
         """Creates a time-series (response) metadata for stimulated cells. This method is called by :py:meth`.recordings_cellstimulus`.
@@ -229,15 +249,16 @@ class TimeseriesGenerator(object):
         **Returned value:** Dictionary whose elements themselves are dictionaries. The length of the root dictionary is equal to the number of cell regions, say, a soma and an axon. The keys of the parent dictionary are the cell region names. Their respective values are themselves dictionaries, see :py:meth:`.cellrecordings_response`.
 
         """
-        specific_rec_i = "not stimulated"
+        specific_rec_stim = "not stimulated"
+        stimtype = None
         y = {}
         for cellregion in chosenmodel.regions.keys():
             y.update( {cellregion:
                        cls.cellrecordings_response(
                                             chosenmodel, cellregion,
-                                            recordings["time"], specific_rec_i,
+                                            recordings["time"],
                                             recordings["response"][cellregion],
-                                            runtimeparameters )} )
+                                            stimtype, runtimeparameters )} )
         return y
 
     @classmethod

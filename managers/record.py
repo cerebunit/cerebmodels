@@ -74,8 +74,9 @@ class RecordManager(object):
 
              - records voltage response for regions that are section
              - records current response from channels in a section
-             - region_key_list will be of the form ``[ "secA", "secB", "channels_secA_chnlx", "channels_secA_chnly", "channels_secB_chnly"]``.
+             - region_key_list will be of the form ``[ "secA", "secB", "channel_secA_chnlx", "channel_secA_chnly", "channel_secB_chnly"]``.
              - response_list will be the list of responses (voltages and currents) from sections and channels in corresponding indices of region_key_list.
+             - NOTE: a key in ``chosenmodel.regions.keys()`` is "channels" but each assigned channel in region_key_list the letter "**s**" gets dropped and becomes for eg. "channel_secA_chnlx" and not "channels_secA_chnlx".
 
         """
         regionkeylist = list(chosenmodel.regions.keys())# Initial keys list of model.regions
@@ -101,7 +102,7 @@ class RecordManager(object):
                     for sec in channels.keys(): # keys in the dictionary are section names
                         section = getattr(chosenmodel.cell, sec) # get h.Section()
                         for achan in channels[sec]: # get each channel name in list
-                            regionkeylist.append( akey+"_"+sec+"_"+achan )
+                            regionkeylist.append( "channel_"+sec+"_"+achan )#NOTE: singular
                             record_current(section, achan, responselist)
         elif without == "channels": # record only voltages
             for akey in chosenmodel.regions.keys(): # for all the desired section

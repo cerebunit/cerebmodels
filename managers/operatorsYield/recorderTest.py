@@ -110,7 +110,7 @@ class RecorderTest(unittest.TestCase):
                         )
         os.chdir(pwd) # reset to the location of this recorderTest.py
 
-    @unittest.skip("reason for skipping")
+    #@unittest.skip("reason for skipping")
     def test_4_stimulus_individual_currents_NEURON(self):
         #os.chdir("..") # this moves you up to ~/managers
         #os.chdir("..") # you are now in parent /cerebmodels
@@ -129,7 +129,7 @@ class RecorderTest(unittest.TestCase):
         self.assertEqual( len( rec_i_indivs ), len( currparameters["stimlist"] ) )
         os.chdir(pwd) # reset to the location of this recorderTest.py
 
-    @unittest.skip("reason for skipping")
+    #@unittest.skip("reason for skipping")
     def test_5_stimulus_overall_currents_NEURON(self):
         #os.chdir("..") # this moves you up to ~/managers
         #os.chdir("..") # you are now in parent /cerebmodels
@@ -153,7 +153,7 @@ class RecorderTest(unittest.TestCase):
                         )
         os.chdir(pwd) # reset to the location of this recorderTest.py
 
-    @unittest.skip("reason for skipping")
+    #@unittest.skip("reason for skipping")
     def test_6_stimulus_overall_voltage_NEURON(self):
         #os.chdir("..") # this moves you up to ~/managers
         #os.chdir("..") # you are now in parent /cerebmodels

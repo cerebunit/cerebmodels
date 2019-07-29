@@ -15,7 +15,7 @@ class Recorder(object):
     +-------------------------------------------------+------------------------+
     | :py:meth:`.response_body_NEURON`                | static method          |
     +-------------------------------------------------+------------------------+
-    | :py:meth:`.response_channel_NEURON`             | static method          |
+    | :py:meth:`.response_component_NEURON`           | static method          |
     +-------------------------------------------------+------------------------+
     | :py:meth:`.stimulus_individual_currents_NEURON` | static method          |
     +-------------------------------------------------+------------------------+

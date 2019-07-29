@@ -8,21 +8,25 @@ class Recorder(object):
     """
     ** Available methods:**
 
-    +-------------------------------------------------+------------------------+
-    | Method name                                     | Method type            |
-    +=================================================+========================+
-    | :py:meth:`.time_NEURON`                         | static method          |
-    +-------------------------------------------------+------------------------+
-    | :py:meth:`.response_body_NEURON`                | static method          |
-    +-------------------------------------------------+------------------------+
-    | :py:meth:`.response_component_NEURON`           | static method          |
-    +-------------------------------------------------+------------------------+
-    | :py:meth:`.stimulus_individual_currents_NEURON` | static method          |
-    +-------------------------------------------------+------------------------+
-    | :py:meth:`.stimulus_overall_current_NEURON`     | static method          |
-    +-------------------------------------------------+------------------------+
-    | :py:meth:`.stimulus_overall_voltage_NEURON`     | static method          |
-    +-------------------------------------------------+------------------------+
+    +---------------------------------------------------+------------------------+
+    | Method name                                       | Method type            |
+    +===================================================+========================+
+    | :py:meth:`.time_NEURON`                           | static method          |
+    +---------------------------------------------------+------------------------+
+    | :py:meth:`.response_body_NEURON`                  | static method          |
+    +---------------------------------------------------+------------------------+
+    | :py:meth:`.response_body_allrectypes_NEURON`      | static method          |
+    +---------------------------------------------------+------------------------+
+    | :py:meth:`.response_component_NEURON`             | static method          |
+    +---------------------------------------------------+------------------------+
+    | :py:meth:`.response_component_allrectypes_NEURON` | static method          |
+    +---------------------------------------------------+------------------------+
+    | :py:meth:`.stimulus_individual_currents_NEURON`   | static method          |
+    +---------------------------------------------------+------------------------+
+    | :py:meth:`.stimulus_overall_current_NEURON`       | static method          |
+    +---------------------------------------------------+------------------------+
+    | :py:meth:`.stimulus_overall_voltage_NEURON`       | static method          |
+    +---------------------------------------------------+------------------------+
 
     """
 
@@ -75,8 +79,15 @@ class Recorder(object):
         recording.record( getattr(section(0.5), "_ref_"+rectype) )
         return recording
 
+    @classmethod
+    def response_body_allrectypes_NEURON(cls, region, rectypelist):
+        recordings = []
+        for arectype in rectypelist:
+            recordings.append( cls.response_body_NEURON( region, arectype ) )
+        return recordings
+
     @staticmethod
-    def response_component_NEURON(region, component, rectype):
+    def response_component_NEURON(region, componentname, rectype):
         """Returns an array (NEURON's ``h.Vector``) of recorded voltage response from a given cell section.
 
         **Arguments:** Pass a NEURON `section <https://www.neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/topology/secspec.html>`_ or a list whose elements are NEURON sections (e.g. dendrites) of the cell, assuming that the model is instantiated.
@@ -97,10 +108,18 @@ class Recorder(object):
 
         """
         #if type(region).__name__=="Mechanism":
-        compo = getattr(region(0.5), component)
+        compo = getattr(region(0.5), componentname)
         recording = h.Vector()
         recording.record( getattr(compo, "_ref_"+rectype) )
         return recording
+
+    @classmethod
+    def response_component_allrectypes_NEURON(cls, region, componentname, rectypelist):
+        recordings = []
+        for arectype in rectypelist:
+            recordings.append( cls.response_component_NEURON( region, componentname,
+                                                              arectype ) )
+        return recordings
 
     @staticmethod
     def stimulus_individual_currents_NEURON(stimuli):

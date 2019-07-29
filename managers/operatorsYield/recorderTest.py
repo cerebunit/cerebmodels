@@ -67,6 +67,9 @@ class RecorderTest(unittest.TestCase):
         #os.chdir("..") # you are now in parent /cerebmodels
         os.chdir(rootwd)
         sm.prepare_model_NEURON(parameters=self.parameters, chosenmodel=self.chosenmodel)
+        # self.chosenmodel.regions ->
+        # {'axon': ['v'], 'soma': ['v', 'i_cap'], 'channels': {'axon': {'pas': ['i']},
+        # 'soma': {'hh': ['il', 'el'], 'pas': ['i']}}}
         rec_v = rc.response_body_NEURON(self.chosenmodel.cell.soma,
                                         self.chosenmodel.regions["soma"][0]) # "v"
         sm.engage_NEURON()
@@ -84,6 +87,9 @@ class RecorderTest(unittest.TestCase):
         #os.chdir("..") # you are now in parent /cerebmodels
         os.chdir(rootwd)
         sm.prepare_model_NEURON(parameters=self.parameters, chosenmodel=self.chosenmodel)
+        # self.chosenmodel.regions ->
+        # {'axon': ['v'], 'soma': ['v', 'i_cap'], 'channels': {'axon': {'pas': ['i']},
+        # 'soma': {'hh': ['il', 'el'], 'pas': ['i']}}}
         rec_v = rc.response_body_NEURON(self.chosenmodel.cell.soma, "v")
         rec_i = rc.response_body_NEURON(self.chosenmodel.cell.soma, "i_cap")
         sm.engage_NEURON()
@@ -93,7 +99,24 @@ class RecorderTest(unittest.TestCase):
         os.chdir(pwd) # reset to the location of this recorderTest.py
 
     #@unittest.skip("reason for skipping")
-    def test_5_response_component_NEURON_channel(self):
+    def test_5_response_body_allrectypes_NEURON(self):
+        #os.chdir("..") # this moves you up to ~/managers
+        #os.chdir("..") # you are now in parent /cerebmodels
+        os.chdir(rootwd)
+        sm.prepare_model_NEURON(parameters=self.parameters, chosenmodel=self.chosenmodel)
+        # self.chosenmodel.regions ->
+        # {'axon': ['v'], 'soma': ['v', 'i_cap'], 'channels': {'axon': {'pas': ['i']},
+        # 'soma': {'hh': ['il', 'el'], 'pas': ['i']}}}
+        recs = rc.response_body_allrectypes_NEURON( self.chosenmodel.cell.soma,
+                                               self.chosenmodel.regions["soma"] )
+        sm.engage_NEURON()
+        # check the length of the rec_v = 0:dt:tstop
+        a = all( boolean == True for boolean in np.array(recs[0]) != np.array(recs[1]) )
+        self.assertEqual( a, True)
+        os.chdir(pwd) # reset to the location of this recorderTest.py
+
+    #@unittest.skip("reason for skipping")
+    def test_6_response_component_NEURON_channel(self):
         #os.chdir("..") # this moves you up to ~/managers
         #os.chdir("..") # you are now in parent /cerebmodels
         os.chdir(rootwd)
@@ -110,6 +133,23 @@ class RecorderTest(unittest.TestCase):
                                      int(self.parameters["tstop"]/self.parameters["dt"]) )
                              ) + 1 # for the additional dt  step
                         )
+        os.chdir(pwd) # reset to the location of this recorderTest.py
+
+    #@unittest.skip("reason for skipping")
+    def test_7_response_component_allrectypes_NEURON(self):
+        #os.chdir("..") # this moves you up to ~/managers
+        #os.chdir("..") # you are now in parent /cerebmodels
+        os.chdir(rootwd)
+        sm.prepare_model_NEURON(parameters=self.parameters, chosenmodel=self.chosenmodel)
+        # self.chosenmodel.regions ->
+        # {'axon': ['v'], 'soma': ['v', 'i_cap'], 'channels': {'axon': {'pas': ['i']},
+        # 'soma': {'hh': ['il', 'el'], 'pas': ['i']}}}
+        recs = rc.response_component_allrectypes_NEURON( self.chosenmodel.cell.soma, "hh",
+                                        self.chosenmodel.regions["channels"]["soma"]["hh"] )
+        sm.engage_NEURON()
+        # check the length of the rec_v = 0:dt:tstop
+        a = all( boolean == True for boolean in np.array(recs[0]) != np.array(recs[1]) )
+        self.assertEqual( a, True)
         os.chdir(pwd) # reset to the location of this recorderTest.py
 
     #@unittest.skip("reason for skipping")

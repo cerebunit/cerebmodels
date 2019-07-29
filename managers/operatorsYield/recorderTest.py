@@ -93,12 +93,12 @@ class RecorderTest(unittest.TestCase):
         os.chdir(pwd) # reset to the location of this recorderTest.py
 
     #@unittest.skip("reason for skipping")
-    def test_5_response_channel_NEURON(self):
+    def test_5_response_component_NEURON_channel(self):
         #os.chdir("..") # this moves you up to ~/managers
         #os.chdir("..") # you are now in parent /cerebmodels
         os.chdir(rootwd)
         sm.prepare_model_NEURON(parameters=self.parameters, chosenmodel=self.chosenmodel)
-        rec_i = rc.response_channel_NEURON( self.chosenmodel.cell.soma,
+        rec_i = rc.response_component_NEURON( self.chosenmodel.cell.soma,
                       list( self.chosenmodel.regions["channels"]["soma"].keys() )[0], # "pas"
                       self.chosenmodel.regions["channels"]["soma"]["pas"][0] ) # "i"
         sm.engage_NEURON()

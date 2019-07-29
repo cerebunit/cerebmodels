@@ -76,7 +76,7 @@ class Recorder(object):
         return recording
 
     @staticmethod
-    def response_channel_NEURON(region, chnnltype, rectype):
+    def response_component_NEURON(region, component, rectype):
         """Returns an array (NEURON's ``h.Vector``) of recorded voltage response from a given cell section.
 
         **Arguments:** Pass a NEURON `section <https://www.neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/topology/secspec.html>`_ or a list whose elements are NEURON sections (e.g. dendrites) of the cell, assuming that the model is instantiated.
@@ -97,9 +97,9 @@ class Recorder(object):
 
         """
         #if type(region).__name__=="Mechanism":
-        chnnl = getattr(region(0.5), chnnltype)
+        compo = getattr(region(0.5), component)
         recording = h.Vector()
-        recording.record( getattr(chnnl, "_ref_"+rectype) )
+        recording.record( getattr(compo, "_ref_"+rectype) )
         return recording
 
     @staticmethod

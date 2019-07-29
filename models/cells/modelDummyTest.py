@@ -15,7 +15,7 @@ class DummyCell(object):
     def __init__(self):
         # refer Dummy.py to choose regions
         self.regions = {'soma': ['v'],
-                        'axon': ['v']
+                        'axon': ['v'],
                         'channels': {'soma': {'pas': ['i']},
                                      'axon': {'pas': ['i']}}
                        }

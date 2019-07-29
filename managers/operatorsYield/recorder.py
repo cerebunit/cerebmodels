@@ -13,7 +13,7 @@ class Recorder(object):
     +=================================================+========================+
     | :py:meth:`.time_NEURON`                         | static method          |
     +-------------------------------------------------+------------------------+
-    | :py:meth:`.response_voltage_NEURON`             | static method          |
+    | :py:meth:`.response_body_NEURON`                | static method          |
     +-------------------------------------------------+------------------------+
     | :py:meth:`.stimulus_individual_currents_NEURON` | static method          |
     +-------------------------------------------------+------------------------+
@@ -44,10 +44,10 @@ class Recorder(object):
         return recorded_time
 
     @staticmethod
-    def response_voltage_NEURON(region):
+    def response_body_NEURON(region, rectype):
         """Returns an array (NEURON's ``h.Vector``) of recorded voltage response from a given cell section.
 
-        **Arguments:** Pass a NEURON `section <https://www.neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/topology/secspec.html>`_ or a list whose elements are NEURON sections (e.g. dendrites) of the cell, assuming that the model is instantiated.
+        **Arguments:** Pass a NEURON `section <https://www.neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/topology/secspec.html>`_ or a list whose elements are NEURON sections (e.g. dendrites) of the cell, assuming that the model is instantiated. An a rectype is a string such as "v", "i_membrane", "i_cap".
 
         NOTE: If the argument is a list of sections (of a particular anatomical region) then rather than record for each and every section within the list only one section is recorded. This one section is picked randomly hence each section has equal probability to be picked. Also, note that this picking of a section may be determined and done within the __cell template__ (**not** the model template). Then, the regions (passed here as the argument) will most likely be a NEURON section.
 
@@ -69,9 +69,9 @@ class Recorder(object):
         else:
             section = region[ randint(0, len(region)-1) ]
         #
-        recorded_voltage = h.Vector()
-        recorded_voltage.record(section(0.5)._ref_v)
-        return recorded_voltage
+        recording = h.Vector()
+        recording.record(section(0.5)._ref_+rectype)
+        return recording
 
     @staticmethod
     def response_current_NEURON(region):

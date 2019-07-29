@@ -164,20 +164,19 @@ class RecordManager(object):
     @staticmethod
     def recordings_of_cellular_components_NEURON(chosenmodel):
         componentgrouplist = rp.get_componentgrouplist(chosenmodel)
-        print(componentgrouplist)
         recordings = {} # {compgroup: {region_name: {a_comp_name: [ [], [] ]} } }
         for compgroup_name in componentgrouplist:
             its_regionlist = rp.get_regionlist_of_componentgroup(chosenmodel, compgroup_name)
             ans2 = {} # {region_name: {a_comp_name: [ Vector[], Vector[], ... ]} }
-            for region_name in its_regionlist:
+            for region_name in its_regionlist: # for ans2
                 complist = rp.get_componentlist(chosenmodel, compgroup_name, region_name)
                 ans1 = {} # {a_comp_name: [ Vector[], Vector[], ... ]
-                for a_comp_name in complist:
+                for a_comp_name in complist: # for ans1
                     region = getattr(chosenmodel.cell, region_name)
                     rectypes = chosenmodel.regions[compgroup_name][region_name][a_comp_name]
-                    ans1.update({a_comp_name:
+                    ans1.update({a_comp_name: # update ans1
                     rc.response_component_allrectypes_NEURON(region, a_comp_name, rectypes)})
-            ans2.update( {region_name: ans1} )
+                ans2.update( {region_name: ans1} ) # update ans2
             recordings.update( {compgroup_name: ans2} )
         return recordings
 

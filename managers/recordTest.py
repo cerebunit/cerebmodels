@@ -58,11 +58,11 @@ class RecordManagerTest(unittest.TestCase):
         # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
         recs = rm.recordings_of_cellular_components_NEURON(self.chosenmodel)
         sm.engage_NEURON()
-        #a = ( Counter( list(recs["channels"]["soma"]["hh"][0]) ) !=
-        #      Counter( list(recs["channels"]["soma"]["hh"][1]) ) )
-        #b = ( Counter( list(recs["channels"]["soma"]["pas"][0]) ) !=
-        #      Counter( list(recs["channels"]["axon"]["pas"][0]) ) )
-        #self.assertEqual( [ a, b ], [ True, True ] )
+        a = ( Counter( list(recs["channels"]["soma"]["hh"][0]) ) !=
+              Counter( list(recs["channels"]["soma"]["hh"][1]) ) )
+        b = ( Counter( list(recs["channels"]["soma"]["pas"][0]) ) !=
+              Counter( list(recs["channels"]["axon"]["pas"][0]) ) )
+        self.assertEqual( [ a, b ], [ True, True ] )
         os.chdir(pwd) # reset to the location of this managerRecordTest.py
 
     @unittest.skip("reason for skipping")

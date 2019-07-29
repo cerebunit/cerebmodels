@@ -2,6 +2,7 @@
 import re
 
 from managers.operatorsYield.recorder import Recorder as rc
+from managers.operatorsYield.regionparser import RegionParser as rp
 
 class RecordManager(object):
     """
@@ -148,6 +149,37 @@ class RecordManager(object):
                 else: # if the key does not exist create it with node as its value
                     x.update({str_list[0]: node})
         return x
+
+    @staticmethod
+    def recordings_of_cellular_regionbodies_NEURON(chosenmodel):
+        regionbodylist = rp.get_regionlist(chosenmodel)
+        recordings = {}
+        for region_name in regionbodylist:
+            region = getattr(chosenmodel.cell, region_name)
+            rectypes = chosenmodel.regions[region_name]
+            recordings.update(
+               {region_name: rc.response_body_allrectypes_NEURON(region, rectypes)} )
+        return recordings # dictionary
+
+    @staticmethod
+    def recordings_of_cellular_components_NEURON(chosenmodel):
+        componentgrouplist = rp.get_componentgrouplist(chosenmodel)
+        print(componentgrouplist)
+        recordings = {} # {compgroup: {region_name: {a_comp_name: [ [], [] ]} } }
+        for compgroup_name in componentgrouplist:
+            its_regionlist = rp.get_regionlist_of_componentgroup(chosenmodel, compgroup_name)
+            ans2 = {} # {region_name: {a_comp_name: [ Vector[], Vector[], ... ]} }
+            for region_name in its_regionlist:
+                complist = rp.get_componentlist(chosenmodel, compgroup_name, region_name)
+                ans1 = {} # {a_comp_name: [ Vector[], Vector[], ... ]
+                for a_comp_name in complist:
+                    region = getattr(chosenmodel.cell, region_name)
+                    rectypes = chosenmodel.regions[compgroup_name][region_name][a_comp_name]
+                    ans1.update({a_comp_name:
+                    rc.response_component_allrectypes_NEURON(region, a_comp_name, rectypes)})
+            ans2.update( {region_name: ans1} )
+            recordings.update( {compgroup_name: ans2} )
+        return recordings
 
     @classmethod
     def prepare_recording_NEURON(cls, chosenmodel, stimuli=None, stimtype=None):

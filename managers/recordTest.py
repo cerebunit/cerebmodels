@@ -3,6 +3,8 @@ import unittest
 import os
 import importlib
 
+from collections import Counter
+
 import sys
 # import modules from other directories
 # set to ~/cerebmodels
@@ -18,6 +20,7 @@ os.chdir(pwd)
 from managers.simulation import SimulationManager as sm
 from managers.record import RecordManager as rm
 
+import numpy as np
 
 class RecordManagerTest(unittest.TestCase):
 
@@ -25,9 +28,44 @@ class RecordManagerTest(unittest.TestCase):
         os.chdir(rootwd)
         self.chosenmodel = DummyCell() #for alternative approach see managerSimulationTest.py
         os.chdir(pwd)
-        self.regionslist_str = list(self.chosenmodel.regions.keys())
+        #self.regionslist_str = list(self.chosenmodel.regions.keys())
+        self.no_parameters = {"dt": 0.1, "celsius": 30, "tstop": 10, "v_init": 65}
 
     #@unittest.skip("reason for skipping")
+    def test_1_recordings_of_cellular_regionbodies_NEURON(self):
+        os.chdir(rootwd) # move up to load the model
+        # pick the model
+        sm.prepare_model_NEURON(parameters=self.no_parameters, chosenmodel=self.chosenmodel)
+        # self.chosenmodel.regions ->
+        # {"soma": ["v", "i_cap"], "axon": ["v"],
+        # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
+        recs = rm.recordings_of_cellular_regionbodies_NEURON(self.chosenmodel)
+        sm.engage_NEURON()
+        total_iterations = len( range(-1,
+                                int(self.no_parameters["tstop"]/self.no_parameters["dt"])) )
+        a = ( Counter( list(recs["soma"][0]) ) != Counter( list(recs["axon"][0]) ) )
+        self.assertEqual( [ len(recs["soma"][0]), a ],
+                          [ total_iterations, True ] )
+        os.chdir(pwd) # reset to the location of this managerRecordTest.py
+
+    #@unittest.skip("reason for skipping")
+    def test_2_recordings_of_cellular_componenets_NEURON(self):
+        os.chdir(rootwd) # move up to load the model
+        # pick the model
+        sm.prepare_model_NEURON(parameters=self.no_parameters, chosenmodel=self.chosenmodel)
+        # self.chosenmodel.regions ->
+        # {"soma": ["v", "i_cap"], "axon": ["v"],
+        # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
+        recs = rm.recordings_of_cellular_components_NEURON(self.chosenmodel)
+        sm.engage_NEURON()
+        #a = ( Counter( list(recs["channels"]["soma"]["hh"][0]) ) !=
+        #      Counter( list(recs["channels"]["soma"]["hh"][1]) ) )
+        #b = ( Counter( list(recs["channels"]["soma"]["pas"][0]) ) !=
+        #      Counter( list(recs["channels"]["axon"]["pas"][0]) ) )
+        #self.assertEqual( [ a, b ], [ True, True ] )
+        os.chdir(pwd) # reset to the location of this managerRecordTest.py
+
+    @unittest.skip("reason for skipping")
     def test_1_prepare_recording_NEURON_without_stimulating(self):
         os.chdir(rootwd) # move up to load the model
         # pick the model

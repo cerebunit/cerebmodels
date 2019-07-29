@@ -63,7 +63,7 @@ class RegionParser(object):
         return componentgrouplist
 
     @staticmethod
-    def get_regionlist_of_componentgroup(chosenmodel, componentgroup):
+    def get_regionlist_of_componentgroup(chosenmodel, componentgroup_name):
         """Returns an array (NEURON's ``h.Vector``) of recorded time.
 
         **Arguments:** No arguments
@@ -77,9 +77,9 @@ class RegionParser(object):
         ``>> rec_t = rc.time_NEURON()``
 
         """
-        return list(chosenmodel.regions[componentgroup].keys())
+        return list(chosenmodel.regions[componentgroup_name].keys())
 
     @staticmethod
-    def get_componentlist(chosenmodel, componentgroup, region):
-        return list( chosenmodel.regions[componentgroup][region].keys() )
+    def get_componentlist(chosenmodel, componentgroup_name, region_name):
+        return list( chosenmodel.regions[componentgroup_name][region_name].keys() )
 

@@ -45,6 +45,7 @@ class RegionParserTest(unittest.TestCase):
         # {'axon': ['v'], 'soma': ['v', 'i_cap'], 'channels': {'axon': {'pas': ['i']},
         # 'soma': {'hh': ['il', 'el'], 'pas': ['i']}}}
         componentgrouplist = rp.get_componentgrouplist(self.chosenmodel)
+        print(componentgrouplist)
         a = ( Counter(componentgrouplist) == Counter(["channels"]) )
         self.assertEqual( a, True )
 

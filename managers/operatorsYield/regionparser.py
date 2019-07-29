@@ -1,8 +1,8 @@
 # ~/managers/operatorsYield/regionparser.py
-import numpy as np
-from random import randint
+#import numpy as np
+#from random import randint
 
-from neuron import h
+#from neuron import h
 
 class RegionParser(object):
     """

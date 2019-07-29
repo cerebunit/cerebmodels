@@ -15,6 +15,8 @@ class Recorder(object):
     +-------------------------------------------------+------------------------+
     | :py:meth:`.response_body_NEURON`                | static method          |
     +-------------------------------------------------+------------------------+
+    | :py:meth:`.response_channel_NEURON`             | static method          |
+    +-------------------------------------------------+------------------------+
     | :py:meth:`.stimulus_individual_currents_NEURON` | static method          |
     +-------------------------------------------------+------------------------+
     | :py:meth:`.stimulus_overall_current_NEURON`     | static method          |
@@ -74,7 +76,7 @@ class Recorder(object):
         return recording
 
     @staticmethod
-    def response_current_NEURON(region):
+    def response_channel_NEURON(region, chnnltype, rectype):
         """Returns an array (NEURON's ``h.Vector``) of recorded voltage response from a given cell section.
 
         **Arguments:** Pass a NEURON `section <https://www.neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/topology/secspec.html>`_ or a list whose elements are NEURON sections (e.g. dendrites) of the cell, assuming that the model is instantiated.
@@ -95,10 +97,10 @@ class Recorder(object):
 
         """
         #if type(region).__name__=="Mechanism":
-        chnnl = region
-        recorded_current = h.Vector()
-        recorded_current.record(chnnl._ref_i)
-        return recorded_current
+        chnnl = getattr(region(0.5), chnnltype)
+        recording = h.Vector()
+        recording.record( getattr(chnnl, "_ref_"+rectype) )
+        return recording
 
     @staticmethod
     def stimulus_individual_currents_NEURON(stimuli):

@@ -92,6 +92,24 @@ class RecorderTest(unittest.TestCase):
         self.assertEqual( a, True)
         os.chdir(pwd) # reset to the location of this recorderTest.py
 
+    #@unittest.skip("reason for skipping")
+    def test_5_response_channel_NEURON(self):
+        #os.chdir("..") # this moves you up to ~/managers
+        #os.chdir("..") # you are now in parent /cerebmodels
+        os.chdir(rootwd)
+        sm.prepare_model_NEURON(parameters=self.parameters, chosenmodel=self.chosenmodel)
+        rec_i = rc.response_channel_NEURON( self.chosenmodel.cell.soma,
+                      list( self.chosenmodel.regions["channels"]["soma"].keys() )[0], # "pas"
+                      self.chosenmodel.regions["channels"]["soma"]["pas"][0] ) # "i"
+        sm.engage_NEURON()
+        # check the length of the rec_v = 0:dt:tstop
+        self.assertEqual( len( rec_i ),
+                          len( range(0,
+                                     int(self.parameters["tstop"]/self.parameters["dt"]) )
+                             ) + 1 # for the additional dt  step
+                        )
+        os.chdir(pwd) # reset to the location of this recorderTest.py
+
     @unittest.skip("reason for skipping")
     def test_4_stimulus_individual_currents_NEURON(self):
         #os.chdir("..") # this moves you up to ~/managers

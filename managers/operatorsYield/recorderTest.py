@@ -98,8 +98,10 @@ class RecorderTest(unittest.TestCase):
         #os.chdir("..") # you are now in parent /cerebmodels
         os.chdir(rootwd)
         sm.prepare_model_NEURON(parameters=self.parameters, chosenmodel=self.chosenmodel)
-        rec_i = rc.response_component_NEURON( self.chosenmodel.cell.soma,
-                      list( self.chosenmodel.regions["channels"]["soma"].keys() )[0], # "pas"
+        # self.chosenmodel.regions ->
+        # {'axon': ['v'], 'soma': ['v', 'i_cap'], 'channels': {'axon': {'pas': ['i']},
+        # 'soma': {'hh': ['il', 'el'], 'pas': ['i']}}}
+        rec_i = rc.response_component_NEURON( self.chosenmodel.cell.soma, "pas",
                       self.chosenmodel.regions["channels"]["soma"]["pas"][0] ) # "i"
         sm.engage_NEURON()
         # check the length of the rec_v = 0:dt:tstop

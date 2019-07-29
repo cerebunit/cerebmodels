@@ -14,11 +14,15 @@ class DummyCell(object):
 
     def __init__(self):
         # refer Dummy.py to choose regions
-        self.regions = {'soma': ['v'],
+        self.regions = {'soma': ['v', 'i_cap'],
                         'axon': ['v'],
-                        'channels': {'soma': {'pas': ['i']},
+                        'channels': {'soma': {'pas': ['i'],
+                                              'hh': ['il', 'el']},
                                      'axon': {'pas': ['i']}}
                        }
+        self.recordingunits = { 'v': 'mV', 'el': 'mV',
+                                'i_cap': 'mA/cm**2',
+                                'i': 'mA/cm**2', 'il': 'mA/cm**2' }
         self.modelscale = "cells"
         self.modelname = "DummyTest"
         #

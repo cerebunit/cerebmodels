@@ -1,5 +1,5 @@
 # ../managers/record.py
-import re
+#import re
 
 from managers.operatorsYield.recorder import Recorder as rc
 from managers.operatorsYield.regionparser import RegionParser as rp
@@ -8,17 +8,17 @@ class RecordManager(object):
     """
     **Available methods:**
 
-    +-----------------------------------------------+-----------------------+
-    | Method name                                   | Method type           |
-    +===============================================+=======================+
-    | :py:meth:`.create_regionkeylist_responselist` | static method         |
-    +-----------------------------------------------+-----------------------+
-    | :py:meth:`.create_response_dictionary`        | static method         |
-    +-----------------------------------------------+-----------------------+
-    | :py:meth:`.prepare_recording_NEURON`          | class method          |
-    +-----------------------------------------------+-----------------------+
-    | :py:meth:`.postrun_record_NEURON`             | static method         |
-    +-----------------------------------------------+-----------------------+
+    +--------------------------------------------------------+-----------------------+
+    | Method name                                            | Method type           |
+    +========================================================+=======================+
+    | :py:meth:`.recordings_of_cellular_regionbodies_NEURON` | static method         |
+    +--------------------------------------------------------+-----------------------+
+    | :py:meth:`.recordings_of_cellular_components_NEURON`   | static method         |
+    +--------------------------------------------------------+-----------------------+
+    | :py:meth:`.prepare_recording_NEURON`                   | class method          |
+    +--------------------------------------------------------+-----------------------+
+    | :py:meth:`.postrun_record_NEURON`                      | static method         |
+    +--------------------------------------------------------+-----------------------+
 
     """
 
@@ -27,7 +27,33 @@ class RecordManager(object):
         pass
 
     @staticmethod
-    def create_regionkeylist_responselist(chosenmodel, without=None):
+    def recordings_of_cellular_regionbodies_NEURON(chosenmodel):
+        """Returns a dictionary whose value represent model response
+
+        **Arguments:**
+
+        +-----------------+-------------------------------------------------+
+        | Argument        | Value type                                      |
+        +=================+=================================================+
+        | first argument  | list of strings; names of the regions           |
+        +-----------------+-------------------------------------------------+
+        | second argument | list of numbers/array; list of lists            |
+        +-----------------+-------------------------------------------------+
+
+        *NOTE:* ``len(regionslist_str) == len(responselist_num)``
+
+        """
+        regionbodylist = rp.get_regionlist(chosenmodel)
+        recordings = {}
+        for region_name in regionbodylist:
+            region = getattr(chosenmodel.cell, region_name)
+            rectypes = chosenmodel.regions[region_name]
+            recordings.update(
+               {region_name: rc.response_body_allrectypes_NEURON(region, rectypes)} )
+        return recordings # dictionary
+
+    @staticmethod
+    def recordings_of_cellular_components_NEURON(chosenmodel):
         """Returns a list of strings of region names and a list of response
 
         **Arguments:**
@@ -80,89 +106,6 @@ class RecordManager(object):
              - NOTE: a key in ``chosenmodel.regions.keys()`` is "channels" but each assigned channel in region_key_list the letter "**s**" gets dropped and becomes for eg. "channel_secA_chnlx" and not "channels_secA_chnlx".
 
         """
-        regionkeylist = list(chosenmodel.regions.keys())# Initial keys list of model.regions
-        responselist = []                               # placeholder for response
-        (lambda keyslist: keyslist.remove("channels")   # removes "channels" in regionkeylist
-                          if "channels" in keyslist else keyslist)(regionkeylist)
-        # Lambda function for appending section voltage response into responselist
-        record_voltage = \
-         lambda chosenmodel, regionkey, responselist: \
-            responselist.append( rc.response_voltage_NEURON(
-                                               getattr(chosenmodel.cell, regionkey) ) )
-        # Lambda function for appending channel current response into responselist
-        record_current = \
-         lambda section, channelkey, responselist: \
-            responselist.append( rc.response_current_NEURON(
-                                               getattr(section(0.5), channelkey) ) )
-        if without is None: # record every thing
-            for akey in chosenmodel.regions.keys(): # for all the desired section
-                if akey != "channels": # if key refers to a section record voltage response
-                    record_voltage(chosenmodel, akey, responselist)
-                elif akey == "channels": # if key refers to a channer record current response
-                    channels = chosenmodel.regions[akey] # dict value of .regions["channels"]
-                    for sec in channels.keys(): # keys in the dictionary are section names
-                        section = getattr(chosenmodel.cell, sec) # get h.Section()
-                        for achan in channels[sec]: # get each channel name in list
-                            regionkeylist.append( akey+"_"+sec+"_"+achan )
-                            record_current(section, achan, responselist)
-        elif without == "channels": # record only voltages
-            for akey in chosenmodel.regions.keys(): # for all the desired section
-                if akey != "channels":
-                    record_voltage(chosenmodel, akey, responselist)
-        return [regionkeylist, responselist]
-
-    @staticmethod
-    def create_response_dictionary(regionslist_str, responselist_num):
-        """Returns a dictionary whose value represent model response
-
-        **Arguments:**
-
-        +-----------------+-------------------------------------------------+
-        | Argument        | Value type                                      |
-        +=================+=================================================+
-        | first argument  | list of strings; names of the regions           |
-        +-----------------+-------------------------------------------------+
-        | second argument | list of numbers/array; list of lists            |
-        +-----------------+-------------------------------------------------+
-
-        *NOTE:* ``len(regionslist_str) == len(responselist_num)``
-
-        """
-        x = {}
-        #[ x.update({regionslist_str[i]: responselist_num[i]})
-        #                            for i in range(len(regionslist_str)) ]
-        for i in range(len(regionslist_str)):
-            str_list = re.split("_", regionslist_str[i])
-            str_no = len(str_list)
-            if str_no==1: # cell sections are section_name: array/list as value
-                x.update({str_list[0]: responselist_num[i]})
-            else:
-                node = {str_list[-1]: responselist_num[i]}
-                leaf = {}
-                for j in reversed(range(str_no-1)):
-                    if j != 0: # contruct the dictionary which will be the final value
-                        leaf.update( {str_list[j]: node} ) # leaf = {str_list[-2]: node}
-                        node = leaf # set current leaf as node moving up the tree
-                # assign constructed dictionary to the first in string list
-                if str_list[0] in x.keys(): # if the root key already exists
-                    x[str_list[0]].update(node) # update the its dictionary value
-                else: # if the key does not exist create it with node as its value
-                    x.update({str_list[0]: node})
-        return x
-
-    @staticmethod
-    def recordings_of_cellular_regionbodies_NEURON(chosenmodel):
-        regionbodylist = rp.get_regionlist(chosenmodel)
-        recordings = {}
-        for region_name in regionbodylist:
-            region = getattr(chosenmodel.cell, region_name)
-            rectypes = chosenmodel.regions[region_name]
-            recordings.update(
-               {region_name: rc.response_body_allrectypes_NEURON(region, rectypes)} )
-        return recordings # dictionary
-
-    @staticmethod
-    def recordings_of_cellular_components_NEURON(chosenmodel):
         componentgrouplist = rp.get_componentgrouplist(chosenmodel)
         recordings = {} # {compgroup: {region_name: {a_comp_name: [ [], [] ]} } }
         for compgroup_name in componentgrouplist:
@@ -260,25 +203,14 @@ class RecordManager(object):
             stimtype is not None and
             stimuli != "Model is not stimulated"): # if model is stimulated
             if stimtype[0]=="current": # record only voltage
-                [regionkeylist, volts] = \
-                    cls.create_regionkeylist_responselist( chosenmodel, without="channels" )
-                response_record = cls.create_response_dictionary( regionkeylist, volts )
-                #response_record = volts
                 stim_record = rc.stimulus_individual_currents_NEURON( stimuli )
             elif stimtype[0]=="voltage": # record current
-                [regionkeylist, volts_currents] = \
-                    cls.create_regionkeylist_responselist( chosenmodel )
-                response_record = \
-                    cls.create_response_dictionary( regionkeylist, volts_currents )
-                #response_record = volts_currents
                 stim_record = stimuli
-        else: # record voltage & currents if possible when no stimulus is given
-            [regionkeylist, volts] = \
-                cls.create_regionkeylist_responselist( chosenmodel, without="channels" )
-            response_record = cls.create_response_dictionary( regionkeylist, volts )
-            #response_record = volts
+        else:
             stim_record = "Model is not stimulated"
-        return [ time_record, response_record, regionkeylist, stim_record]
+        responses = cls.recordings_of_cellular_regionbodies_NEURON( chosenmodel )
+        responses.update(cls.recordings_of_cellular_components_NEURON(chosenmodel))
+        return [ time_record, responses, stim_record]
 
     @staticmethod
     def postrun_record_NEURON(injectedstimuli=None, stimtype=None):

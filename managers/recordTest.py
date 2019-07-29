@@ -30,6 +30,23 @@ class RecordManagerTest(unittest.TestCase):
         os.chdir(pwd)
         #self.regionslist_str = list(self.chosenmodel.regions.keys())
         self.no_parameters = {"dt": 0.1, "celsius": 30, "tstop": 10, "v_init": 65}
+        self.ic_parameters = {"dt": 0.1, "celsius": 30, "tstop": 35, "v_init": 65}
+        self.ic_stimparam = {"type": ["current", "IClamp"],
+                         "stimlist": [ {'amp': 0.5, 'dur': 10.0, 'delay': 5.0},
+                                       {'amp': 1.0, 'dur': 20.0, 'delay': 5.0+10.0} ],
+                            "tstop": self.ic_parameters["tstop"] }
+        self.sec_parameters = {"dt": 0.1, "celsius": 30, "tstop": 35, "v_init": 65}
+        self.sec_stimparam = {"type": ["voltage", "SEClamp"],
+                          "stimlist": [ {'amp1': 0., 'dur1': 10.0},
+                                       {'amp2': -70.0, 'dur2': 20.0} ],
+                             "tstop": self.sec_parameters["tstop"] }
+        self.ir_parameters = {"dt": 0.1, "celsius": 30, "tstop": 35, "v_init": 65}
+        self.ir_stimparam = {"type": ["current", "IRamp"],
+           "stimlist": [ {"amp_initial": 0.0, "amp_final": 0.5, "dur": 5.0, "delay": 5.0},
+                         {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0, "delay": 10.0},
+                         {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
+                         {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ],
+           "tstop": self.ir_parameters["tstop"] }
 
     #@unittest.skip("reason for skipping")
     def test_1_recordings_of_cellular_regionbodies_NEURON(self):
@@ -65,169 +82,153 @@ class RecordManagerTest(unittest.TestCase):
         self.assertEqual( [ a, b ], [ True, True ] )
         os.chdir(pwd) # reset to the location of this managerRecordTest.py
 
-    @unittest.skip("reason for skipping")
-    def test_1_prepare_recording_NEURON_without_stimulating(self):
+    #@unittest.skip("reason for skipping")
+    def test_3_prepare_recording_NEURON_without_stimulating(self):
         os.chdir(rootwd) # move up to load the model
         # pick the model
-        parameters = {"dt": 0.1, "celsius": 30, "tstop": 10, "v_init": 65}
-        sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
-        rec_t, rec_v, rec_reg, x = rm.prepare_recording_NEURON(self.chosenmodel)
+        sm.prepare_model_NEURON(parameters=self.no_parameters, chosenmodel=self.chosenmodel)
+        # self.chosenmodel.regions ->
+        # {"soma": ["v", "i_cap"], "axon": ["v"],
+        # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
+        rec_t, recs, x = rm.prepare_recording_NEURON(self.chosenmodel)
         sm.engage_NEURON()
-        total_iterations = len( range(-1, int(parameters["tstop"]/parameters["dt"])) )
-        self.assertEqual( len(rec_t) + len(rec_v["soma"]),#len(rec_v[self.regionslist_str[0]]),
-                          2*total_iterations )
+        a = ( Counter( list(recs["soma"][0]) ) != Counter( list(recs["axon"][0]) ) )
+        b = ( Counter( list(recs["channels"]["soma"]["pas"][0]) ) !=
+              Counter( list(recs["channels"]["axon"]["pas"][0]) ) )
+        total_iterations = len( range(-1,
+                                int(self.no_parameters["tstop"]/self.no_parameters["dt"])) )
+        self.assertEqual( [len(rec_t), a, b], [total_iterations,  True, True] )
         os.chdir(pwd) # reset to the location of this managerRecordTest.py
 
-    @unittest.skip("reason for skipping")
-    def test_2_prepare_recording_NEURON_without_stimulating_multiple_sections(self):
-        os.chdir(rootwd) # move up to load the model
-        # pick the model
-        parameters = {"dt": 0.1, "celsius": 30, "tstop": 10, "v_init": 65}
-        sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
-        rec_t, rec_v, rec_reg, x = rm.prepare_recording_NEURON(self.chosenmodel)
-        sm.engage_NEURON()
-        total_iterations = len( range(-1, int(parameters["tstop"]/parameters["dt"])) )
-        self.assertEqual( len(rec_t) + len(rec_v["soma"]) #len(rec_v[self.regionslist_str[0]])
-                                     + len(rec_v["axon"]),#len(rec_v[self.regionslist_str[1]]),
-                          3*total_iterations )
-        os.chdir(pwd) # reset to the location of this managerRecordTest.py
-
-    @unittest.skip("reason for skipping")
-    def test_3_prepare_recording_NEURON_without_stimulating_but_evoke_stimulate_model(self):
+    #@unittest.skip("reason for skipping")
+    def test_4_prepare_recording_NEURON_without_stimulating_but_evoke_stimulate_model(self):
         os.chdir(rootwd) # move up to load the model
         # pick the modelstimtype = currparameters["type"]
-        parameters = {"dt": 0.1, "celsius": 30, "tstop": 10, "v_init": 65}
-        sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
+        sm.prepare_model_NEURON(parameters=self.no_parameters, chosenmodel=self.chosenmodel)
+        # self.chosenmodel.regions ->
+        # {"soma": ["v", "i_cap"], "axon": ["v"],
+        # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
         stimulate_not = sm.stimulate_model_NEURON()
-        rec_t, rec_v, rec_reg, x = rm.prepare_recording_NEURON(self.chosenmodel,
-                                                               stimuli = stimulate_not)
+        rec_t, recs, x = rm.prepare_recording_NEURON(self.chosenmodel,
+                                                     stimuli = stimulate_not)
         sm.engage_NEURON()
-        total_iterations = len( range(-1, int(parameters["tstop"]/parameters["dt"])) )
-        self.assertEqual( len(rec_t) + len(rec_v["soma"]),#len(rec_v[self.regionslist_str[0]]),
-                          2*total_iterations )
+        a = ( Counter( list(recs["soma"][0]) ) !=
+              Counter( list(recs["channels"]["soma"]["pas"][0]) ) )
+        b = ( Counter( list(recs["axon"][0]) ) !=
+              Counter( list(recs["channels"]["axon"]["pas"][0]) ) )
+        total_iterations = len( range(-1,
+                                int(self.no_parameters["tstop"]/self.no_parameters["dt"])) )
+        self.assertEqual( [len(rec_t), a, b], [total_iterations,  True, True] )
         os.chdir(pwd) # reset to the location of this managerRecordTest.py
 
-    @unittest.skip("reason for skipping")
-    def test_4_prepare_recording_NEURON_currentclamp(self):
+    #@unittest.skip("reason for skipping")
+    def test_5_prepare_recording_NEURON_currentclamp(self):
         os.chdir(rootwd) # move up to load the model
         # pick the model
-        parameters = {"dt": 0.1, "celsius": 30, "tstop": 35, "v_init": 65}
-        currparameters = {"type": ["current", "IClamp"],
-                          "stimlist": [ {'amp': 0.5, 'dur': 10.0, 'delay': 5.0},
-                                        {'amp': 1.0, 'dur': 20.0, 'delay': 5.0+10.0} ],
-                          "tstop": parameters["tstop"] }
-        sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
-        stimuli_list = sm.stimulate_model_NEURON(stimparameters = currparameters,
-                                               modelsite = self.chosenmodel.cell.soma)
-        rec_t, rec_v, rec_reg, rec_i_indivs = rm.prepare_recording_NEURON(
-                                                           self.chosenmodel,
-                                                           stimuli = stimuli_list,
-                                                           stimtype = currparameters["type"] )
+        sm.prepare_model_NEURON(parameters=self.ic_parameters, chosenmodel=self.chosenmodel)
+        # self.chosenmodel.regions ->
+        # {"soma": ["v", "i_cap"], "axon": ["v"],
+        # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
+        stimuli_list = sm.stimulate_model_NEURON(stimparameters = self.ic_stimparam,
+                                                 modelsite = self.chosenmodel.cell.soma)
+        rec_t, recs, rec_i_indivs = rm.prepare_recording_NEURON(
+                                                 self.chosenmodel,
+                                                 stimuli = stimuli_list,
+                                                 stimtype = self.ic_stimparam["type"] )
         sm.engage_NEURON()
-        total_iterations = len( range(-1, int(parameters["tstop"]/parameters["dt"])) )
-        self.assertEqual( len(rec_t) + len(rec_v["soma"]) #len(rec_v[self.regionslist_str[0]])
-                                     + len(rec_i_indivs),
-                          2*total_iterations + len( currparameters["stimlist"] ) )
+        total_iterations = len( range(-1,
+                             int(self.ic_parameters["tstop"]/self.ic_parameters["dt"])) )
+        self.assertEqual( len(rec_t) + len(recs["soma"][0]) + len(rec_i_indivs),
+                          2*total_iterations + len( self.ic_stimparam["stimlist"] ) )
         os.chdir(pwd) # reset to the location of this managerRecordTest.py
 
-    @unittest.skip("reason for skipping")
-    def test_5_prepare_recording_NEURON_voltageclamp(self):
+    #@unittest.skip("reason for skipping")
+    def test_6_prepare_recording_NEURON_voltageclamp(self):
         os.chdir(rootwd) # move up to load the model
         # pick the model
-        parameters = {"dt": 0.1, "celsius": 30, "tstop": 35, "v_init": 65}
-        injparameters = {"type": ["voltage", "SEClamp"],
-                         "stimlist": [ {'amp1': 0., 'dur1': 10.0},
-                                       {'amp2': -70.0, 'dur2': 20.0} ],
-                         "tstop": parameters["tstop"] }
-        sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
-        vstimuli = sm.stimulate_model_NEURON(stimparameters = injparameters,
+        sm.prepare_model_NEURON(parameters=self.sec_parameters, chosenmodel=self.chosenmodel)
+        # self.chosenmodel.regions ->
+        # {"soma": ["v", "i_cap"], "axon": ["v"],
+        # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
+        vstimuli = sm.stimulate_model_NEURON(stimparameters = self.sec_stimparam,
                                              modelsite = self.chosenmodel.cell.soma)
-        rec_t, rec_v, rec_reg, rec_v_stim = rm.prepare_recording_NEURON(
-                                                         self.chosenmodel,
-                                                         stimuli = vstimuli,
-                                                         stimtype = injparameters["type"] )
+        rec_t, recs, rec_v_stim = rm.prepare_recording_NEURON(
+                                             self.chosenmodel,
+                                             stimuli = vstimuli,
+                                             stimtype = self.sec_stimparam["type"] )
         sm.engage_NEURON()
-        total_iterations = len( range(-1, int(parameters["tstop"]/parameters["dt"])) )
-        self.assertEqual( [ len(rec_t) + len(rec_v["soma"]),#len(rec_v[self.regionslist_str[0]]),
+        total_iterations = len( range(-1,
+                                int(self.sec_parameters["tstop"]/self.sec_parameters["dt"])) )
+        self.assertEqual( [ len(rec_t) + len(recs["soma"][0]),
                             rec_v_stim.amp1, rec_v_stim.dur1, rec_v_stim.amp2, rec_v_stim.dur2 ],
-                          [ 2*total_iterations, injparameters["stimlist"][0]["amp1"],
-                            injparameters["stimlist"][0]["dur1"],
-                            injparameters["stimlist"][1]["amp2"],
-                            injparameters["stimlist"][1]["dur2"] ] )
+                          [ 2*total_iterations, self.sec_stimparam["stimlist"][0]["amp1"],
+                            self.sec_stimparam["stimlist"][0]["dur1"],
+                            self.sec_stimparam["stimlist"][1]["amp2"],
+                            self.sec_stimparam["stimlist"][1]["dur2"] ] )
         #self.assertEqual( len(rec_t) + len(rec_v["soma"]),#len(rec_v[self.regionslist_str[0]]),
         #                  2*total_iterations )
         os.chdir(pwd) # reset to the location of this managerRecordTest.py
 
-    @unittest.skip("reason for skipping")
-    def test_6_postrun_recording_NEURON_without_stimulating(self):
+    #@unittest.skip("reason for skipping")
+    def test_7_postrun_recording_NEURON_without_stimulating(self):
         os.chdir(rootwd) # move up to load the model
         # pick the model
-        parameters = {"dt": 0.1, "celsius": 30, "tstop": 35, "v_init": 65}
-        sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
+        sm.prepare_model_NEURON(parameters=self.no_parameters, chosenmodel=self.chosenmodel)
+        # self.chosenmodel.regions ->
+        # {"soma": ["v", "i_cap"], "axon": ["v"],
+        # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
         stimuli_list = sm.stimulate_model_NEURON()
-        rec_t, rec_v, rec_reg, rec_i_indivs = rm.prepare_recording_NEURON(
+        rec_t, recs, rec_i_indivs = rm.prepare_recording_NEURON(
                                                          self.chosenmodel,
                                                          stimuli = stimuli_list )
         sm.engage_NEURON()
         rec_i = rm.postrun_record_NEURON( injectedstimuli =  rec_i_indivs)
-        self.assertEqual( rm.postrun_record_NEURON(),
-                          "Model is not stimulated" )
+        self.assertEqual( rm.postrun_record_NEURON(), "Model is not stimulated" )
         os.chdir(pwd) # reset to the location of this managerRecordTest.py
 
-    @unittest.skip("reason for skipping")
-    def test_7_postrun_recording_NEURON_currentclamp(self):
+    #@unittest.skip("reason for skipping")
+    def test_8_postrun_recording_NEURON_currentclamp(self):
         os.chdir(rootwd) # move up to load the model
         # pick the model
-        parameters = {"dt": 0.1, "celsius": 30, "tstop": 35, "v_init": 65}
-        currparameters = {"type": ["current", "IRamp"],
-           "stimlist": [ {"amp_initial": 0.0, "amp_final": 0.5, "dur": 5.0, "delay": 5.0},
-                         {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0, "delay": 10.0},
-                         {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0, "delay": 15.0},
-                         {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0, "delay": 20.0} ] }
-        sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
-        stimuli_list = sm.stimulate_model_NEURON(stimparameters = currparameters,
+        sm.prepare_model_NEURON(parameters=self.ir_parameters, chosenmodel=self.chosenmodel)
+        # self.chosenmodel.regions ->
+        # {"soma": ["v", "i_cap"], "axon": ["v"],
+        # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
+        stimuli_list = sm.stimulate_model_NEURON(stimparameters = self.ir_stimparam,
                                                modelsite = self.chosenmodel.cell.soma)
-        rec_t, rec_v, rec_reg, rec_i_indivs = rm.prepare_recording_NEURON(
-                                                         self.chosenmodel,
-                                                         stimuli = stimuli_list,
-                                                         stimtype = currparameters["type"] )
+        rec_t, recs, rec_i_indivs = rm.prepare_recording_NEURON(
+                                               self.chosenmodel,
+                                               stimuli = stimuli_list,
+                                               stimtype = self.ir_stimparam["type"] )
         sm.engage_NEURON()
         rec_i = rm.postrun_record_NEURON( injectedstimuli = rec_i_indivs,
-                                          stimtype = currparameters["type"] )
-        total_iterations = len( range(-1, int(parameters["tstop"]/parameters["dt"])) )
-        self.assertEqual( len(rec_t) + len(rec_v["soma"])#len(rec_v[self.regionslist_str[0]])
-                                     + len(rec_i),
+                                          stimtype = self.ir_stimparam["type"] )
+        total_iterations = len( range(-1,
+                                int(self.ir_parameters["tstop"]/self.ir_parameters["dt"])) )
+        self.assertEqual( len(rec_t) + len(recs["soma"][0]) + len(rec_i),
                           3*total_iterations )
         os.chdir(pwd) # reset to the location of this managerRecordTest.py
 
-    @unittest.skip("reason for skipping")
-    def test_8_postrun_recording_NEURON_voltageclamp(self):
+    #@unittest.skip("reason for skipping")
+    def test_9_postrun_recording_NEURON_voltageclamp(self):
         os.chdir(rootwd) # move up to load the model
         # pick the model
-        parameters = {"dt": 0.1, "celsius": 30, "tstop": 35, "v_init": 65}
-        injparameters = {"type": ["voltage", "SEClamp"],
-                         "stimlist": [ {"amp1": 0.0, "dur1": 10},
-                                       {"amp2": 10, "dur2": 20},
-                                       {"amp3": 20, "dur3": 30} ],
-                         "tstop": parameters["tstop"] }
-        sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
-        vstimuli = sm.stimulate_model_NEURON(stimparameters = injparameters,
+        sm.prepare_model_NEURON(parameters=self.sec_parameters, chosenmodel=self.chosenmodel)
+        # self.chosenmodel.regions ->
+        # {"soma": ["v", "i_cap"], "axon": ["v"],
+        # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
+        vstimuli = sm.stimulate_model_NEURON(stimparameters = self.sec_stimparam,
                                              modelsite = self.chosenmodel.cell.soma)
-        rec_t, rec_v, rec_reg, rec_v_stim = rm.prepare_recording_NEURON(
-                                                         self.chosenmodel,
-                                                         stimuli = vstimuli,
-                                                         stimtype = injparameters["type"] )
+        rec_t, recs, rec_v_stim = rm.prepare_recording_NEURON(
+                                             self.chosenmodel,
+                                             stimuli = vstimuli,
+                                             stimtype = self.sec_stimparam["type"] )
         sm.engage_NEURON()
         rec_v_stim = rm.postrun_record_NEURON( injectedstimuli = rec_v_stim,
-                                               stimtype = injparameters["type"] )
-        print(len(rec_t), len(rec_v), len(rec_v["soma"]), len(rec_reg))
-        print(len(rec_v["channels"]))
-        print(len(rec_v["channels"]["soma"]))
-        print(len(rec_v["channels"]["soma"]["pas"]))
-        total_iterations = len( range(-1, int(parameters["tstop"]/parameters["dt"])) )
-        #print(len(rec_v), len(rec_reg))
-        self.assertEqual( len(rec_t) + len(rec_v["soma"])#len(rec_v[self.regionslist_str[0]])
-                                     + len(rec_v_stim),
+                                               stimtype = self.sec_stimparam["type"] )
+        total_iterations = len( range(-1,
+                                int(self.sec_parameters["tstop"]/self.sec_parameters["dt"])) )
+        self.assertEqual( len(rec_t) + len(recs["soma"][0]) + len(rec_v_stim),
                           3*total_iterations )
         os.chdir(pwd) # reset to the location of this managerRecordTest.py
 

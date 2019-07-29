@@ -58,8 +58,8 @@ class RegionParser(object):
 
         """
         componentgrouplist = list(chosenmodel.regions.keys())
-        [ componentgrouplist.remove(key) for key in componentgrouplist
-                                    if type(chosenmodel.regions[key]) is not dict ]
+        [ componentgrouplist.remove(key) for key, value in chosenmodel.regions.items()
+                                    if type(value) is not dict ]
         return componentgrouplist
 
     @staticmethod

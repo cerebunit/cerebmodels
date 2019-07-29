@@ -70,7 +70,7 @@ class Recorder(object):
             section = region[ randint(0, len(region)-1) ]
         #
         recording = h.Vector()
-        recording.record(section(0.5)._ref_+rectype)
+        recording.record( getattr(section(0.5), "_ref_"+rectype) )
         return recording
 
     @staticmethod

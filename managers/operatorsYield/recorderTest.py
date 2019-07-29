@@ -19,6 +19,7 @@ from managers.simulation import SimulationManager as sm
 
 from recorder import Recorder as rc
 
+import numpy as np
 
 class RecorderTest(unittest.TestCase):
 
@@ -26,19 +27,20 @@ class RecorderTest(unittest.TestCase):
         os.chdir(rootwd)
         self.chosenmodel = DummyCell()
         os.chdir(pwd)
+        #
+        self.parameters = {"dt": 0.1, "celsius": 20, "tstop": 10, "v_init": 65}
 
     #@unittest.skip("reason for skipping")
     def test_1_time_NEURON_without_engaging(self):
         #os.chdir("..") # this moves you up to ~/managers
         #os.chdir("..") # you are now in parent /cerebmodels
         os.chdir(rootwd)
-        parameters = {"dt": 0.1, "celsius": 20, "tstop": 10, "v_init": 65}
-        sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
+        sm.prepare_model_NEURON(parameters=self.parameters, chosenmodel=self.chosenmodel)
         rec_t = rc.time_NEURON()
         # the length of the rec_time != 0:dt:tstop since recording was not done
         self.assertNotEqual( len( rec_t ),
                              len( range(0,
-                                     int(parameters["tstop"]/parameters["dt"]) )
+                                     int(self.parameters["tstop"]/self.parameters["dt"]) )
                               ) + 1 # for the additional dt  step
                         )
         os.chdir(pwd) # reset to the location of this recorderTest.py
@@ -48,36 +50,49 @@ class RecorderTest(unittest.TestCase):
         #os.chdir("..") # this moves you up to ~/managers
         #os.chdir("..") # you are now in parent /cerebmodels
         os.chdir(rootwd)
-        parameters = {"dt": 0.1, "celsius": 20, "tstop": 10, "v_init": 65}
-        sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
+        sm.prepare_model_NEURON(parameters=self.parameters, chosenmodel=self.chosenmodel)
         rec_t = rc.time_NEURON()
         sm.engage_NEURON()
         # check the length of the recorded time = 0:dt:tstop
         self.assertEqual( len( rec_t ),
                           len( range(0,
-                                     int(parameters["tstop"]/parameters["dt"]) )
+                                     int(self.parameters["tstop"]/self.parameters["dt"]) )
                              ) + 1 # for the additional dt  step
                         )
         os.chdir(pwd) # reset to the location of this recorderTest.py
 
     #@unittest.skip("reason for skipping")
-    def test_3_response_voltage_NEURON(self):
+    def test_3_response_body_NEURON(self):
         #os.chdir("..") # this moves you up to ~/managers
         #os.chdir("..") # you are now in parent /cerebmodels
         os.chdir(rootwd)
-        parameters = {"dt": 0.1, "celsius": 20, "tstop": 10, "v_init": 65}
-        sm.prepare_model_NEURON(parameters=parameters, chosenmodel=self.chosenmodel)
-        rec_v = rc.response_voltage_NEURON(self.chosenmodel.cell.soma)
+        sm.prepare_model_NEURON(parameters=self.parameters, chosenmodel=self.chosenmodel)
+        rec_v = rc.response_body_NEURON(self.chosenmodel.cell.soma,
+                                        self.chosenmodel.regions["soma"][0]) # "v"
         sm.engage_NEURON()
         # check the length of the rec_v = 0:dt:tstop
         self.assertEqual( len( rec_v ),
                           len( range(0,
-                                     int(parameters["tstop"]/parameters["dt"]) )
+                                     int(self.parameters["tstop"]/self.parameters["dt"]) )
                              ) + 1 # for the additional dt  step
                         )
         os.chdir(pwd) # reset to the location of this recorderTest.py
 
     #@unittest.skip("reason for skipping")
+    def test_4_response_body_NEURON_tworesponses(self):
+        #os.chdir("..") # this moves you up to ~/managers
+        #os.chdir("..") # you are now in parent /cerebmodels
+        os.chdir(rootwd)
+        sm.prepare_model_NEURON(parameters=self.parameters, chosenmodel=self.chosenmodel)
+        rec_v = rc.response_body_NEURON(self.chosenmodel.cell.soma, "v")
+        rec_i = rc.response_body_NEURON(self.chosenmodel.cell.soma, "i_cap")
+        sm.engage_NEURON()
+        # check the length of the rec_v = 0:dt:tstop
+        a = all( boolean == True for boolean in np.array(rec_v) != np.array(rec_i) )
+        self.assertEqual( a, True)
+        os.chdir(pwd) # reset to the location of this recorderTest.py
+
+    @unittest.skip("reason for skipping")
     def test_4_stimulus_individual_currents_NEURON(self):
         #os.chdir("..") # this moves you up to ~/managers
         #os.chdir("..") # you are now in parent /cerebmodels
@@ -96,7 +111,7 @@ class RecorderTest(unittest.TestCase):
         self.assertEqual( len( rec_i_indivs ), len( currparameters["stimlist"] ) )
         os.chdir(pwd) # reset to the location of this recorderTest.py
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_5_stimulus_overall_currents_NEURON(self):
         #os.chdir("..") # this moves you up to ~/managers
         #os.chdir("..") # you are now in parent /cerebmodels
@@ -120,7 +135,7 @@ class RecorderTest(unittest.TestCase):
                         )
         os.chdir(pwd) # reset to the location of this recorderTest.py
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_6_stimulus_overall_voltage_NEURON(self):
         #os.chdir("..") # this moves you up to ~/managers
         #os.chdir("..") # you are now in parent /cerebmodels

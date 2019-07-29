@@ -13,10 +13,12 @@ from models.cells.DummyTest.Dummy import Dummy
 class DummyCell(object):
 
     def __init__(self):
-        self.regions = {'soma': 0.0, # refer Dummy.py to choose regions
-                        'axon': 0.0,
-                        'channels': {'soma': ['pas'],
-                                     'axon': ['pas']}}
+        # refer Dummy.py to choose regions
+        self.regions = {'soma': ['v'],
+                        'axon': ['v']
+                        'channels': {'soma': {'pas': ['i']},
+                                     'axon': {'pas': ['i']}}
+                       }
         self.modelscale = "cells"
         self.modelname = "DummyTest"
         #

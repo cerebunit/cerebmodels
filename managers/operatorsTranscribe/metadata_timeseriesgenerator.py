@@ -2,25 +2,29 @@
 #import numpy.core.defchararray as npd
 import re
 
+from managers.operatorsYield.regionparser import RegionParser as rp
+
 class TimeseriesGenerator(object):
     """
     **Available Methods:**
 
-    +---------------------------------------------+-------------------------+
-    | Method name                                 | Method type             |
-    +=============================================+=========================+
-    | :py:meth:`.forcellrecording`                | class method            |
-    +---------------------------------------------+-------------------------+
-    | :py:meth:`.forrecording`                    | class method            |
-    +---------------------------------------------+-------------------------+
-    | :py:meth:`.cellrecordings_response`         | static method           |
-    +---------------------------------------------+-------------------------+
-    | :py:meth:`.recordings_cell_stimulus`        | static method           |
-    +---------------------------------------------+-------------------------+
+    +--------------------------------------------------+-------------------------+
+    | Method name                                      | Method type             |
+    +==================================================+=========================+
+    | :py:meth:`.forcellrecording`                     | class method            |
+    +--------------------------------------------------+-------------------------+
+    | :py:meth:`.forrecording`                         | class method            |
+    +--------------------------------------------------+-------------------------+
+    | :py:meth:`.cellrecordings_response_regionbodies` | static method           |
+    +--------------------------------------------------+-------------------------+
+    | :py:meth:`.cellrecordings_response_components`   | static method           |
+    +--------------------------------------------------+-------------------------+
+    | :py:meth:`.recordings_cell_stimulus`             | static method           |
+    +--------------------------------------------------+-------------------------+
 
     """
     @staticmethod
-    def cellrecordings_response( model, cellregion, recordings, stimtype, parameters):
+    def cellrecordings_response_regionbodies( model, recordings, stimtype, parameters):
         """Creates a generic time-series (response) metadata for cells. This method is called by :py:meth:`.forcellrecordings_nostimulus` and :py:meth:`.forcellrecordings_stimulus`.
 
         **Arguments:**
@@ -66,33 +70,88 @@ class TimeseriesGenerator(object):
         * but ``recordings["stimulus"]`` = ``array`` = ``specific_rec_stim``
 
         """
-        str_list = re.split("_", cellregion)
-        unit = (lambda strlist: "mV" if len(strlist)==1 else "mA/cm**2")(str_list)
         response_type = lambda unit: "voltage" if unit=="mV" else "current"
-        str_no = len(str_list)
-        recorded_response = recordings["response"]
-        # Extract recorded response for given region
-        if str_no==1:
-            rec_response = recorded_response[cellregion]
-        else:
-            rec_response = recorded_response[ str_list[0] ]
-            for i in range(1, str_no):
-                rec_response = rec_response[ str_list[i] ]
+        comments = lambda unit, stimulus,  stimtype: \
+                     response_type(unit) +" response without stimulation" \
+                     if ( (type(stimulus) is str) and
+                          (stimulus=="Model is not stimulated") ) \
+                     else response_type(unit) +" response with "+ stimtype[1]
+        description = lambda unit, region_name, model: \
+                     "whole single array of "+ response_type(unit) + " response from " + region_name + " of " + model.modelname
         #
-        if ( (type(recordings["stimulus"]) is str) and
-             (recordings["stimulus"]=="Model is not stimulated") ):
-            comments = response_type(unit) +" response without stimulation"
-        else:
-            comments = response_type(unit) +" response with "+ stimtype[1]
-        return {"name": model.modelname+"_"+cellregion, # "source": cellregion, # No longer NWB2.0
-                "data": rec_response, "unit": unit,
-                "resolution": float(parameters["dt"]),
-                "conversion": 1000.0, #1000=>1ms
-                "timestamps": recordings["time"], #"starting_time": 0.0,
+        resolution = float( parameters["dt"] )
+        conversion = 1000.0
+        timestamps = recordings["time"]
+        #
+        regionlist = rp.get_regionlist(model)
+        #
+        regions_md_dict = {}
+        #
+        for a_region_name in regionlist:
+            no_of_rec = len(model.regions[a_region_name])
+            md_list = []
+            for i in range(no_of_rec):
+                rec_of = model.regions[a_region_name][i]
+                unit = model.recordingunits[rec_of]
+                md_list.append(
+                   {"name": model.modelname+"_"+a_region_name+"_"+rec_of,
+                    "data": recordings["response"][a_region_name][i],
+                    "unit": unit,        "resolution": resolution,
+              "conversion": conversion,  "timestamps": timestamps,
                 #"rate": 1/parameters["dt"], # NWB suggests using Hz but frequency != rate
-                "comments": comments,
-                "description": "whole single array of voltage response from "+cellregion+" of "+ model.modelname}
-        
+                "comments": comments(unit, recordings["stimulus"],  stimtype),
+             "description": description(unit, a_region_name, model) } )
+            regions_md_dict.update( {a_region_name: md_list} )
+        return regions_md_dict
+
+    @staticmethod
+    def cellrecordings_response_components( model, recordings, stimtype, parameters):
+        response_type = lambda unit: "voltage" if unit=="mV" else "current"
+        comments = lambda unit, stimulus,  stimtype: \
+                     response_type(unit) +" response without stimulation" \
+                     if ( (type(stimulus) is str) and
+                          (stimulus=="Model is not stimulated") ) \
+                     else response_type(unit) +" response with "+ stimtype[1]
+        description = lambda unit, compgroup_name, region_name, comp_name, model: \
+                     "whole single array of "+ response_type(unit) + " response from the " + compgroup_name + ", " + comp_name + " of the "+ region_name + " of " + model.modelname
+        #
+        resolution = float( parameters["dt"] )
+        conversion = 1000.0
+        timestamps = recordings["time"]
+        #
+        componentgrouplist = rp.get_componentgrouplist(model)
+        #
+        components_md_dict = {}
+        #
+        for compgroup_name in componentgrouplist:
+            its_regionlist = rp.get_regionlist_of_componentgroup(model, compgroup_name)
+            ans2 = {}
+            for a_region_name in its_regionlist:
+                complist = rp.get_componentlist(model, compgroup_name, a_region_name)
+                ans1 = {}
+                for a_comp_name in complist:
+                    no_of_rec = \
+                        len(model.regions[compgroup_name][a_region_name][a_comp_name])
+                    md_list = []
+                    for i in range(no_of_rec):
+                        rec_of = model.regions[compgroup_name][a_region_name][a_comp_name][i]
+                        unit = model.recordingunits[rec_of]
+                        md_list.append(
+                          {"name": model.modelname+"_"+a_region_name+"_" \
+                                                      +a_comp_name+"_"+rec_of,
+                           "data": recordings["response"][compgroup_name]\
+                                             [a_region_name][a_comp_name][i],
+                           "unit": unit,        "resolution": resolution,
+                     "conversion": conversion,  "timestamps": timestamps,
+                #"rate": 1/parameters["dt"], # NWB suggests using Hz but frequency != rate
+                       "comments": comments(unit, recordings["stimulus"],  stimtype),
+                    "description": description(unit, compgroup_name, a_region_name,
+                                               a_comp_name, model) } )
+                    ans1.update( {a_comp_name: md_list} )
+                ans2.update( {a_region_name: ans1} )
+            components_md_dict.update( {compgroup_name: ans2} )
+        return components_md_dict
+
     @staticmethod
     def recordings_cell_stimulus(model, recordings, parameters, stimparameters):
         """Creates a time-series (response) metadata for stimulated cells. This method is called by :py:meth`.recordings_cellstimulus`.
@@ -251,12 +310,13 @@ class TimeseriesGenerator(object):
         * however, with stimulation there is an additional "stimulus" key ``stimulmd = respmmd["stimulus"]``
 
         """
-        y = {}
-        update_y = \
-          lambda y, chosenmodel, recordings, stimtype, runtimeparameters: \
-             [ y.update( {region: cls.cellrecordings_response( chosenmodel, region,
-                                       recordings, stimtype, runtimeparameters)})
-               for region in recordings["regions"] ]
+        #y = {}
+        #update_y = \
+        #  lambda y, chosenmodel, recordings, stimtype, runtimeparameters: \
+        #     [ y.update( {region: cls.cellrecordings_response( chosenmodel, region,
+        #                               recordings, stimtype, runtimeparameters)})
+        #       for region in recordings["regions"] ]
+        #
         #if npd.equal(recordings["stimulus"], "Model is not stimulated").item((0)):
         # str because recordings has numpy array as dictionary values resulting in
         # numpy FutureWarning bug as it expects this to be an array as well
@@ -265,11 +325,15 @@ class TimeseriesGenerator(object):
             #y.update( cls.forcellrecordings_nostimulus( chosenmodel, recordings,
             #                                            runtimeparameters ) )
             stimtype = stimparameters # None
-            update_y( y, chosenmodel, recordings, stimtype, runtimeparameters ) 
+            #update_y( y, chosenmodel, recordings, stimtype, runtimeparameters ) 
         else: # for stimulus
             stimtype = stimparameters["type"]
-            update_y( y, chosenmodel, recordings, stimtype, runtimeparameters ) 
-        return y
+            #update_y( y, chosenmodel, recordings, stimtype, runtimeparameters )
+        recordings_md = cls.cellrecordings_response_regionbodies( chosenmodel,
+                                recordings, stimtype, runtimeparameters )
+        recordings_md.update( cls.cellrecordings_response_components( chosenmodel,
+                                      recordings, stimtype, runtimeparameters ) )
+        return recordings_md
 
     @classmethod
     def forrecording( cls, chosenmodel=None, recordings=None,

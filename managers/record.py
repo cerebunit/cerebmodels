@@ -202,9 +202,9 @@ class RecordManager(object):
         if (stimuli is not None and    # record stimulus
             stimtype is not None and
             stimuli != "Model is not stimulated"): # if model is stimulated
-            if stimtype[0]=="current": # record only voltage
+            if stimtype[0]=="current":
                 stim_record = rc.stimulus_individual_currents_NEURON( stimuli )
-            elif stimtype[0]=="voltage": # record current
+            elif stimtype[0]=="voltage":
                 stim_record = stimuli
         else:
             stim_record = "Model is not stimulated"

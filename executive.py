@@ -128,7 +128,7 @@ class ExecutiveControl(object):
         # NOTE: although it is convenient to use self.chosenmodel
         # to the user having explicitly choose onmodel as an argument is clearer
         uu.check_not_None_in_arg({'parameters': parameters, 'onmodel': onmodel})
-        stimtype = (lambda stimpar: None if stimparameters is None else stimparameters["type"])
+        stimtype=(lambda stimpar: None if stimparameters is None else stimparameters["type"])
         self.simtime = datetime.datetime.now()
         if onmodel.modelscale is "cells":
             sm.prepare_model_NEURON( parameters=parameters, chosenmodel=onmodel,
@@ -137,8 +137,7 @@ class ExecutiveControl(object):
             stimuli_clamp = sm.stimulate_model_NEURON(
                                           stimparameters = stimparameters,
                                           modelsite = stimloc )
-            self.recordings["time"], self.recordings["response"], \
-            self.recording["regions"], rec_clamp_indivs = \
+            self.recordings["time"], self.recordings["response"], rec_clamp_indivs = \
                     rm.prepare_recording_NEURON( onmodel,
                                                  stimuli = stimuli_clamp,
                                                  stimtype = stimtype )

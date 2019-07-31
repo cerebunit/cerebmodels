@@ -1,4 +1,5 @@
 # ~/managers/operatorsTranscribe/metadata_epochgenerator.py
+from managers.operatorsYield.regionparser import RegionParser as rp
 
 class EpochGenerator(object):
     """
@@ -14,6 +15,10 @@ class EpochGenerator(object):
     | :py:meth:`.forepoch`                           | class method  |
     +------------------------------------------------+---------------+
     | :py:meth:`.compute_totalepochs_per_cellregion` | static method |
+    +------------------------------------------------+---------------+
+    | :py:meth:`.epochcontainer_for_regionbodies`    | static method |
+    +------------------------------------------------+---------------+
+    | :py:meth:`.epochcontainer_for_compartments`    | static method |
     +------------------------------------------------+---------------+
     | :py:meth:`.an_epoch_stimulus_window`           | static method |
     +------------------------------------------------+---------------+
@@ -67,15 +72,69 @@ class EpochGenerator(object):
         """
         if "stimlist" in parameters:
             no_of_stimulus = len(parameters["stimlist"])
-            last_t = parameters["stimlist"][-1]["delay"]+parameters["stimlist"][-1]["dur"]
-            if last_t == parameters["tstop"]:
-                n = 0
-            else:
-                n = 1
+            #last_t = parameters["stimlist"][-1]["delay"]+parameters["stimlist"][-1]["dur"]
+            #if last_t == parameters["tstop"]:
+            #    n = 0
+            #else:
+            #    n = 1
         else:
             no_of_stimulus = 0
-            n = 0
-        return 1+no_of_stimulus+n
+            #n = 0
+        return 1+no_of_stimulus#+n
+
+    @staticmethod
+    def epochcontainer_for_regionbodies(model, no_of_epochs):
+        regionlist = rp.get_regionlist(model)
+        x = {}
+        for a_region_name in regionlist:
+            [ x.update({"epoch"+str(i)+a_region_name: {}})
+              for i in range(no_of_epochs) ]
+            no_of_rec = len(model.regions[a_region_name])
+            for ith_rec_type in range(no_of_rec):
+                rec_of = model.regions[a_region_name][ith_rec_type]
+                [ x["epoch"+str(i)+a_region_name].update(
+                    {rec_of:
+                        {"tags": ( str(no_of_epochs)+"_epoch_response",# 0 number of epochs
+                                   str(i),                        # 1 epochID
+                                   [ a_region_name, rec_of ],     # 2 [ region, recsite ]
+                                   " ".join(model.regions[a_region_name]),#3 all rec sites
+                                   model.modelname, model.modelscale,# 4modelname, 5scale
+                                   ["epoch"+str(i)+a_region_name, rec_of] )} # 6 dict keys
+                    } ) for i in range(no_of_epochs) ]
+        return x
+
+    @staticmethod
+    def epochcontainer_for_components(model, no_of_epochs):
+        componentgrouplist = rp.get_componentgrouplist(model)
+        x = {}
+        for epochID in range(no_of_epochs):
+            for compgroup_name in componentgrouplist:
+                its_regionlist = rp.get_regionlist_of_componentgroup(model, compgroup_name)
+                ans2 = {}
+                for a_region_name in its_regionlist:
+                    complist = rp.get_componentlist(model, compgroup_name, a_region_name)
+                    ans1 = {}
+                    for a_comp_name in complist:
+                        no_of_rec = \
+                          len(model.regions[compgroup_name][a_region_name][a_comp_name])
+                        ans0 = {}
+                        for ith_rec_type in range(no_of_rec):
+                            rec_of = model.regions[compgroup_name][a_region_name]\
+                                                  [a_comp_name][ith_rec_type]
+                            ans0.update({rec_of:
+                              {"tags": ( str(no_of_epochs)+"_epoch_response",# 0 #epochs
+                                         str(epochID), # 1 epochID
+                                         [ compgroup_name, a_region_name,
+                                           a_comp_name, rec_of ],# 2[gp, reg, comp, rec]
+                                         " ".join(model.regions[compgroup_name][a_region_name][a_comp_name]),#3 all rec sites
+                                         model.modelname, model.modelscale,# 4, 5 indices
+                                         ["epoch"+str(epochID)+compgroup_name,
+                                         a_region_name, a_comp_name,
+                                         rec_of] )} }) # 6 dict keys
+                        ans1.update( {a_comp_name: ans0} )
+                    ans2.update( {a_region_name: ans1} )
+                x.update( {"epoch"+str(epochID)+compgroup_name: ans2} )
+        return x
 
     @classmethod
     def epochcontainer(cls, chosenmodel, parameters):

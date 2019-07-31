@@ -32,11 +32,11 @@ class TimeseriesGeneratorTest(unittest.TestCase):
         # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
         #
         # The following are generated via RegionParser in operatorsTranscribe/regionparser.py
-        self.regionlist = ["soma", "axon"]
-        self.componentgrouplist = ["channels"]
-        self.regionlist_of_of_componentgroup = ["soma", "axon"]
-        self.soma_componentlist = ["hh", "pas"]
-        self.axon_componentlist = ["pas"]
+        #self.regionlist = ["soma", "axon"]
+        #self.componentgrouplist = ["channels"]
+        #self.regionlist_of_of_componentgroup = ["soma", "axon"]
+        #self.soma_componentlist = ["hh", "pas"]
+        #self.axon_componentlist = ["pas"]
         # No stimulus
         self.no_runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         self.no_rec_t = [ t*self.no_runtimeparam["dt"] for t in

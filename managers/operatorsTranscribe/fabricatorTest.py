@@ -18,6 +18,7 @@ rootwd = os.getcwd()
 from models.cells.modelDummyTest import DummyCell
 os.chdir(pwd)
 
+from metadata_timeseriesgenerator import TimeseriesGenerator as tg
 from fabricator import Fabricator as fab
 
 import numpy
@@ -50,6 +51,9 @@ class FabricatorTest(unittest.TestCase):
                                  "pas":[ self.no_rec_resp[5] ]},
                         "axon": {"pas":[ self.no_rec_resp[3] ]}}},
            "stimulus": "Model is not stimulated"}
+        self.no_respmd = tg.forrecording( chosenmodel = self.chosenmodel,
+                                          recordings = self.no_recordings,
+                                          runtimeparameters = self.no_runtimeparam )
         # IClamp
         self.ic_runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         self.ic_stimparameters = {"type": ["current", "IClamp"],
@@ -65,8 +69,12 @@ class FabricatorTest(unittest.TestCase):
                         "axon": [ self.ic_rec_resp[2] ],
            "channels": {"soma": {"hh": [self.ic_rec_resp[3], self.ic_rec_resp[4]],
                                  "pas":[ self.ic_rec_resp[5] ]},
-                        "axon": {"pas":[ self.ic_rec_resp[3] ]}}},
+                        "axon": {"pas":[ self.ic_rec_resp[6] ]}}},
            "stimulus": self.ic_rec_stim}
+        self.ic_respmd = tg.forrecording( chosenmodel = self.chosenmodel,
+                                          recordings = self.ic_recordings,
+                                          runtimeparameters = self.ic_runtimeparam,
+                                          stimparameters = self.ic_stimparameters )
         # Voltage clamp
         self.sec_runtimeparam = {"dt": 0.1, "celsius": 30, "tstop": 35, "v_init": 65}
         self.sec_stimparameters = {"type": ["voltage", "SEClamp"],
@@ -84,6 +92,10 @@ class FabricatorTest(unittest.TestCase):
                                  "pas":[ self.sec_rec_resp[5] ]},
                         "axon": {"pas":[ self.sec_rec_resp[3] ]}}},
            "stimulus": self.sec_rec_stim}
+        self.sec_respmd = tg.forrecording( chosenmodel = self.chosenmodel,
+                                           recordings = self.sec_recordings,
+                                           runtimeparameters = self.sec_runtimeparam,
+                                           stimparameters = self.sec_stimparameters )
         # parameters for generating NWBFile
         now = datetime.now()
         self.file_metadata = {
@@ -151,6 +163,109 @@ class FabricatorTest(unittest.TestCase):
         a = all(boolean == True for boolean in nwbts.data==rec_v_soma)
         b = all(boolean == True for boolean in nwbts.timestamps==rec_t)
         self.assertTrue( a and b is True )
+
+    #@unittest.slip("reason for skipping")
+    def test_3_construct_nwbseries_regionbodies_nostimulus(self):
+        # self.chosenmodel.regions ->
+        # {"soma": ["v", "i_cap"], "axon": ["v"],
+        # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
+        nwbts = fab.construct_nwbseries_regionbodies( self.chosenmodel, self.no_respmd )
+        a = all(boolean == True for boolean in
+                    nwbts['soma']['v'].data==self.no_recordings['response']['soma'][0])
+        b = all(boolean == True for boolean in
+                    nwbts['axon']['v'].data==self.no_recordings['response']['axon'][0])
+        c = all(boolean == True for boolean in
+                    nwbts['soma']['v'].timestamps==self.no_recordings['time'])
+        self.assertTrue( a and b and c is True )
+
+    #@unittest.slip("reason for skipping")
+    def test_4_construct_nwbseries_components_voltagestimulus(self):
+        # self.chosenmodel.regions ->
+        # {"soma": ["v", "i_cap"], "axon": ["v"],
+        # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
+        nwbts = fab.construct_nwbseries_components( self.chosenmodel, self.sec_respmd )
+        a = all(boolean == True for boolean in
+                    nwbts['channels']['soma']['pas']['i'].data ==
+                    self.sec_recordings['response']['channels']['soma']['pas'][0])
+        b = all(boolean == True for boolean in
+                    nwbts['channels']['axon']['pas']['i'].data ==
+                    self.sec_recordings['response']['channels']['axon']['pas'][0])
+        c = all(boolean == True for boolean in
+                    nwbts['channels']['soma']['pas']['i'].timestamps ==
+                    self.sec_recordings['time'])
+        self.assertTrue( a and b and c is True )
+
+    #@unittest.slip("reason for skipping")
+    def test_5_build_nwbseries_currentstimulus(self):
+        # self.chosenmodel.regions ->
+        # {"soma": ["v", "i_cap"], "axon": ["v"],
+        # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
+        nwbts = fab.build_nwbseries( chosenmodel=self.chosenmodel, tsmd=self.ic_respmd )
+        a = all(boolean == True for boolean in
+                    nwbts['soma']['v'].data ==
+                    self.ic_recordings['response']['soma'][0])
+        b = all(boolean == True for boolean in
+                    nwbts['channels']['axon']['pas']['i'].data ==
+                    self.ic_recordings['response']['channels']['axon']['pas'][0])
+        c = all(boolean == True for boolean in
+                    nwbts['soma']['v'].data != nwbts['axon']['v'].data )
+        d = all(boolean == True for boolean in
+                    nwbts['stimulus'].data == self.ic_recordings['stimulus'])
+        self.assertTrue( a and b and c and d is True )
+
+    #@unittest.skip("reason for skipping")
+    def test_6_affix_nwbseries_to_nwbfile_nostimulus(self):
+        # self.chosenmodel.regions ->
+        # {"soma": ["v", "i_cap"], "axon": ["v"],
+        # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
+        mynwbfile = fab.build_nwbfile(self.file_metadata) # build NWBFile
+        nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
+                                    tsmd = self.no_respmd)
+        # Insert
+        updated_mynwbfile = fab.affix_nwbseries_to_nwbfile(chosenmodel = self.chosenmodel,
+                                    nwbts = nwbts, nwbfile = mynwbfile)
+        # what does the insertion lead to?
+        extracted_nwbts_soma =  updated_mynwbfile.get_acquisition(nwbts["soma"]['v'].name)
+        extracted_nwbts_axon =  updated_mynwbfile.get_acquisition(nwbts["axon"]['v'].name)
+        #
+        a = all(boolean == True for boolean in
+                                extracted_nwbts_soma.data==nwbts['soma']['v'].data)
+        b = all(boolean == True for boolean in
+                                extracted_nwbts_axon.data==nwbts['axon']['v'].data)
+        c = all(boolean == True for boolean in
+                                extracted_nwbts_soma.timestamps==nwbts['soma']['v'].timestamps)
+        d = ( str(type(updated_mynwbfile))[8:-2] == "pynwb.file.NWBFile" )
+        self.assertTrue( a and b and c and d is True )
+
+    #@unittest.skip("reason for skipping")
+    def test_7_affix_nwbseries_to_nwbfile_currentstimulus(self):
+        # self.chosenmodel.regions ->
+        # {"soma": ["v", "i_cap"], "axon": ["v"],
+        # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
+        mynwbfile = fab.build_nwbfile(self.file_metadata) # build NWBFile
+        nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
+                                    tsmd = self.ic_respmd)
+        # Insert
+        updated_mynwbfile = fab.affix_nwbseries_to_nwbfile(chosenmodel = self.chosenmodel,
+                                    nwbts=nwbts, nwbfile=mynwbfile)
+        # what does the insertion lead to?
+        extracted_nwbts_soma = updated_mynwbfile.get_acquisition(nwbts["soma"]['v'].name)
+        extracted_nwbts_axon = updated_mynwbfile.get_acquisition(nwbts["axon"]['v'].name)
+        extracted_nwbts_soma_hh = updated_mynwbfile.get_acquisition(
+                                      nwbts["channels"]["soma"]["hh"]['il'].name)
+        extracted_nwbts_axon_pas = updated_mynwbfile.get_acquisition(
+                                      nwbts["channels"]["axon"]["pas"]['i'].name)
+        #
+        a = all(boolean == True for boolean in
+                                extracted_nwbts_soma.data==nwbts['soma']['v'].data)
+        b = all(boolean == True for boolean in
+                                extracted_nwbts_axon.data==nwbts['axon']['v'].data)
+        c = all(boolean == True for boolean in
+                                extracted_nwbts_soma.timestamps==nwbts['soma']['v'].timestamps)
+        d = all(boolean == True for boolean in
+                                extracted_nwbts_soma_hh.data!=extracted_nwbts_axon_pas.data)
+        e = ( str(type(updated_mynwbfile))[8:-2] == "pynwb.file.NWBFile" )
+        self.assertTrue( a and b and c and d and e is True )
 
     @unittest.skip("reason for skipping")
     def test_3_construct_nwbseries_nostimulus(self):
@@ -274,7 +389,7 @@ class FabricatorTest(unittest.TestCase):
         self.assertTrue( a and b and c is True )
 
     @unittest.skip("reason for skipping")
-    def test_6_link_nwbseriesresponses_to_nwbfile(self):
+    def test_x_link_nwbseriesresponses_to_nwbfile(self):
         # Build NWBFile
         mynwbfile = fab.build_nwbfile(self.file_metadata)
         # generate data

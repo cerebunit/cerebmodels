@@ -178,16 +178,143 @@ class Fabricator(object):
                            description = metadata["description"] )
 
     @classmethod
-    def construct_nwbseries_regionbodies( model, tsmd ):
+    def construct_nwbseries_regionbodies( cls, model, tsmd ):
         regionlist = rp.get_regionlist(model)
         nwbseries = {}
+        for a_region_name in regionlist:
+            nwbseries.update( { a_region_name: {} } )
+            no_of_rec = len(model.regions[a_region_name])
+            for ith_rec_type in range(no_of_rec):
+                rec_of = model.regions[a_region_name][ith_rec_type]
+                nwbseries[a_region_name].update(
+                  {rec_of: cls.generic_timeseries( tsmd[a_region_name][ith_rec_type] )})
+        return nwbseries
+
+    @classmethod
+    def construct_nwbseries_components( cls, model, tsmd ):
+        componentgrouplist = rp.get_componentgrouplist(model)
+        nwbseries = {}
+        for compgroup_name in componentgrouplist:
+            its_regionlist = rp.get_regionlist_of_componentgroup(model, compgroup_name)
+            ans2 = {}
+            for a_region_name in its_regionlist:
+                complist = rp.get_componentlist(model, compgroup_name, a_region_name)
+                ans1 = {}
+                for a_comp_name in complist:
+                    no_of_rec = \
+                        len(model.regions[compgroup_name][a_region_name][a_comp_name])
+                    ans0 = {}
+                    for ith_rec_type in range(no_of_rec):
+                        rec_of = model.regions[compgroup_name][a_region_name]\
+                                              [a_comp_name][ith_rec_type]
+                        ans0.update( {rec_of: cls.generic_timeseries(
+                             tsmd[compgroup_name][a_region_name]\
+                                 [a_comp_name][ith_rec_type] )})
+                    ans1.update( {a_comp_name: ans0} )
+                ans2.update( {a_region_name: ans1} )
+            nwbseries.update( { compgroup_name: ans2 } )
+        return nwbseries
+
+    @classmethod
+    def build_nwbseries(cls, chosenmodel=None, tsmd=None):
+        x1 = cls.construct_nwbseries_regionbodies( chosenmodel, tsmd )
+        componentgrouplist = rp.get_componentgrouplist(chosenmodel)
+        if len(componentgrouplist) != 0:
+            x2 = cls.construct_nwbseries_components(chosenmodel, tsmd)
+            x = {**x1, **x2}
+        else:
+            x = x1
+        if "stimulus" in tsmd.keys():
+            x.update( {"stimulus": cls.generic_timeseries(tsmd["stimulus"])} )
+        return x
+
+    @staticmethod
+    def link_nwbseries_regionbodies_to_nwbfile(model, nwbseries, nwbfile):
+        regionlist = rp.get_regionlist(model)
         for a_region_name in regionlist:
             no_of_rec = len(model.regions[a_region_name])
             for ith_rec_type in range(no_of_rec):
                 rec_of = model.regions[a_region_name][ith_rec_type]
+                nwbfile.add_acquisition(nwbseries[a_region_name][rec_of])
+        return nwbfile
+
+    @staticmethod
+    def link_nwbseries_components_to_nwbfile(model, nwbseries, nwbfile):
+        componentgrouplist = rp.get_componentgrouplist(model)
+        for compgroup_name in componentgrouplist:
+            its_regionlist = rp.get_regionlist_of_componentgroup(model, compgroup_name)
+            for a_region_name in its_regionlist:
+                complist = rp.get_componentlist(model, compgroup_name, a_region_name)
+                for a_comp_name in complist:
+                    no_of_rec = \
+                        len(model.regions[compgroup_name][a_region_name][a_comp_name])
+                    for ith_rec_type in range(no_of_rec):
+                        rec_of = model.regions[compgroup_name][a_region_name]\
+                                              [a_comp_name][ith_rec_type]
+                        nwbfile.add_acquisition(
+                                     nwbseries[compgroup_name][a_region_name]\
+                                              [a_comp_name][rec_of] )
+        return nwbfile
 
     @classmethod
-    def construct_nwbseries_nostimulus(cls, chosenmodel, tsmd):
+    def affix_nwbseries_to_nwbfile(cls, chosenmodel=None, nwbts=None, nwbfile=None):
+        """Adds time-series (response time-series with or without the stimulus time-series).
+
+        **Keyword Arguments:**
+
+        +-------------+------------------------------------------------------------+
+        | Key         | Value type                                                 |
+        +=============+============================================================+ 
+        | ``nwbts``   |- dictionary of NWB time-series object                      |
+        |             |- its keys are the keys in                                  |
+        |             |``chosenmodel.regions = {"soma": 0.0, "axon", 0.0}``        |
+        |             |- the key ``"stimulus"`` is optional                        |
+        |             |- value for each key is a ``pynwb.base.TimeSeries`` object, |
+        |             |obtained using :py:meth:`.build_nwbseries method`           |
+        +-------------+------------------------------------------------------------+
+        | ``nwbfile`` |- the built NWB file of type ``pynwb.file.NWBFile``         |
+        |             |- obtained using :py:meth:`.build_nwbfile method`           |
+        +-------------+------------------------------------------------------------+
+
+        **Returned value:** This is the NWB file fed as an argument but updated by adding the time-series, say, ``updated_nwbfile``. The ``TimeSeries`` object can be extracted as
+
+        ``>> ts_of_key = updated_nwbfile.get_acquisition(nwbseries[key].name)``
+
+        where key is the region. For example,
+
+        ``>> ts_soma = updated_nwbfile.get_acquisition(nwbseries["soma"].name)``
+
+        Then you can get all the available attributes as usual
+
+        ::
+
+           ts_soma.name, ts_soma.data,
+           ts_soma.timestamps, ts_soma.unit,
+           ts_soma.resolution, ts_soma.converstion,
+           ts_soma.starting_time, ts_soma.rate,
+           ts_soma.comment, ts_soma.description
+
+        But if ``"stimulus"`` is one of the availabe keys then do
+
+        ``>> ts_stim = updated_nwbfile.get_stimulus(nwbseries["stimulus"].name)``
+
+        Now all the aforementioned attributes are available as usual.
+
+        *NOTE:* Unlike the returned value for :py:meth:`.build_nwbseries` the time-series here are for a particular key therefore it is no longer a dictionary.
+
+        """
+        nwbfile = cls.link_nwbseries_regionbodies_to_nwbfile(
+                                     chosenmodel, nwbts, nwbfile )
+        componentgrouplist = rp.get_componentgrouplist(chosenmodel)
+        if len(componentgrouplist) != 0:
+            nwbfile = cls.link_nwbseries_components_to_nwbfile(
+                                        chosenmodel, nwbts, nwbfile )
+        if "stimulus" in nwbts.keys():
+            nwbfile.add_acquisition( nwbts["stimulus"] )
+        return nwbfile
+
+    @classmethod
+    def dep_construct_nwbseries_nostimulus(cls, chosenmodel, tsmd):
         """Creates `NWB time-series object <https://pynwb.readthedocs.io/en/latest/pynwb.base.html#pynwb.base.TimeSeries>`_ without stimulus.
 
         **Arguments:**
@@ -252,7 +379,7 @@ class Fabricator(object):
         return nwbseries
 
     @classmethod
-    def build_nwbseries(cls, chosenmodel=None, tsmd=None):
+    def dep_build_nwbseries(cls, chosenmodel=None, tsmd=None):
         """Builds an `NWB time-series object. <https://pynwb.readthedocs.io/en/latest/pynwb.base.html#pynwb.base.TimeSeries>`_
 
         **Keyword Arguments:**
@@ -319,7 +446,7 @@ class Fabricator(object):
         return nwbseries
 
     @staticmethod
-    def link_nwbseriesresponses_to_nwbfile(nwbseries, nwbfile):
+    def dep_link_nwbseriesresponses_to_nwbfile(nwbseries, nwbfile):
         """Adds response related time-series NOT the stimulus signal (time-series). This is called by :py:meth:`.affix_nwbseries_to_nwbfile`.
 
         **Arguments:**
@@ -365,14 +492,14 @@ class Fabricator(object):
         return nwbfile
 
     @staticmethod
-    def strip_out_stimulus_from_nwbseries(nwbseries):
+    def dep_strip_out_stimulus_from_nwbseries(nwbseries):
         """Extracts from the root time-series object all the time-series objects with the exception of the stimulus time-series. This method is called by :py:meth:`.affix_nwbseries_to_nwbfile`.
         """
         return { x: nwbseries[x] for x in nwbseries
                                   if x not in {"stimulus"} }
 
     @classmethod
-    def affix_nwbseries_to_nwbfile(cls, nwbts=None, nwbfile=None):
+    def dep_affix_nwbseries_to_nwbfile(cls, nwbts=None, nwbfile=None):
         """Adds time-series (response time-series with or without the stimulus time-series).
 
         **Keyword Arguments:**
@@ -418,14 +545,19 @@ class Fabricator(object):
         *NOTE:* Unlike the returned value for :py:meth:`.build_nwbseries` the time-series here are for a particular key therefore it is no longer a dictionary.
 
         """
-        if "stimulus" in nwbts.keys():
-            nwbfile.add_stimulus(nwbts["stimulus"])
-            stripped_nwbseries = cls.strip_out_stimulus_from_nwbseries(nwbts)
-            nwbfile = cls.link_nwbseriesresponses_to_nwbfile(stripped_nwbseries,
-                                                             nwbfile)
-        else:
-            nwbfile = cls.link_nwbseriesresponses_to_nwbfile(nwbts,
-                                                             nwbfile)
+        #return { x: nwbseries[x] for x in nwbseries
+        #                          if x not in {"stimulus"} }
+        #if "stimulus" in nwbts.keys():
+            #nwbfile.add_stimulus(nwbts["stimulus"])
+            #stripped_nwbseries = cls.strip_out_stimulus_from_nwbseries(nwbts)
+            #nwbfile = cls.link_nwbseriesresponses_to_nwbfile(stripped_nwbseries,
+            #                                                 nwbfile)
+        #    nwbfile = cls.link_nwbseriesresponses_to_nwbfile(nwbts,
+        #                                                     nwbfile)
+        #else:
+        #    nwbfile = cls.link_nwbseriesresponses_to_nwbfile(nwbts,
+        #                                                     nwbfile)
+        nwbfile = cls.link_nwbseriesresponses_to_nwbfile(nwbts, nwbfile)
         return nwbfile
 
     @staticmethod

@@ -32,6 +32,58 @@ class FabricatorTest(unittest.TestCase):
         os.chdir(rootwd)
         self.chosenmodel = DummyCell()
         os.chdir(pwd)
+        #
+        # self.chosenmodel.regions ->
+        # {"soma": ["v", "i_cap"], "axon": ["v"],
+        # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
+        # No stimulus
+        self.no_runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
+        self.no_rec_t = [ t*self.no_runtimeparam["dt"] for t in
+                     range( int( self.no_runtimeparam["tstop"]/self.no_runtimeparam["dt"] ) ) ]
+        self.no_rec_resp = numpy.random.rand(7,len(self.no_rec_t))
+        self.no_rec_stim = "Model is not stimulated" # response["stimulus"]
+        #self.no_stimtype = None # stimparameters["type"] = ["current", "IClamp"]
+        self.no_recordings = {"time": self.no_rec_t,
+           "response": {"soma": [self.no_rec_resp[0], self.no_rec_resp[1]],
+                        "axon": [ self.no_rec_resp[2] ],
+           "channels": {"soma": {"hh": [self.no_rec_resp[3], self.no_rec_resp[4]],
+                                 "pas":[ self.no_rec_resp[5] ]},
+                        "axon": {"pas":[ self.no_rec_resp[3] ]}}},
+           "stimulus": "Model is not stimulated"}
+        # IClamp
+        self.ic_runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
+        self.ic_stimparameters = {"type": ["current", "IClamp"],
+                              "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
+                                            {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
+                              "tstop": self.ic_runtimeparam["tstop"]}
+        self.ic_rec_t = [ t*self.ic_runtimeparam["dt"] for t in
+                  range( int( self.ic_runtimeparam["tstop"]/self.ic_runtimeparam["dt"] ) ) ]
+        self.ic_rec_stim = numpy.random.rand(1,len(self.ic_rec_t))[0]
+        self.ic_rec_resp = numpy.random.rand(7,len(self.ic_rec_t))
+        self.ic_recordings = {"time": self.ic_rec_t,
+           "response": {"soma": [self.ic_rec_resp[0], self.ic_rec_resp[1]],
+                        "axon": [ self.ic_rec_resp[2] ],
+           "channels": {"soma": {"hh": [self.ic_rec_resp[3], self.ic_rec_resp[4]],
+                                 "pas":[ self.ic_rec_resp[5] ]},
+                        "axon": {"pas":[ self.ic_rec_resp[3] ]}}},
+           "stimulus": self.ic_rec_stim}
+        # Voltage clamp
+        self.sec_runtimeparam = {"dt": 0.1, "celsius": 30, "tstop": 35, "v_init": 65}
+        self.sec_stimparameters = {"type": ["voltage", "SEClamp"],
+                               "stimlist": [ {'amp1': 0., 'dur1': 10.0},
+                                        {'amp2': -70.0, 'dur2': 20.0} ],
+                               "tstop": self.sec_runtimeparam["tstop"]}
+        self.sec_rec_t = [ t*self.sec_runtimeparam["dt"] for t in
+                   range( int( self.sec_runtimeparam["tstop"]/self.sec_runtimeparam["dt"] ) ) ]
+        self.sec_rec_stim = numpy.random.rand(1,len(self.sec_rec_t))[0]
+        self.sec_rec_resp = numpy.random.rand(7,len(self.sec_rec_t))
+        self.sec_recordings = {"time": self.sec_rec_t,
+           "response": {"soma": [self.sec_rec_resp[0], self.sec_rec_resp[1]],
+                        "axon": [ self.sec_rec_resp[2] ],
+           "channels": {"soma": {"hh": [self.sec_rec_resp[3], self.sec_rec_resp[4]],
+                                 "pas":[ self.sec_rec_resp[5] ]},
+                        "axon": {"pas":[ self.sec_rec_resp[3] ]}}},
+           "stimulus": self.sec_rec_stim}
         # parameters for generating NWBFile
         now = datetime.now()
         self.file_metadata = {
@@ -46,6 +98,7 @@ class FabricatorTest(unittest.TestCase):
                 "lab": "name of the lab",
                 "institution": "name of the institution" }
         # parameters for generating TimeSeries nwb object
+        #self.no_ts_metadata = {
 
     #@unittest.skip("reason for skipping")
     def test_1_build_nwbfile(self):
@@ -99,7 +152,7 @@ class FabricatorTest(unittest.TestCase):
         b = all(boolean == True for boolean in nwbts.timestamps==rec_t)
         self.assertTrue( a and b is True )
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_3_construct_nwbseries_nostimulus(self):
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         rec_t = [ t*runtimeparam["dt"]
@@ -135,7 +188,7 @@ class FabricatorTest(unittest.TestCase):
                                 nwbts['soma'].timestamps==recordings['time'])
         self.assertTrue( a and b and c is True )
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_4_build_nwbseries_nostimulus(self):
         # basically the same as test_3_construct_nwbseries_nostimulus
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
@@ -172,7 +225,7 @@ class FabricatorTest(unittest.TestCase):
                                 nwbts['soma'].timestamps==recordings['time'])
         self.assertTrue( a and b and c is True )
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_5_build_nwbseries_stimulus(self):
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 200, "v_init": 65}
         stimparameters = {"type": ["current", "IClamp"],
@@ -220,7 +273,7 @@ class FabricatorTest(unittest.TestCase):
                                 nwbts['soma'].timestamps==recordings['time'])
         self.assertTrue( a and b and c is True )
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_6_link_nwbseriesresponses_to_nwbfile(self):
         # Build NWBFile
         mynwbfile = fab.build_nwbfile(self.file_metadata)
@@ -265,7 +318,7 @@ class FabricatorTest(unittest.TestCase):
         d = ( str(type(updated_mynwbfile))[8:-2] == "pynwb.file.NWBFile" )
         self.assertTrue( a and b and c and d is True )
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_7_strip_out_stimulus_from_nwbseries(self):
         # very similar to test_5_build_nwbseries_stimulus but stripping off created stimulus series
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 200, "v_init": 65}
@@ -327,7 +380,7 @@ class FabricatorTest(unittest.TestCase):
         compare2 = [3, 2, True, True]
         self.assertEqual( compare1, compare2 )
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_8_affix_nwbseries_to_nwbfilei_nostimulus(self):
         # similar to test_6_link_nwbseriesresponses_to_nwbfile
         # output should be same as test_6_link_nwbseriesresponses_to_nwbfile
@@ -375,7 +428,7 @@ class FabricatorTest(unittest.TestCase):
         d = ( str(type(updated_mynwbfile))[8:-2] == "pynwb.file.NWBFile" )
         self.assertTrue( a and b and c and d is True )
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_9_affix_nwbseries_to_nwbfile_stimulus(self):
         # Build NWBFile
         mynwbfile = fab.build_nwbfile(self.file_metadata)
@@ -443,7 +496,7 @@ class FabricatorTest(unittest.TestCase):
         d = ( str(type(updated_mynwbfile))[8:-2] == "pynwb.file.NWBFile" )
         self.assertTrue( a and b and c and d is True )
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_10_insert_a_nwbepoch(self):
         # Build NWBFile
         mynwbfile = fab.build_nwbfile(self.file_metadata)
@@ -553,7 +606,7 @@ class FabricatorTest(unittest.TestCase):
         #breakpoint()
         #self.assertEqual( compare1, compare2 )
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_11_insert_a_nwbepoch_twice(self):
         # Build NWBFile
         mynwbfile = fab.build_nwbfile(self.file_metadata)
@@ -648,7 +701,7 @@ class FabricatorTest(unittest.TestCase):
         c = ( str(type(updated_mynwbfile))[8:-2] == "pynwb.file.NWBFile" )
         self.assertTrue( a and b and ab and c is True )
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_12_build_nwbepoch(self):
         # Build NWBFile
         mynwbfile = fab.build_nwbfile(self.file_metadata)
@@ -786,7 +839,7 @@ class FabricatorTest(unittest.TestCase):
                  == ts_metadata[region_3]["data"] )
         self.assertTrue( a and b and c and d is True )
 
-    #@unittest.skip("reason for skipping")
+    @unittest.skip("reason for skipping")
     def test_13_write_nwbfile(self):
         # Build NWBFile
         mynwbfile = fab.build_nwbfile(self.file_metadata)

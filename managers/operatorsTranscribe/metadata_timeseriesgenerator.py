@@ -325,12 +325,16 @@ class TimeseriesGenerator(object):
             #y.update( cls.forcellrecordings_nostimulus( chosenmodel, recordings,
             #                                            runtimeparameters ) )
             stimtype = stimparameters # None
-            #update_y( y, chosenmodel, recordings, stimtype, runtimeparameters ) 
+            #update_y( y, chosenmodel, recordings, stimtype, runtimeparameters )
+            recordings_md = {} 
         else: # for stimulus
             stimtype = stimparameters["type"]
             #update_y( y, chosenmodel, recordings, stimtype, runtimeparameters )
-        recordings_md = cls.cellrecordings_response_regionbodies( chosenmodel,
-                                recordings, stimtype, runtimeparameters )
+            recordings_md = { "stimulus":
+                              cls.recordings_cell_stimulus( chosenmodel, recordings,
+                                                runtimeparameters, stimparameters) }
+        recordings_md.update( cls.cellrecordings_response_regionbodies( chosenmodel,
+                                      recordings, stimtype, runtimeparameters ) )
         recordings_md.update( cls.cellrecordings_response_components( chosenmodel,
                                       recordings, stimtype, runtimeparameters ) )
         return recordings_md

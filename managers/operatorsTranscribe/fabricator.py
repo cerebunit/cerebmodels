@@ -2,6 +2,8 @@
 import os # only for filepath/filename in writing nwbfile
 from datetime import datetime
 
+from managers.operatorsYield.regionparser import RegionParser as rp
+
 import numpy
 
 import pynwb
@@ -174,6 +176,15 @@ class Fabricator(object):
                            #rate = metadata["rate"],
                            comments = metadata["comments"],
                            description = metadata["description"] )
+
+    @classmethod
+    def construct_nwbseries_regionbodies( model, tsmd ):
+        regionlist = rp.get_regionlist(model)
+        nwbseries = {}
+        for a_region_name in regionlist:
+            no_of_rec = len(model.regions[a_region_name])
+            for ith_rec_type in range(no_of_rec):
+                rec_of = model.regions[a_region_name][ith_rec_type]
 
     @classmethod
     def construct_nwbseries_nostimulus(cls, chosenmodel, tsmd):

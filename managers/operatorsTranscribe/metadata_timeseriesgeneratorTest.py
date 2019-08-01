@@ -278,11 +278,13 @@ class TimeseriesGeneratorTest(unittest.TestCase):
                    respmd["channels"]["soma"]["hh"][1]["data"])
         c = all(boolean == True for boolean in
                    respmd["soma"][0]["data"] != respmd["axon"][0]["data"])
-        self.assertEqual( [respmd["channels"]["soma"]["hh"][0]["name"], a, b, c,
+        d = all(boolean == True for boolean in
+                   respmd["stimulus"]["data"] == self.sec_recordings["stimulus"])
+        self.assertEqual( [respmd["channels"]["soma"]["hh"][0]["name"], a, b, c, d,
                            respmd["channels"]["axon"]["pas"][0]["name"],
                            respmd["channels"]["soma"]["hh"][1]["comments"],
                            respmd["channels"]["soma"]["pas"][0]["comments"]],
-                          ["DummyTest_soma_hh_il", True, True, True, "DummyTest_axon_pas_i",
+                          ["DummyTest_soma_hh_il", True, True, True, True, "DummyTest_axon_pas_i",
                            "voltage response with SEClamp", "current response with SEClamp"] )
 
 if __name__ == '__main__':

@@ -10,9 +10,9 @@ class EpochGenerator(object):
     +================================================+===============+
     | :py:meth:`.epochcontainer`                     | class method  |
     +------------------------------------------------+---------------+
-    | :py:meth:`.anepoch`                            | class method  |
+    | :py:meth:`.anepoch` DEPRECIATED                | class method  |
     +------------------------------------------------+---------------+
-    | :py:meth:`.forepoch`                           | class method  |
+    | :py:meth:`.forepoch` DEPRECIATED               | class method  |
     +------------------------------------------------+---------------+
     | :py:meth:`.compute_totalepochs_per_cellregion` | static method |
     +------------------------------------------------+---------------+
@@ -20,7 +20,7 @@ class EpochGenerator(object):
     +------------------------------------------------+---------------+
     | :py:meth:`.epochcontainer_for_compartments`    | static method |
     +------------------------------------------------+---------------+
-    | :py:meth:`.an_epoch_stimulus_window`           | static method |
+    | :py:meth:`.an_epoch_stimulus_window`DEPRECIATED| static method |
     +------------------------------------------------+---------------+
 
     """

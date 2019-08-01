@@ -151,7 +151,7 @@ class EpochGeneratorTest(unittest.TestCase):
         #
         self.assertEqual( [a, b], [True, True] )
         
-    @unittest.skip("reason for skipping")
+    #@unittest.skip("reason for skipping")
     def test_7_epochcontainer_without_stimulus(self):
         no_of_regions = len(list(self.chosenmodel.regions.keys()))
         filler = eg.epochcontainer(self.chosenmodel, self.no_runtimeparam)

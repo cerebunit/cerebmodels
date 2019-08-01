@@ -70,17 +70,30 @@ class EpochGenerator(object):
         * ``total number of epochs = no_of_regions * no_of_epochs_per_regions``
 
         """
-        if "stimlist" in parameters:
-            no_of_stimulus = len(parameters["stimlist"])
+        #if "stimlist" in parameters:
+        #    no_of_stimulus = len(parameters["stimlist"])
             #last_t = parameters["stimlist"][-1]["delay"]+parameters["stimlist"][-1]["dur"]
             #if last_t == parameters["tstop"]:
             #    n = 0
             #else:
             #    n = 1
-        else:
-            no_of_stimulus = 0
+        #else:
+        #    no_of_stimulus = 0
             #n = 0
-        return 1+no_of_stimulus#+n
+        #return 1+no_of_stimulus#+n
+        if "stimlist" in parameters:
+            no_of_stimulus = len(parameters["stimlist"])
+            if parameters["type"][0]=="current":
+                if parameters["stimlist"][0]["delay"] != 0:
+                    n = 1 + no_of_stimulus
+                else:# first delay = 0 => first stimulus at t = 0.0
+                    n = no_of_stimulus
+            else:
+                n = no_of_stimulus
+        else:
+            n = 1
+        return n
+
 
     @staticmethod
     def epochcontainer_for_regionbodies(model, no_of_epochs):
@@ -216,24 +229,144 @@ class EpochGenerator(object):
         * the last element is a string of space separated region names
 
         """
-        x = {}
-        lst = []
-        no_of_epochs_per_region = cls.compute_totalepochs_per_cellregion(parameters)
-        for cellregion in chosenmodel.regions.keys():
-            [ x.update({"epoch"+str(i)+cellregion: {}})
-                                   for i in range(no_of_epochs_per_region) ]
-            [ x["epoch"+str(i)+cellregion].update(
-                            {"tags":
-                                  ( str(no_of_epochs_per_region)+"_epoch_responses",
-                                    str(i), cellregion,
-                                    chosenmodel.modelname, chosenmodel.modelscale,
-                                    "epoch"+str(i)+cellregion,
-                                    ' '.join( chosenmodel.regions.keys() ) )}) # space separated string
-                 for i in range(no_of_epochs_per_region) ]
-        return x
+        #x = {}
+        #lst = []
+        #no_of_epochs_per_region = cls.compute_totalepochs_per_cellregion(parameters)
+        #for cellregion in chosenmodel.regions.keys():
+        #    [ x.update({"epoch"+str(i)+cellregion: {}})
+        #                           for i in range(no_of_epochs_per_region) ]
+        #    [ x["epoch"+str(i)+cellregion].update(
+        #                    {"tags":
+        #                          ( str(no_of_epochs_per_region)+"_epoch_responses",
+        #                            str(i), cellregion,
+        #                            chosenmodel.modelname, chosenmodel.modelscale,
+        #                            "epoch"+str(i)+cellregion,
+        #                            ' '.join( chosenmodel.regions.keys() ) )}) # space separated string
+        #         for i in range(no_of_epochs_per_region) ]
+        #return x
+        no_of_epochs = cls.compute_totalepochs_per_cellregion(parameters)
+        x = cls.epochcontainer_for_regionbodies(chosenmodel, no_of_epochs)
+        componentgrouplist = rp.get_componentgrouplist(chosenmodel)
+        if len(componentgrouplist)!=0:
+            y = cls.epochcontainer_for_components(chosenmodel, no_of_epochs)
+            return {**x, **y}
+        else:
+            return x
 
     @staticmethod
-    def an_epoch_stimulus_window(epoch_no_per_region, theregion, parameters):
+    def epochs_allstimuli(stimparameters, no_of_epochs):
+        """Returns a dictionary focusing on the stimulation for an epoch.
+
+        **Arguments:**
+
+        +-----------+---------------------------------------------------------------+
+        | Arguments | Value type                                                    |
+        +===========+===============================================================+
+        | first     | number of epochs per region                                   |
+        +-----------+---------------------------------------------------------------+
+        | second    | string for the region name,                                   |
+        |           |i.e, key of chosenmodel.regions = {"soma": 0.0, "axon": 0.0}   |
+        +-----------+---------------------------------------------------------------+
+        | third     | - dictionary for stimulation parameters dictionary            |
+        |           | - ``"type"`` key value is a two element list of strings       |
+        |           |``<stimulus category> <specific type of that category>``       |
+        |           |The first element is ALWAYS ``<stimulus category>``            |
+        |           | - Eg: for injecting cell current ``["current", "IClamp"]``    |
+        |           | - ``"stimlist"`` key value is a list with elements as         |
+        |           |dictionary in the form [ {}, {}, ... ]                         |
+        |           | - Eg: [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},            |
+        |           |         {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ]      |
+        |           | - Eg: [ {"amp_initial": 0.0, "amp_final": 0.5, "dur": 5.0,    |
+        |           |                                              "delay": 5.0},   |
+        |           |         {"amp_initial": 0.5, "amp_final": 1.0, "dur": 5.0,    |
+        |           |                                              "delay": 10.0},  |
+        |           |         {"amp_initial": 1.0, "amp_final": 0.5, "dur": 5.0,    |
+        |           |                                              "delay": 15.0},  |
+        |           |         {"amp_initial": 0.5, "amp_final": 0.0, "dur": 5.0,    |
+        |           |                                              "delay": 20.0} ] |
+        |           | - ``"tstop"`` key value `` = runtimeparameters["tstop"]``     |
+        |           |hence, for the last epoch                                      |
+        +-----------+---------------------------------------------------------------+
+
+        **Returned value:** This is a dictionary with the keys ``"source"``, ``"start_time"``, ``"stop_time"`` and ``"description"``.
+
+        """
+        # Current amplitudes
+        ic_amps = (lambda ic_stimlist: [ ic_stimlist[i]["amp"] \
+                                         for i in range(len(ic_stimlist)) ])
+        ir_amps = (lambda ir_stimlist: [ ir_stimlist[i]["amp_initial"] \
+                                         for i in range(len(ir_stimlist)) ])
+        i_amps = (lambda stimparameters: \
+            ic_amps(stimparameters["stimlist"]) if stimparameters["type"][1]=="IClamp"\
+            else ( ir_amps(stimparameters["stimlist"]) if stimparameters["type"][1]=="IRamp"\
+                   else [] ) )
+        # Current times
+        i_times = (lambda i_stimlist: [ i_stimlist[i]["delay"] \
+                                        for i in range(len(i_stimlist)) ])
+        # Current description
+        curr_descrip = (lambda stimparameters: \
+                stimparameters["type"][1]+" stimulation of model with amplitude = "+\
+                str( i_amps(stimparameters) )+" nA starting at times = "+\
+                str( i_times(stimparameters) ))
+        # Voltage amplitudes
+        sec_amps = (lambda sec_stimlist: [ sec_stimlist[i]["amp"+str(i+1)] \
+                                           for i in range(len(sec_stimlist)) ])
+        v_amps = (lambda stimparameters: \
+            sec_amps(stimparameters["stimlist"]) if stimparameters["type"][1]=="SEClamp"\
+            else ic_amps(stimparameters["stimlist"]) ) # note key for VClamp same as ic
+        # Voltages times
+        v_times = (lambda stimparameters: \
+            [ stimparameters["stimlist"][i]["dur"+str(i+1)]
+              for i in range(len(stimparameters["stimlist"]))] \
+            if stimparameters["type"][1]=="SEClamp"\
+            else [ stimparameters["stimlist"][i]["dur"]
+                   for i in range(len(stimparameters["stimlist"]))] )
+        # Voltage description
+        volt_descrip = (lambda stimparameters: \
+                stimparameters["type"][1]+" stimulation of model with amplitude = "+\
+                str( v_amps(stimparameters) )+" mV stopping at times = "+\
+                str( v_times(stimparameters) ))
+        # Main Description
+        if stimparameters["type"][0]=="current":
+            descrip = curr_descrip( stimparameters )
+        else:
+            descrip = volt_descrip( stimparameters )
+        #
+        curr_t0_tf = ( lambda epochID, stimlist: \
+                [ 0.0, float(stimlist[epochID]["delay"]) ] if epochID==0 \
+                else [ float(stimlist[epochID]["delay"]),
+                       float(stimlist[epochID]["delay"] + stimlist[epochID]["dur"]) ] )
+        #
+        #sec_t0_tf = ( lambda epochID, stimlist: \
+        #        [ 0.0, float(stimlist[epochID]["dur"+str(epochID+1)]) ]
+        #        if epochID==0 \
+        #        else [ float(stimlist[epochID-1]["dur"+str(epochID)]),
+        #               float(stimlist[epochID]["dur"+str(epochID))] ] )
+        #
+        #
+        #x = {}
+        #for i in range(no_of_epochs):
+        #    key = "epoch"+str(i)+"stimulus"
+        #    src = stimparameters["type"][1]
+        #    if i==0:
+        #        t0 = 0.0
+        #        tf = 
+        #i = epoch_no_per_region - 1
+        #stimlist = parameters["stimlist"]
+        #if parameters["type"][1]=="IClamp":
+        #    descrip = "IClamp stimulation of model with amplitude = " + \
+        #              str(stimlist[i]["amp"]) + " nA"
+        #else:
+        #    descrip = "IRamp stimulation of model with amplitudes from " + \
+        #              str(stimlist[i]["amp_initial"]) + " to " + \
+        #              str(stimlist[i]["amp_final"]) + " nA"
+        #return {"source": theregion,
+        #        "start_time": float(stimlist[i]["delay"]),
+        #        "stop_time": float(stimlist[i]["delay"] + stimlist[i]["dur"]),
+        #        "description": descrip}
+
+    @staticmethod
+    def an_epoch_stimulus_window(epoch_no_per_region, theregion, stimparameters):
         """Returns a dictionary focusing on the stimulation for an epoch.
 
         **Arguments:**

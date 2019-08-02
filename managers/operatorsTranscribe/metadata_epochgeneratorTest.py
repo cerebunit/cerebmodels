@@ -53,52 +53,115 @@ class EpochGeneratorTest(unittest.TestCase):
     def test_3_compute_totalepochs_per_cellregion_with_voltagestimulus(self):
         self.assertEqual( eg.compute_totalepochs_per_cellregion(self.sec_stimparameters),
                           len(self.sec_stimparameters["stimlist"]) )
+
+    #@unittest.skip("reason for skipping")
+    def test_4_epoch_times_list_epoch1Istimulus(self):
+        #              <---100--->   <----50---->
+        # 0----------10-----------110------------160------------200
+        # ep0        ep1          ep2            ep3
+        ic_stimparam = {"type": ["current", "IClamp"],
+                    "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10}, # 0, 10.0
+                                  {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
+                       "tstop": self.ic_runtimeparam["tstop"]}
+        [start_ts, stop_ts] = eg.epoch_times_list(ic_stimparam)
+        #print(start_ts, stop_ts)
+        a = Counter(start_ts) == Counter([0, 10, 110, 160])
+        b = Counter(stop_ts) == Counter([10, 110, 160, 200])
+        self.assertEqual( [a, b], [True, True] )
         
     #@unittest.skip("reason for skipping")
-    def test_4_epochcontainer_for_regionbodies_nostimulus(self):
+    def test_5_epoch_times_list_epoch0Istimulus(self):
+        #             <---100--->   <----50---->
+        # 0----------0-----------100------------150------------200
+        # ep0        ep0          ep1            ep2
+        ic_stimparam = {"type": ["current", "IClamp"],
+                    "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 0}, # 0, 10.0
+                                  {"amp": 1.0, "dur": 50.0, "delay": 0.0+100.0} ],
+                       "tstop": self.ic_runtimeparam["tstop"]}
+        [start_ts, stop_ts] = eg.epoch_times_list(ic_stimparam)
+        #print(start_ts, stop_ts)
+        a = Counter(start_ts) == Counter([0, 100, 150])
+        b = Counter(stop_ts) == Counter([100, 150, 200])
+        self.assertEqual( [a, b], [True, True] )
+        
+    #@unittest.skip("reason for skipping")
+    def test_6_epoch_times_list_Vstimulus(self):
+        #  <---10--->  <----20---->
+        # 0----------10-----------20------------35
+        # ep0        ep1          ep2           
+        sec_stimparam = {"type": ["voltage", "SEClamp"],
+                     "stimlist": [ {'amp1': 0., 'dur1': 10.0},
+                                   {'amp2': -70.0, 'dur2': 20.0} ],
+                        "tstop": self.sec_runtimeparam["tstop"]}
+        [start_ts, stop_ts] = eg.epoch_times_list(sec_stimparam)
+        #print(start_ts, stop_ts)
+        a = Counter(start_ts) == Counter([0, 10, 20])
+        b = Counter(stop_ts) == Counter([10, 20, 35])
+        self.assertEqual( [a, b], [True, True] )
+        
+    #@unittest.skip("reason for skipping")
+    def test_7_epoch_times_list_nostimulus(self):
+        # 0----------10
+        # ep0        
+        [start_ts, stop_ts] = eg.epoch_times_list(self.no_runtimeparam)
+        #print(start_ts, stop_ts)
+        a = Counter(start_ts) == Counter([0])
+        b = Counter(stop_ts) == Counter([ self.no_runtimeparam["tstop"] ])
+        self.assertEqual( [a, b], [True, True] )
+        
+    #@unittest.skip("reason for skipping")
+    def test_8_epochcontainer_for_regionbodies_nostimulus(self):
         no_of_epochs = eg.compute_totalepochs_per_cellregion(self.no_runtimeparam)
-        filler = eg.epochcontainer_for_regionbodies(self.chosenmodel, no_of_epochs)
+        [start_ts, stop_ts] = eg.epoch_times_list(self.no_runtimeparam)
+        filler = eg.epochcontainer_for_regionbodies(self.chosenmodel,
+                                                  no_of_epochs, start_ts, stop_ts)
         compare2 = len(filler)
         # self.chosenmodel.regions ->
         # {"soma": ["v", "i_cap"], "axon": ["v"],
         # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
         no_of_regions = 2
         compare1 = no_of_regions * no_of_epochs
+        a = Counter( [ compare2, filler["epoch0soma"]["v"]["start_time"],
+                       filler["epoch0soma"]["v"]["stop_time"] ] ) \
+            == Counter( [ compare1, filler["epoch0axon"]["v"]["start_time"],
+                          self.no_runtimeparam["tstop"] ] )
         #print filler # how does the epochcontainer metadata look?
-        self.assertEqual( compare2, compare1 )
+        self.assertEqual( a, True )
 
     #@unittest.skip("reason for skipping")
-    def test_5_epochcontainer_for_regionbodies_currentstimulus(self):
+    def test_9_epochcontainer_for_regionbodies_currentstimulus(self):
         no_of_epochs = eg.compute_totalepochs_per_cellregion(self.ic_stimparameters)
-        filler = eg.epochcontainer_for_regionbodies(self.chosenmodel, no_of_epochs)
+        [start_ts, stop_ts] = eg.epoch_times_list(self.ic_stimparameters)
+        filler = eg.epochcontainer_for_regionbodies(self.chosenmodel,
+                                                    no_of_epochs, start_ts, stop_ts)
         #print(filler) # how does the epochcontainer metadata look?
         # self.chosenmodel.regions ->
         # {"soma": ["v", "i_cap"], "axon": ["v"],
         # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
         compare1a = filler["epoch0soma"]["v"]["tags"][0] # number of epochs
         compare1b = filler["epoch0soma"]["v"]["tags"][1] # epochID
-        compare1c = filler["epoch0soma"]["v"]["tags"][2][-1] # recsite
+        compare1c = filler["epoch0soma"]["v"]["tags"][2].split()[-1] # recsite
         compare1d = filler["epoch0soma"]["v"]["tags"][3] # all recsites
         compare1e = filler["epoch0soma"]["v"]["tags"][4] # modelname
         compare1f = filler["epoch0soma"]["v"]["tags"][5] # modelscale
-        compare1g = filler["epoch0soma"]["v"]["tags"][6][-1] # key for recsite
+        compare1g = filler["epoch0soma"]["v"]["tags"][6].split()[-1] # key for recsite
         compare2a = filler["epoch0axon"]["v"]["tags"][0]
         compare2b = filler["epoch0axon"]["v"]["tags"][1]
-        compare2c = filler["epoch0axon"]["v"]["tags"][2][-1]
+        compare2c = filler["epoch0axon"]["v"]["tags"][2].split()[-1]
         compare2d = filler["epoch1soma"]["v"]["tags"][3] # all recsites
         compare2e = filler["epoch0axon"]["v"]["tags"][4]
         compare2f = filler["epoch0axon"]["v"]["tags"][5]
-        compare2g = filler["epoch1soma"]["v"]["tags"][6][-1]
+        compare2g = filler["epoch1soma"]["v"]["tags"][6].split()[-1]
         #
         compare1 = [compare1a, compare1b, compare1c, compare1d, compare1e, compare1f, compare1g]
         compare2 = [compare2a, compare2b, compare2c, compare2d, compare2e, compare2f, compare2g]
         a = Counter(compare1) == Counter(compare2)
         #
         compare3a = filler["epoch0soma"]["v"]["tags"][1] # epochID
-        compare3b = filler["epoch0soma"]["v"]["tags"][2][-1] # [ region, recsite ]
+        compare3b = filler["epoch0soma"]["v"]["tags"][2].split()[-1] # [ region, recsite ]
         compare3c = filler["epoch0soma"]["v"]["tags"][3] # all recsites
         compare4a = filler["epoch1soma"]["v"]["tags"][1]
-        compare4b = filler["epoch1soma"]["i_cap"]["tags"][2][-1]
+        compare4b = filler["epoch1soma"]["i_cap"]["tags"][2].split()[-1]
         compare4c = filler["epoch0axon"]["v"]["tags"][3]
         #
         compare3 = [compare3a, compare3b, compare3c]
@@ -108,27 +171,29 @@ class EpochGeneratorTest(unittest.TestCase):
         self.assertEqual( [a, b], [True, True] )
 
     #@unittest.skip("reason for skipping")
-    def test_6_epochcontainer_for_components_currentstimulus(self):
+    def test_10_epochcontainer_for_components_currentstimulus(self):
         no_of_epochs = eg.compute_totalepochs_per_cellregion(self.ic_stimparameters)
-        filler = eg.epochcontainer_for_components(self.chosenmodel, no_of_epochs)
+        [start_ts, stop_ts] = eg.epoch_times_list(self.ic_stimparameters)
+        filler = eg.epochcontainer_for_components(self.chosenmodel,
+                                                  no_of_epochs, start_ts, stop_ts )
         #print(filler) # how does the epochcontainer metadata look?
         # self.chosenmodel.regions ->
         # {"soma": ["v", "i_cap"], "axon": ["v"],
         # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
         compare1a = filler["epoch0channels"]["soma"]["pas"]["i"]["tags"][0] # number of epochs
         compare1b = filler["epoch0channels"]["soma"]["pas"]["i"]["tags"][1] # epochID
-        compare1c = filler["epoch0channels"]["soma"]["pas"]["i"]["tags"][2][-1] # recsite
+        compare1c = filler["epoch0channels"]["soma"]["pas"]["i"]["tags"][2].split()[-1]#recsite
         compare1d = filler["epoch0channels"]["soma"]["pas"]["i"]["tags"][3] # all recsites
         compare1e = filler["epoch0channels"]["soma"]["pas"]["i"]["tags"][4] # modelname
         compare1f = filler["epoch0channels"]["soma"]["pas"]["i"]["tags"][5] # modelscale
-        compare1g = filler["epoch0channels"]["soma"]["pas"]["i"]["tags"][6][-1] # key for recsite
+        compare1g = filler["epoch0channels"]["soma"]["pas"]["i"]["tags"][6].split()[-1] # key for recsite
         compare2a = filler["epoch0channels"]["axon"]["pas"]["i"]["tags"][0] # number of epochs
         compare2b = filler["epoch0channels"]["axon"]["pas"]["i"]["tags"][1] # epochID
-        compare2c = filler["epoch0channels"]["axon"]["pas"]["i"]["tags"][2][-1] # recsite
+        compare2c = filler["epoch0channels"]["axon"]["pas"]["i"]["tags"][2].split()[-1] # recsite
         compare2d = filler["epoch0channels"]["axon"]["pas"]["i"]["tags"][3] # all recsites
         compare2e = filler["epoch0channels"]["axon"]["pas"]["i"]["tags"][4] # modelname
         compare2f = filler["epoch0channels"]["axon"]["pas"]["i"]["tags"][5] # modelscale
-        compare2g = filler["epoch0channels"]["axon"]["pas"]["i"]["tags"][6][-1] # key for recsite
+        compare2g = filler["epoch0channels"]["axon"]["pas"]["i"]["tags"][6].split()[-1] # key for recsite
         #
         compare1 = [compare1a, compare1b, compare1c, compare1d, compare1e, compare1f, compare1g]
         compare2 = [compare2a, compare2b, compare2c, compare2d, compare2e, compare2f, compare2g]
@@ -136,14 +201,14 @@ class EpochGeneratorTest(unittest.TestCase):
         #
         compare3a = filler["epoch0channels"]["soma"]["hh"]["il"]["tags"][0] # number of epochs
         compare3b = filler["epoch0channels"]["soma"]["hh"]["il"]["tags"][1] # epochID
-        compare3c = filler["epoch0channels"]["soma"]["hh"]["il"]["tags"][2][-1] # recsite
+        compare3c = filler["epoch0channels"]["soma"]["hh"]["il"]["tags"][2].split()[-1] # recsite
         compare3d = filler["epoch0channels"]["soma"]["hh"]["il"]["tags"][3] # all recsites
-        compare3e = filler["epoch0channels"]["soma"]["hh"]["il"]["tags"][6][-1] # key for recsite
+        compare3e = filler["epoch0channels"]["soma"]["hh"]["il"]["tags"][6].split()[-1] # key for recsite
         compare4a = filler["epoch1channels"]["axon"]["pas"]["i"]["tags"][0] # number of epochs
         compare4b = filler["epoch1channels"]["soma"]["hh"]["il"]["tags"][1] # epochID
-        compare4c = filler["epoch0channels"]["axon"]["pas"]["i"]["tags"][2][-1] # recsite
+        compare4c = filler["epoch0channels"]["axon"]["pas"]["i"]["tags"][2].split()[-1] # recsite
         compare4d = filler["epoch0channels"]["soma"]["pas"]["i"]["tags"][3] # all recsites
-        compare4e = filler["epoch0channels"]["soma"]["hh"]["el"]["tags"][6][-1] # key for recsite
+        compare4e = filler["epoch0channels"]["soma"]["hh"]["el"]["tags"][6].split()[-1] # key for recsite
         #
         compare3 = [compare3a, compare3b, compare3c, compare3d, compare3e]
         compare4 = [compare4a, compare4b, compare4c, compare4d, compare4e]
@@ -152,16 +217,22 @@ class EpochGeneratorTest(unittest.TestCase):
         self.assertEqual( [a, b], [True, True] )
         
     #@unittest.skip("reason for skipping")
-    def test_7_epochcontainer_without_stimulus(self):
-        no_of_regions = len(list(self.chosenmodel.regions.keys()))
-        filler = eg.epochcontainer(self.chosenmodel, self.no_runtimeparam)
+    def test_11_epochcontainer_without_stimulus(self):
+        filler = eg.epochcontainer( chosenmodel = self.chosenmodel,
+                                    parameters = self.no_runtimeparam)
         no_of_epochs = filler["epoch0soma"]["v"]["tags"][0]
+        a = Counter( [ int(no_of_epochs[0]),
+                       filler["epoch0soma"]["v"]["start_time"],
+                       filler["epoch0soma"]["v"]["stop_time"] ] ) \
+            == Counter( [ 1, filler["epoch0axon"]["v"]["start_time"],
+                          self.no_runtimeparam["tstop"] ] )
         #print filler # how does the epochcontainer metadata look?
-        self.assertEqual( int(no_of_epochs[0]), 1 )
+        self.assertEqual( a, True )
 
     #@unittest.skip("reason for skipping")
     def test_8_epochcontainer_with_voltagestimulus(self):
-        filler = eg.epochcontainer(self.chosenmodel, self.sec_stimparameters)
+        filler = eg.epochcontainer( chosenmodel = self.chosenmodel,
+                                    parameters = self.sec_stimparameters )
         #print(filler) # how does the epochcontainer metadata look?
         #print(filler.keys())
         #print(filler["epoch0soma"].keys())
@@ -170,28 +241,28 @@ class EpochGeneratorTest(unittest.TestCase):
         # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
         compare1a = filler["epoch0soma"]["v"]["tags"][0] # number of epochs
         compare1b = filler["epoch0soma"]["v"]["tags"][1] # epochID
-        compare1c = filler["epoch0soma"]["v"]["tags"][2][-1] # recsite
+        compare1c = filler["epoch0soma"]["v"]["tags"][2].split()[-1] # recsite
         compare1d = filler["epoch0soma"]["v"]["tags"][3] # all recsites
         compare1e = filler["epoch0soma"]["v"]["tags"][4] # modelname
         compare1f = filler["epoch0soma"]["v"]["tags"][5] # modelscale
-        compare1g = filler["epoch0soma"]["v"]["tags"][6][-1] # key for recsite
+        compare1g = filler["epoch0soma"]["v"]["tags"][6].split()[-1] # key for recsite
         compare2a = filler["epoch0axon"]["v"]["tags"][0]
         compare2b = filler["epoch0axon"]["v"]["tags"][1]
-        compare2c = filler["epoch0axon"]["v"]["tags"][2][-1]
+        compare2c = filler["epoch0axon"]["v"]["tags"][2].split()[-1]
         compare2d = filler["epoch1soma"]["v"]["tags"][3] # all recsites
         compare2e = filler["epoch0axon"]["v"]["tags"][4]
         compare2f = filler["epoch0axon"]["v"]["tags"][5]
-        compare2g = filler["epoch1soma"]["v"]["tags"][6][-1]
+        compare2g = filler["epoch1soma"]["v"]["tags"][6].split()[-1]
         #
         compare1 = [compare1a, compare1b, compare1c, compare1d, compare1e, compare1f, compare1g]
         compare2 = [compare2a, compare2b, compare2c, compare2d, compare2e, compare2f, compare2g]
         a = Counter(compare1) == Counter(compare2)
         #
         compare3a = filler["epoch0soma"]["v"]["tags"][1] # epochID
-        compare3b = filler["epoch0soma"]["v"]["tags"][2][-1] # [ region, recsite ]
+        compare3b = filler["epoch0soma"]["v"]["tags"][2].split()[-1] # [ region, recsite ]
         compare3c = filler["epoch0soma"]["v"]["tags"][3] # all recsites
         compare4a = filler["epoch1soma"]["v"]["tags"][1]
-        compare4b = filler["epoch1soma"]["i_cap"]["tags"][2][-1]
+        compare4b = filler["epoch1soma"]["i_cap"]["tags"][2].split()[-1]
         compare4c = filler["epoch0axon"]["v"]["tags"][3]
         #
         compare3 = [compare3a, compare3b, compare3c]
@@ -200,18 +271,18 @@ class EpochGeneratorTest(unittest.TestCase):
         #
         compare5a = filler["epoch0channels"]["soma"]["pas"]["i"]["tags"][0] # number of epochs
         compare5b = filler["epoch0channels"]["soma"]["pas"]["i"]["tags"][1] # epochID
-        compare5c = filler["epoch0channels"]["soma"]["pas"]["i"]["tags"][2][-1] # recsite
+        compare5c = filler["epoch0channels"]["soma"]["pas"]["i"]["tags"][2].split()[-1] # recsite
         compare5d = filler["epoch0channels"]["soma"]["pas"]["i"]["tags"][3] # all recsites
         compare5e = filler["epoch0channels"]["soma"]["pas"]["i"]["tags"][4] # modelname
         compare5f = filler["epoch0channels"]["soma"]["pas"]["i"]["tags"][5] # modelscale
-        compare5g = filler["epoch0channels"]["soma"]["pas"]["i"]["tags"][6][-1] # key for recsite
+        compare5g = filler["epoch0channels"]["soma"]["pas"]["i"]["tags"][6].split()[-1] # key for recsite
         compare6a = filler["epoch0channels"]["axon"]["pas"]["i"]["tags"][0] # number of epochs
         compare6b = filler["epoch0channels"]["axon"]["pas"]["i"]["tags"][1] # epochID
-        compare6c = filler["epoch0channels"]["axon"]["pas"]["i"]["tags"][2][-1] # recsite
+        compare6c = filler["epoch0channels"]["axon"]["pas"]["i"]["tags"][2].split()[-1] # recsite
         compare6d = filler["epoch0channels"]["axon"]["pas"]["i"]["tags"][3] # all recsites
         compare6e = filler["epoch0channels"]["axon"]["pas"]["i"]["tags"][4] # modelname
         compare6f = filler["epoch0channels"]["axon"]["pas"]["i"]["tags"][5] # modelscale
-        compare6g = filler["epoch0channels"]["axon"]["pas"]["i"]["tags"][6][-1] # key for recsite
+        compare6g = filler["epoch0channels"]["axon"]["pas"]["i"]["tags"][6].split()[-1] # key for recsite
         #
         compare5 = [compare5a, compare5b, compare5c, compare5d, compare5e, compare5f, compare5g]
         compare6 = [compare6a, compare6b, compare6c, compare6d, compare6e, compare6f, compare6g]
@@ -219,14 +290,14 @@ class EpochGeneratorTest(unittest.TestCase):
         #
         compare7a = filler["epoch0channels"]["soma"]["hh"]["il"]["tags"][0] # number of epochs
         compare7b = filler["epoch0channels"]["soma"]["hh"]["il"]["tags"][1] # epochID
-        compare7c = filler["epoch0channels"]["soma"]["hh"]["il"]["tags"][2][-1] # recsite
+        compare7c = filler["epoch0channels"]["soma"]["hh"]["il"]["tags"][2].split()[-1] # recsite
         compare7d = filler["epoch0channels"]["soma"]["hh"]["il"]["tags"][3] # all recsites
-        compare7e = filler["epoch0channels"]["soma"]["hh"]["il"]["tags"][6][-1] # key for recsite
+        compare7e = filler["epoch0channels"]["soma"]["hh"]["il"]["tags"][6].split()[-1] # key for recsite
         compare8a = filler["epoch1channels"]["axon"]["pas"]["i"]["tags"][0] # number of epochs
         compare8b = filler["epoch1channels"]["soma"]["hh"]["il"]["tags"][1] # epochID
-        compare8c = filler["epoch0channels"]["axon"]["pas"]["i"]["tags"][2][-1] # recsite
+        compare8c = filler["epoch0channels"]["axon"]["pas"]["i"]["tags"][2].split()[-1] # recsite
         compare8d = filler["epoch0channels"]["soma"]["pas"]["i"]["tags"][3] # all recsites
-        compare8e = filler["epoch0channels"]["soma"]["hh"]["el"]["tags"][6][-1] # key for recsite
+        compare8e = filler["epoch0channels"]["soma"]["hh"]["el"]["tags"][6].split()[-1] # key for recsite
         #
         compare7 = [compare7a, compare7b, compare7c, compare7d, compare7e]
         compare8 = [compare8a, compare8b, compare8c, compare8d, compare8e]

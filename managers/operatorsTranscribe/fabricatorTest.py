@@ -19,6 +19,7 @@ from models.cells.modelDummyTest import DummyCell
 os.chdir(pwd)
 
 from metadata_timeseriesgenerator import TimeseriesGenerator as tg
+from metadata_epochgenerator import EpochGenerator as eg
 from fabricator import Fabricator as fab
 
 import numpy
@@ -54,6 +55,8 @@ class FabricatorTest(unittest.TestCase):
         self.no_respmd = tg.forrecording( chosenmodel = self.chosenmodel,
                                           recordings = self.no_recordings,
                                           runtimeparameters = self.no_runtimeparam )
+        self.no_epochmd = eg.epochcontainer( chosenmodel = self.chosenmodel,
+                                             parameters = self.no_runtimeparam )
         # IClamp
         self.ic_runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}
         self.ic_stimparameters = {"type": ["current", "IClamp"],
@@ -75,6 +78,8 @@ class FabricatorTest(unittest.TestCase):
                                           recordings = self.ic_recordings,
                                           runtimeparameters = self.ic_runtimeparam,
                                           stimparameters = self.ic_stimparameters )
+        self.ic_epochmd = eg.epochcontainer( chosenmodel = self.chosenmodel,
+                                             parameters = self.ic_stimparameters )
         # Voltage clamp
         self.sec_runtimeparam = {"dt": 0.1, "celsius": 30, "tstop": 35, "v_init": 65}
         self.sec_stimparameters = {"type": ["voltage", "SEClamp"],
@@ -96,6 +101,8 @@ class FabricatorTest(unittest.TestCase):
                                            recordings = self.sec_recordings,
                                            runtimeparameters = self.sec_runtimeparam,
                                            stimparameters = self.sec_stimparameters )
+        self.sec_epochmd = eg.epochcontainer( chosenmodel = self.chosenmodel,
+                                              parameters = self.sec_stimparameters )
         # parameters for generating NWBFile
         now = datetime.now()
         self.file_metadata = {
@@ -266,6 +273,30 @@ class FabricatorTest(unittest.TestCase):
                                 extracted_nwbts_soma_hh.data!=extracted_nwbts_axon_pas.data)
         e = ( str(type(updated_mynwbfile))[8:-2] == "pynwb.file.NWBFile" )
         self.assertTrue( a and b and c and d and e is True )
+
+    #@unittest.skip("reason for skipping")
+    def test_8_nwbepochs_regionbodies_nostimulus(self):
+        # self.chosenmodel.regions ->
+        # {"soma": ["v", "i_cap"], "axon": ["v"],
+        # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
+        mynwbfile = fab.build_nwbfile(self.file_metadata) # build NWBFile
+        nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
+                                    tsmd = self.no_respmd)
+        #
+        updated_mynwbfile = fab.nwbepochs_regionbodies( self.chosenmodel,
+                                    self.no_epochmd, nwbts, mynwbfile)
+        # what does the insertion lead to?
+        extracted_nwbts_soma =  updated_mynwbfile.get_acquisition(nwbts["soma"]['v'].name)
+        extracted_nwbts_axon =  updated_mynwbfile.get_acquisition(nwbts["axon"]['v'].name)
+        #
+        a = all(boolean == True for boolean in
+                                extracted_nwbts_soma.data==nwbts['soma']['v'].data)
+        b = all(boolean == True for boolean in
+                                extracted_nwbts_axon.data==nwbts['axon']['v'].data)
+        c = all(boolean == True for boolean in
+                                extracted_nwbts_soma.timestamps==nwbts['soma']['v'].timestamps)
+        d = ( str(type(updated_mynwbfile))[8:-2] == "pynwb.file.NWBFile" )
+        self.assertTrue( a and b and c and d is True )
 
     @unittest.skip("reason for skipping")
     def test_3_construct_nwbseries_nostimulus(self):

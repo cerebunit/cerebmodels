@@ -16,6 +16,8 @@ class EpochGenerator(object):
     +------------------------------------------------+---------------+
     | :py:meth:`.compute_totalepochs_per_cellregion` | static method |
     +------------------------------------------------+---------------+
+    | :py:meth:`.epoch_times_list`                   | static method |
+    +------------------------------------------------+---------------+
     | :py:meth:`.epochcontainer_for_regionbodies`    | static method |
     +------------------------------------------------+---------------+
     | :py:meth:`.epochcontainer_for_compartments`    | static method |
@@ -94,9 +96,39 @@ class EpochGenerator(object):
             n = 1
         return n
 
-
     @staticmethod
-    def epochcontainer_for_regionbodies(model, no_of_epochs):
+    def epoch_times_list(parameters):
+        dur = (lambda volttype, indx:\
+                  "dur"+str(indx+1) if volttype=="SEClamp" else "dur")
+        start_ts = [0.0]
+        if "stimlist" in parameters:
+            if parameters["type"][0]=="current":
+                if parameters["stimlist"][0]["delay"] != 0.0:
+                    stop_ts = [ parameters["stimlist"][0]["delay"] ]
+                    i0 = 0
+                else: # epoch0 is also when first stimulus was given
+                    stop_ts = [ parameters["stimlist"][0]["dur"] ]
+                    i0 = 1
+                for i in range( i0, len(parameters["stimlist"]) ):
+                    start_ts.append( parameters["stimlist"][i]["delay"] )
+                    stop_ts.append( parameters["stimlist"][i]["delay"] +
+                                    parameters["stimlist"][i]["dur"] )
+            elif parameters["type"][0]=="voltage":
+                volttype = parameters["type"][1]
+                stop_ts = [ parameters["stimlist"][0][dur(volttype,0)] ]
+                for i in range( 1, len(parameters["stimlist"]) ):
+                    start_ts.append( parameters["stimlist"][ i-1 ][ dur(volttype,i-1) ] )
+                    stop_ts.append( parameters["stimlist"][ i ][ dur(volttype,i) ] )
+            # Finally
+            if stop_ts[-1] < parameters["tstop"]:
+                start_ts.append( stop_ts[-1] )
+                stop_ts.append( parameters["tstop"] )
+        else:
+            stop_ts = [ parameters["tstop"] ]
+        return start_ts, stop_ts
+ 
+    @staticmethod
+    def epochcontainer_for_regionbodies(model, no_of_epochs, start_ts, stop_ts):
         regionlist = rp.get_regionlist(model)
         x = {}
         for a_region_name in regionlist:
@@ -107,17 +139,19 @@ class EpochGenerator(object):
                 rec_of = model.regions[a_region_name][ith_rec_type]
                 [ x["epoch"+str(i)+a_region_name].update(
                     {rec_of:
-                        {"tags": ( str(no_of_epochs)+"_epoch_response",# 0 number of epochs
+                        {"start_time": start_ts[i],
+                         "stop_time": stop_ts[i],
+                         "tags": ( str(no_of_epochs)+"_epoch_response",# 0 number of epochs
                                    str(i),                        # 1 epochID
-                                   [ a_region_name, rec_of ],     # 2 [ region, recsite ]
+                                   a_region_name +" "+ rec_of,    # 2 [ region, recsite ]
                                    " ".join(model.regions[a_region_name]),#3 all rec sites
                                    model.modelname, model.modelscale,# 4modelname, 5scale
-                                   ["epoch"+str(i)+a_region_name, rec_of] )} # 6 dict keys
+                                   "epoch"+str(i)+a_region_name +" "+ rec_of )} # 6 dict keys
                     } ) for i in range(no_of_epochs) ]
         return x
 
     @staticmethod
-    def epochcontainer_for_components(model, no_of_epochs):
+    def epochcontainer_for_components(model, no_of_epochs, start_ts, stop_ts):
         componentgrouplist = rp.get_componentgrouplist(model)
         x = {}
         for epochID in range(no_of_epochs):
@@ -135,22 +169,24 @@ class EpochGenerator(object):
                             rec_of = model.regions[compgroup_name][a_region_name]\
                                                   [a_comp_name][ith_rec_type]
                             ans0.update({rec_of:
-                              {"tags": ( str(no_of_epochs)+"_epoch_response",# 0 #epochs
-                                         str(epochID), # 1 epochID
-                                         [ compgroup_name, a_region_name,
-                                           a_comp_name, rec_of ],# 2[gp, reg, comp, rec]
+                              {"start_time": start_ts[ epochID ],
+                               "stop_time": stop_ts[ epochID ],
+                               "tags": ( str(no_of_epochs)+"_epoch_response",# 0 #epochs
+                                         str( epochID ), # 1 epochID
+                                         compgroup_name +" "+ a_region_name +" "+
+                                           a_comp_name, rec_of,# 2[gp, reg, comp, rec]
                                          " ".join(model.regions[compgroup_name][a_region_name][a_comp_name]),#3 all rec sites
                                          model.modelname, model.modelscale,# 4, 5 indices
-                                         ["epoch"+str(epochID)+compgroup_name,
-                                         a_region_name, a_comp_name,
-                                         rec_of] )} }) # 6 dict keys
+                                         "epoch"+str(epochID)+compgroup_name +" "+
+                                         a_region_name +" "+ a_comp_name +" "+
+                                         rec_of )} }) # 6 dict keys
                         ans1.update( {a_comp_name: ans0} )
                     ans2.update( {a_region_name: ans1} )
                 x.update( {"epoch"+str(epochID)+compgroup_name: ans2} )
         return x
 
     @classmethod
-    def epochcontainer(cls, chosenmodel, parameters):
+    def epochcontainer(cls, chosenmodel = None, parameters = None):
         """Creates the container for `NWB <https://www.nwb.org/>`_ formatted epoch metadata.
 
         **Arguments:**
@@ -244,11 +280,14 @@ class EpochGenerator(object):
         #                            ' '.join( chosenmodel.regions.keys() ) )}) # space separated string
         #         for i in range(no_of_epochs_per_region) ]
         #return x
-        no_of_epochs = cls.compute_totalepochs_per_cellregion(parameters)
-        x = cls.epochcontainer_for_regionbodies(chosenmodel, no_of_epochs)
+        no_of_epochs = cls.compute_totalepochs_per_cellregion( parameters )
+        [start_ts, stop_ts] = cls.epoch_times_list( parameters )
+        x = cls.epochcontainer_for_regionbodies( chosenmodel,
+                                          no_of_epochs, start_ts, stop_ts )
         componentgrouplist = rp.get_componentgrouplist(chosenmodel)
         if len(componentgrouplist)!=0:
-            y = cls.epochcontainer_for_components(chosenmodel, no_of_epochs)
+            y = cls.epochcontainer_for_components( chosenmodel,
+                                          no_of_epochs, start_ts, stop_ts )
             return {**x, **y}
         else:
             return x

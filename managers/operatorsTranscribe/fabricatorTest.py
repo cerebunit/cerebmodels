@@ -28,6 +28,8 @@ from pynwb import NWBHDF5IO
 
 from pdb import set_trace as breakpoint
 
+from collections import Counter
+
 class FabricatorTest(unittest.TestCase):
 
     def setUp(self):
@@ -282,22 +284,204 @@ class FabricatorTest(unittest.TestCase):
         mynwbfile = fab.build_nwbfile(self.file_metadata) # build NWBFile
         nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
                                     tsmd = self.no_respmd)
+        mynwbfile = fab.affix_nwbseries_to_nwbfile(chosenmodel = self.chosenmodel,
+                                    nwbts=nwbts, nwbfile=mynwbfile)
         #
         updated_mynwbfile = fab.nwbepochs_regionbodies( self.chosenmodel,
                                     self.no_epochmd, nwbts, mynwbfile)
+        #updated_mynwbfile = fab.nwbepochs_components( self.chosenmodel,
+        #                            self.no_epochmd, nwbts, mynwbfile)
         # what does the insertion lead to?
-        extracted_nwbts_soma =  updated_mynwbfile.get_acquisition(nwbts["soma"]['v'].name)
-        extracted_nwbts_axon =  updated_mynwbfile.get_acquisition(nwbts["axon"]['v'].name)
+        extracted_nwbts_soma = updated_mynwbfile.get_acquisition(nwbts["soma"]['v'].name)
+        extracted_nwbts_axon = updated_mynwbfile.get_acquisition(nwbts["axon"]['v'].name)
+        #print( len(updated_mynwbfile.epochs) ) # no of region = #bodies + #component groups
+        #print( updated_mynwbfile.epochs[0] )
+        #print( len(updated_mynwbfile.epochs[0]) )
+        #print( updated_mynwbfile.epochs[0][0] )
+        #print( updated_mynwbfile.epochs[0][1] ) # start_time
+        #print( updated_mynwbfile.epochs[0][2] ) # stop_time
+        #print( updated_mynwbfile.epochs[0][3] ) # tags
+        #print( len(updated_mynwbfile.epochs[0][4]) )
+        #print( len(updated_mynwbfile.epochs[0][4][0]) )
+        #print( updated_mynwbfile.epochs[0][4][0][0] ) # converted start_time w.r.t dt
+        #print( updated_mynwbfile.epochs[0][4][0][1] ) # converted stop_time w.r.t dt
+        #print( updated_mynwbfile.epochs[0][4][0][2].unit )
+        #print( updated_mynwbfile.epochs[0][4][0][2].name )
+        # Recall
+        #print( len(updated_mynwbfile.epochs[0]) )
+        #print( updated_mynwbfile.epochs[1][4][0][2].name )
+        #print( updated_mynwbfile.epochs[2][4][0][2].name )
         #
-        a = all(boolean == True for boolean in
-                                extracted_nwbts_soma.data==nwbts['soma']['v'].data)
-        b = all(boolean == True for boolean in
-                                extracted_nwbts_axon.data==nwbts['axon']['v'].data)
-        c = all(boolean == True for boolean in
-                                extracted_nwbts_soma.timestamps==nwbts['soma']['v'].timestamps)
+        compare1 = [ updated_mynwbfile.epochs[0][1], # start_time
+                     updated_mynwbfile.epochs[0][2], # stop_time
+                     updated_mynwbfile.epochs[0][4][0][1], # converted stop_time
+                     updated_mynwbfile.epochs[0][3][0][0] ] # number of epochs
+        compare2 = [ 0, self.no_runtimeparam["tstop"],
+                     self.no_runtimeparam["tstop"]/self.no_runtimeparam["dt"],
+                     "1" ]       
+        #
+        compare3 = updated_mynwbfile.epochs[0][4][0][2].timestamps
+        compare4 = updated_mynwbfile.epochs[1][4][0][2].timestamps
+        #
+        compare5 = updated_mynwbfile.epochs[0][4][0][2].data
+        compare6 = updated_mynwbfile.epochs[1][4][0][2].data
+        #
+        compare7 = updated_mynwbfile.epochs[0][4][0][2].name
+        compare8 = updated_mynwbfile.epochs[1][4][0][2].name
+        #
+        a = Counter( compare1 ) == Counter( compare2 )
+        b = all(boolean == True for boolean in compare3 == compare4)
+        c = all(boolean == True for boolean in compare5 != compare6)
+        d = compare7 != compare8
+        e = ( str(type(updated_mynwbfile))[8:-2] == "pynwb.file.NWBFile" )
+        self.assertTrue( a and b and c and d and e is True )
+
+    #@unittest.skip("reason for skipping")
+    def test_9_nwbepochs_components_currentstimulus(self):
+        # self.chosenmodel.regions ->
+        # {"soma": ["v", "i_cap"], "axon": ["v"],
+        # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
+        mynwbfile = fab.build_nwbfile(self.file_metadata) # build NWBFile
+        nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
+                                    tsmd = self.ic_respmd)
+        mynwbfile = fab.affix_nwbseries_to_nwbfile(chosenmodel = self.chosenmodel,
+                                    nwbts=nwbts, nwbfile=mynwbfile)
+        #
+        updated_mynwbfile = fab.nwbepochs_components( self.chosenmodel,
+                                    self.ic_epochmd, nwbts, mynwbfile)
+        #updated_mynwbfile = fab.nwbepochs_components( self.chosenmodel,
+        #                            self.no_epochmd, nwbts, mynwbfile)
+        # what does the insertion lead to?
+        #extracted_nwbts_soma_hh_il = updated_mynwbfile.get_acquisition(
+        #                                 nwbts["channels"]["soma"]["hh"]['il'].name)
+        #extracted_nwbts_soma_hh_el = updated_mynwbfile.get_acquisition(
+        #                                 nwbts["channels"]["soma"]["hh"]['el'].name)
+        #print( len(updated_mynwbfile.epochs) ) # no of region = #bodies + #component groups
+        #print( updated_mynwbfile.epochs[0] )
+        #print( len(updated_mynwbfile.epochs[0]) )
+        #print( updated_mynwbfile.epochs[0][0] )
+        #print( updated_mynwbfile.epochs[0][1] ) # start_time
+        #print( updated_mynwbfile.epochs[0][2] ) # stop_time
+        #print( updated_mynwbfile.epochs[0][3] ) # tags
+        #print( len(updated_mynwbfile.epochs[0][4]) )
+        #print( len(updated_mynwbfile.epochs[0][4][0]) )
+        #print( updated_mynwbfile.epochs[0][4][0][0] ) # converted start_time w.r.t dt
+        #print( updated_mynwbfile.epochs[0][4][0][1] ) # converted stop_time w.r.t dt
+        #print( updated_mynwbfile.epochs[0][4][0][2].unit )
+        #print( updated_mynwbfile.epochs[0][4][0][2].name )
+        #print( updated_mynwbfile.epochs[1][4][0][2].name )
+        #print( updated_mynwbfile.epochs[2][4][0][2].name )
+        #print( updated_mynwbfile.epochs[3][4][0][2].name )
+        # Recall
+        #print( len(updated_mynwbfile.epochs[0]) )
+        #print( updated_mynwbfile.epochs[1][4][0][2].name )
+        #print( updated_mynwbfile.epochs[2][4][0][2].name )
+        #
+        compare1 = updated_mynwbfile.epochs[0][3][0] # 4_no_of_epochs
+        compare2 = updated_mynwbfile.epochs[1][3][0] # 4_no_of_epochs
+        #
+        compare3 = updated_mynwbfile.epochs[0][1] # start_time
+        compare4 = updated_mynwbfile.epochs[1][1] # start_time
+        #
+        compare5 = updated_mynwbfile.epochs[0][3][1] # epochID
+        compare6 = updated_mynwbfile.epochs[1][3][1] # epochID
+        #
+        a = compare1 == compare2
+        b = compare3 != compare4
+        c = compare5 != compare6
         d = ( str(type(updated_mynwbfile))[8:-2] == "pynwb.file.NWBFile" )
         self.assertTrue( a and b and c and d is True )
 
+    #@unittest.skip("reason for skipping")
+    def test_10_build_nwbepochs_voltagestimulus(self):
+        # self.chosenmodel.regions ->
+        # {"soma": ["v", "i_cap"], "axon": ["v"],
+        # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
+        mynwbfile = fab.build_nwbfile(self.file_metadata) # build NWBFile
+        nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
+                                    tsmd = self.sec_respmd)
+        mynwbfile = fab.affix_nwbseries_to_nwbfile(chosenmodel = self.chosenmodel,
+                                    nwbts=nwbts, nwbfile=mynwbfile)
+        #
+        updated_mynwbfile = fab.build_nwbepochs( chosenmodel=self.chosenmodel,
+                                    epochmd=self.sec_epochmd, nwbts=nwbts, nwbfile=mynwbfile)
+        #updated_mynwbfile = fab.nwbepochs_components( self.chosenmodel,
+        #                            self.no_epochmd, nwbts, mynwbfile)
+        # what does the insertion lead to?
+        #extracted_nwbts_soma_hh_il = updated_mynwbfile.get_acquisition(
+        #                                 nwbts["channels"]["soma"]["hh"]['il'].name)
+        #extracted_nwbts_soma_hh_el = updated_mynwbfile.get_acquisition(
+        #                                 nwbts["channels"]["soma"]["hh"]['el'].name)
+        #print( len(updated_mynwbfile.epochs) ) # no of region = #bodies + #component groups
+        #print( updated_mynwbfile.epochs[0] )
+        #print( len(updated_mynwbfile.epochs[0]) )
+        #print( updated_mynwbfile.epochs[0][0] )
+        #print( updated_mynwbfile.epochs[0][1] ) # start_time
+        #print( updated_mynwbfile.epochs[0][2] ) # stop_time
+        #print( updated_mynwbfile.epochs[0][3] ) # tags
+        #print( len(updated_mynwbfile.epochs[0][4]) )
+        #print( len(updated_mynwbfile.epochs[0][4][0]) )
+        #print( updated_mynwbfile.epochs[0][4][0][0] ) # converted start_time w.r.t dt
+        #print( updated_mynwbfile.epochs[0][4][0][1] ) # converted stop_time w.r.t dt
+        #print( updated_mynwbfile.epochs[0][4][0][2].unit )
+        #print( updated_mynwbfile.epochs[0][4][0][2].name )
+        #print( updated_mynwbfile.epochs[1][4][0][2].name )
+        #print( updated_mynwbfile.epochs[2][4][0][2].name )
+        #print( updated_mynwbfile.epochs[3][4][0][2].name )
+        # Recall
+        #print( len(updated_mynwbfile.epochs[0]) )
+        #print( updated_mynwbfile.epochs[1][4][0][2].name )
+        #print( updated_mynwbfile.epochs[2][4][0][2].name )
+        #
+        compare1 = updated_mynwbfile.epochs[0][3][0] # 4_no_of_epochs
+        compare2 = updated_mynwbfile.epochs[1][3][0] # 4_no_of_epochs
+        #
+        compare3 = updated_mynwbfile.epochs[0][1] # start_time
+        compare4 = updated_mynwbfile.epochs[1][1] # start_time
+        #
+        compare5 = updated_mynwbfile.epochs[0][3][1] # epochID
+        compare6 = updated_mynwbfile.epochs[1][3][1] # epochID
+        #
+        a = compare1 == compare2
+        b = compare3 != compare4
+        c = compare5 != compare6
+        d = ( str(type(updated_mynwbfile))[8:-2] == "pynwb.file.NWBFile" )
+        self.assertTrue( a and b and c and d is True )
+
+    #@unittest.skip("reason for skipping")
+    def test_11_write_nwbfile_voltagestimulus(self):
+        # Build NWBFile
+        mynwbfile = fab.build_nwbfile(self.file_metadata) # build NWBFile
+        nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
+                                    tsmd = self.sec_respmd)
+        mynwbfile = fab.affix_nwbseries_to_nwbfile(chosenmodel = self.chosenmodel,
+                                    nwbts=nwbts, nwbfile=mynwbfile)
+        #
+        updated_mynwbfile = fab.build_nwbepochs( chosenmodel=self.chosenmodel,
+                                    epochmd=self.sec_epochmd, nwbts=nwbts, nwbfile=mynwbfile)
+        # Write Test
+        fullname = fab.write_nwbfile(nwbfile=updated_mynwbfile)
+        # Read
+        io = NWBHDF5IO(fullname, mode="r")
+        nwbfile = io.read()
+        #
+        compare1 = updated_mynwbfile.epochs[0][3][0] # 4_no_of_epochs
+        compare2 = updated_mynwbfile.epochs[1][3][0] # 4_no_of_epochs
+        #
+        compare3 = updated_mynwbfile.epochs[0][1] # start_time
+        compare4 = updated_mynwbfile.epochs[1][1] # start_time
+        #
+        compare5 = updated_mynwbfile.epochs[0][3][1] # epochID
+        compare6 = updated_mynwbfile.epochs[1][3][1] # epochID
+        #
+        a = compare1 == compare2
+        b = compare3 != compare4
+        c = compare5 != compare6
+        d = ( str(type(updated_mynwbfile))[8:-2] == "pynwb.file.NWBFile" )
+        self.assertTrue( a and b and c and d is True )
+        os.remove(fullname)
+
+# Depreciated from below
     @unittest.skip("reason for skipping")
     def test_3_construct_nwbseries_nostimulus(self):
         runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 10, "v_init": 65}

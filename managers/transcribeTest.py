@@ -197,8 +197,6 @@ class TranscribeManagerTest(unittest.TestCase):
         io = NWBHDF5IO(fullname, mode="r")
         nwbfile = io.read()
         stimulus = nwbfile.get_stimulus(self.chosenmodel.modelname+"_stimulus")
-        #stimulus = nwbfile.get_stimulus("DummyTest_stimulus")
-        #print(dir(nwbfile))
         #
         #print(type(stimulus.data))                        # <class 'h5py._hl.dataset.Dataset'>
         #print(type(self.recordings_stimulus['stimulus'])) # <type 'numpy.ndarray'>
@@ -206,11 +204,11 @@ class TranscribeManagerTest(unittest.TestCase):
         #print(len(numpy.array(stimulus.data)))
         #breakpoint()
         #
-        #a = all(boolean == True for boolean in
-        #                        numpy.array(stimulus.data) == self.recordings_stimulus['stimulus'])
-        #b = all(boolean == False for boolean in
-        #                        numpy.array(stimulus.timestamps) == self.recordings_stimulus['time'])
-        #self.assertTrue( a is True and b is False)
+        a = all(boolean == True for boolean in
+                                numpy.array(stimulus.data) == self.sec_recordings['stimulus'])
+        b = all(boolean == False for boolean in
+                                numpy.array(stimulus.timestamps) == self.sec_recordings['time'])
+        self.assertTrue( a is True and b is False)
         io.close()
         #
         path = os.getcwd() + os.sep + "responses" + os.sep + self.chosenmodel.modelscale + os.sep + self.chosenmodel.modelname

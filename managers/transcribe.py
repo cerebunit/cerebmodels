@@ -115,10 +115,10 @@ class TranscribeManager(object):
                                        runtimeparameters = runtimeparameters,
                                        stimparameters = stimparameters )
         if stimparameters is None:
-            self.epochmd = eg.forepoch( chosenmodel = self.chosenmodel,
+            self.epochmd = eg.epochcontainer( chosenmodel = self.chosenmodel,
                                         parameters = runtimeparameters )
         else:
-            self.epochmd = eg.forepoch( chosenmodel = self.chosenmodel,
+            self.epochmd = eg.epochcontainer( chosenmodel = self.chosenmodel,
                                         parameters = stimparameters )
 
     def compile_nwbfile(self):
@@ -133,11 +133,12 @@ class TranscribeManager(object):
         nwbfile = fab.build_nwbfile(self.filemd)
         nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel,
                                     tsmd = self.respmd)
-        update_nwbfile = fab.affix_nwbseries_to_nwbfile(nwbts=nwbts,
-                                                        nwbfile=nwbfile)
-        self.nwbfile = fab.build_nwbepochs( nwbfile = update_nwbfile,
-                                            epochmd = self.epochmd,
-                                            nwbts = nwbts )
+        update_nwbfile = fab.affix_nwbseries_to_nwbfile(chosenmodel = self.chosenmodel,
+                                    nwbts=nwbts, nwbfile=nwbfile)
+        self.nwbfile = fab.build_nwbepochs( chosenmodel = self.chosenmodel,
+                                    nwbfile = update_nwbfile,
+                                    epochmd = self.epochmd,
+                                    nwbts = nwbts )
 
     def save_nwbfile(self):
         """**After** evoking :py:meth:`.compile_nwbfile`, calling this function writes the created ``self.nwbfile`` into an HDF5 file.

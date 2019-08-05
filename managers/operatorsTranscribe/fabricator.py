@@ -312,7 +312,7 @@ class Fabricator(object):
             nwbfile = cls.link_nwbseries_components_to_nwbfile(
                                         chosenmodel, nwbts, nwbfile )
         if "stimulus" in nwbts.keys():
-            nwbfile.add_acquisition( nwbts["stimulus"] )
+            nwbfile.add_stimulus( nwbts["stimulus"] )
         return nwbfile
 
     @staticmethod

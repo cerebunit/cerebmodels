@@ -92,17 +92,28 @@ class EpochUnraveller(object):
     @staticmethod
     def pluck_region( an_epoch ):
         "Returns region name for which this epoch is associated with."
-        return an_epoch[3][2]
+        return an_epoch[3][2] # 'region rec_site' or 'group region component rec_site'
+
+    @staticmethod
+    def pluck_recordingsites( an_epoch ):
+        "Returns all the recording sites for which this epoch is associated with just one of the recording site."
+        return an_epoch[3][3] # 'rec_siteA rec_siteB'
 
     @staticmethod
     def pluck_modelname( an_epoch ):
         "Returns model name for which this epoch is associated with."
-        return an_epoch[3][3]
+        return an_epoch[3][4]
 
     @staticmethod
     def pluck_modelscale( an_epoch ):
         "Returns name of the model scale for which this epoch is associated with."
-        return an_epoch[3][4]
+        return an_epoch[3][5]
+
+    @staticmethod
+    def pluck_this_recordingsite( an_epoch ):
+        "Returns name of the model scale for which this epoch is associated with."
+        s = an_epoch[3][6]
+        return s.split()[1] # 'epochXregion rec_site'
 
     @staticmethod
     def pluck_timeseries_object( an_epoch ):

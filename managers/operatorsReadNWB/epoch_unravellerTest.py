@@ -83,8 +83,7 @@ class EpochUnraveller(unittest.TestCase):
                                  "pas":[ self.sec_rec_resp[5] ]},
                         "axon": {"pas":[ self.sec_rec_resp[3] ]}}},
            "stimulus": self.sec_rec_stim}
-        #os.chdir("..") # move up to ~/cerebmodels
-        #os.chdir("..") # move up to ~/cerebmodels
+        #
         tm = TranscribeManager()
         tm.load_metadata( chosenmodel = self.chosenmodel, simtime = self.simtime,
                           recordings = self.sec_recordings,
@@ -95,27 +94,20 @@ class EpochUnraveller(unittest.TestCase):
 
     #@unittest.skip("reason for skipping")
     def test_1_total_overall_epochs(self):
+        #  <---10--->  <----20---->
+        # 0----------10-----------20------------35
+        # ep0        ep1          ep2
+        # self.chosenmodel.regions ->
+        # {"soma": ["v", "i_cap"], "axon": ["v"],
+        # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
+        # notice 7 measuring regions times three points above = 21 epochs in total
         io = NWBHDF5IO(self.fullname, mode="r")
         nwbfile = io.read()
         print(eu.total_overall_epochs( nwbfile ))
-        print( nwbfile.epochs[0][4][0][2].name )
-        print( nwbfile.epochs[1][4][0][2].name )
-        print( nwbfile.epochs[2][4][0][2].name )
-        print( nwbfile.epochs[3][4][0][2].name )
-        print( nwbfile.epochs[4][4][0][2].name )
-        print( nwbfile.epochs[5][4][0][2].name )
-        print( nwbfile.epochs[6][4][0][2].name )
-        print( nwbfile.epochs[7][4][0][2].name )
-        print( nwbfile.epochs[8][4][0][2].name )
-        print( nwbfile.epochs[9][4][0][2].name )
-        print( nwbfile.epochs[10][4][0][2].name )
-        print( nwbfile.epochs[11][4][0][2].name )
-        print( nwbfile.epochs[12][4][0][2].name )
-        print( nwbfile.epochs[13][4][0][2].name )
-        #self.assertEqual( eu.total_overall_epochs(nwbfile), len(self.epoch_metadata) )
+        self.assertEqual( eu.total_overall_epochs(nwbfile), 21 )
         os.remove( self.fullname )
 
-    @unittest.skip("reason for skipping")
+    #@unittest.skip("reason for skipping")
     def test_2_pluck_epoch_row(self):
         io = NWBHDF5IO( self.fullname, mode="r")
         nwbfile = io.read()
@@ -123,18 +115,24 @@ class EpochUnraveller(unittest.TestCase):
         self.assertEqual( eu.pluck_epoch_row( nwbfile, row )[0], row )
         os.remove( self.fullname )
 
-    @unittest.skip("reason for skipping")
+    #@unittest.skip("reason for skipping")
     def test_3_total_epochs_this_region(self):
+        #  <---10--->  <----20---->
+        # 0----------10-----------20------------35
+        # ep0        ep1          ep2
         io = NWBHDF5IO( self.fullname, mode="r")
         nwbfile = io.read()
         row = 3
         an_epoch = eu.pluck_epoch_row( nwbfile, row )
-        if ( eu.total_epochs_this_region(an_epoch) == 4       # 4 for soma
-             or eu.total_epochs_this_region(an_epoch) == 2 ): # 2 for axon
-           say = True
-        else:
-           say = False
-        self.assertTrue( say )
+        #if ( eu.total_epochs_this_region(an_epoch) == 4       # 4 for soma
+        #     or eu.total_epochs_this_region(an_epoch) == 2 ): # 2 for axon
+        #   say = True
+        #else:
+        #   say = False
+        #self.assertTrue( say )
+        a = eu.total_epochs_this_region(an_epoch) == 3
+        self.assertTrue( a is True )
+        print(an_epoch[3])
         os.remove( self.fullname )
 
     @unittest.skip("reason for skipping")

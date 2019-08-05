@@ -86,12 +86,12 @@ class EpochGenerator(object):
         if "stimlist" in parameters:
             no_of_stimulus = len(parameters["stimlist"])
             if parameters["type"][0]=="current":
-                if parameters["stimlist"][0]["delay"] != 0:
+                if (parameters["stimlist"][0]["delay"] != 0):
                     n = 1 + no_of_stimulus
                 else:# first delay = 0 => first stimulus at t = 0.0
                     n = no_of_stimulus
-            else:
-                n = no_of_stimulus
+            elif parameters["type"][0]=="voltage":
+                n = 1+no_of_stimulus
         else:
             n = 1
         return n

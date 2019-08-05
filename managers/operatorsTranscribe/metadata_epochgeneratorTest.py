@@ -52,7 +52,7 @@ class EpochGeneratorTest(unittest.TestCase):
     #@unittest.skip("reason for skipping")
     def test_3_compute_totalepochs_per_cellregion_with_voltagestimulus(self):
         self.assertEqual( eg.compute_totalepochs_per_cellregion(self.sec_stimparameters),
-                          len(self.sec_stimparameters["stimlist"]) )
+                          1+len(self.sec_stimparameters["stimlist"]) )
 
     #@unittest.skip("reason for skipping")
     def test_4_epoch_times_list_epoch1Istimulus(self):

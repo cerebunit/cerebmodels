@@ -28,7 +28,7 @@ class GolgiCell( sciunit.Model,
         self.modelscale = "cells"
         self.modelname = "GoC2007Solinas"
         # ------specify cell-regions from with response are recorded-------
-        self.regions = {"soma": 0.0, "axon": 0.0,}# "dend": 0.0}
+        self.regions = {"soma": ["v"], "axon": ["v"]}# "dend": ["v"]}
         # -----------attributed inheritance from sciunit.Model--------------
         self.name = "Solinas et al. 2007 model of GolgiCell"
         self.description = "Solinas et al. 2007 model of GolgiCell (GoC) and published in 10.3389/neuro.03.004.2007 This is a multi-compartment (131) model. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 112685."

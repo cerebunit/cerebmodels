@@ -28,7 +28,7 @@ class GranuleCell( sciunit.Model,
         self.modelscale = "cells"
         self.modelname = "GrC1994Gabbiani"
         # ------specify cell-regions from with response are recorded-------
-        self.regions = {"soma": 0.0}
+        self.regions = {"soma": ["v"]}
         # -----------attributed inheritance from sciunit.Model--------------
         self.name = "Gabbiani et al. 1994 model of GranuleCell"
         self.description = "Gabbiani 1994 model of GranuleCell (GrC) and published in 10.1152/jn.1994.72.2.999 This is the single compartment model. It models a turtle cerebellar granule cell consisting of 13 compartments that represent the soma and 4 dendrites. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 19591."

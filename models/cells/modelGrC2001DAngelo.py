@@ -28,7 +28,7 @@ class GranuleCell( sciunit.Model,
         self.modelscale = "cells"
         self.modelname = "GrC2001DAngelo"
         # ------specify cell-regions from with response are recorded-------
-        self.regions = {"soma": 0.0}
+        self.regions = {"soma": ["v"]}
         # -----------attributed inheritance from sciunit.Model--------------
         self.name = "D'Angelo et al. 2001 model of GranuleCell"
         self.description = "D'Angelo et al. 2001 model of GranuleCell (GrC) and published in 10.1523/JNEUROSCI.21-03-00759.2001 This is the single compartment model. It models the rat granule cells because the model was derived from slices taken from 20 +/- 2 days old rats. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 46839."

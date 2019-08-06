@@ -29,7 +29,7 @@ class PurkinjeCell( sciunit.Model,
         self.modelscale = "cells"
         self.modelname = "PC1997aHausser"
         # ------specify cell-regions from with response are recorded-------
-        self.regions = {"soma": 0.0, "dend_root": 0.0}
+        self.regions = {"soma": ["v"], "dend_root": ["v"]}
         # -----------attributed inheritance from sciunit.Model--------------
         self.name = "Hausser 19.2.1997 model of PurkinjeCell"
         self.description = "Hausser 19.2.1997 model of PurkinjeCell (PC) and used by Vetter et al. 2001 for Dendritica, published in 10.1152/jn.2001.85.2.926 This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 7907."

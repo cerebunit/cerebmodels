@@ -28,7 +28,7 @@ class PurkinjeCell( sciunit.Model,
         self.modelscale = "cells"
         self.modelname = "PC2010Genet"
         # ------specify cell-regions from with response are recorded-------
-        self.regions = {"soma": 0.0, "dend_sm": 0.0, "dend_sp": 0.0}
+        self.regions = {"soma": ["v"], "dend_sm": ["v"], "dend_sp": ["v"]}
         # -----------attributed inheritance from sciunit.Model--------------
         self.name = "Genet et al. 2010 model of PurkinjeCell"
         self.description = "Genet 2010 model of PurkinjeCell (PC) and published in 10.1016/j.bpj.2010.04.056 This is a multi-compartment (1088) model. It is a resonstruction of Shelton's 1985 model which has been rescaled for dimensions of a guinea pig cell. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 147218."

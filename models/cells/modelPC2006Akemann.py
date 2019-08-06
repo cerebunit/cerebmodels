@@ -28,7 +28,7 @@ class PurkinjeCell( sciunit.Model,
         self.modelscale = "cells"
         self.modelname = "PC2006Akemann"
         # ------specify cell-regions from with response are recorded-------
-        self.regions = {"soma": 0.0} #"dend_sm": 0.0, "dend_sp": 0.0}
+        self.regions = {"soma": ["v"]} #"dend_sm": ["v"], "dend_sp": ["v"]}
         # -----------attributed inheritance from sciunit.Model--------------
         self.name = "Akemann and Knöpfel 2006 model of PurkinjeCell"
         self.description = "Akemann & Knöpfel 006 model of PurkinjeCell (PC) and published in 10.1523/JNEUROSCI.5204-05.2006 This is a single compartment model. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 80769."

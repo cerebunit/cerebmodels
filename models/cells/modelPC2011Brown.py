@@ -28,8 +28,8 @@ class PurkinjeCell( sciunit.Model,
         self.modelscale = "cells"
         self.modelname = "PC2011Brown"
         # ------specify cell-regions from with response are recorded-------
-        self.regions = {"soma": 0.0, "dend_root": 0.0, "dend_sm": 0.0, "dend_sp": 0.0,
-                        "spine_head": 0.0, "spine_neck": 0.0}
+        self.regions = {"soma": ["v"], "dend_root": ["v"], "dend_sm": ["v"],
+                        "dend_sp": ["v"], "spine_head": ["v"], "spine_neck": ["v"]}
         # -----------attributed inheritance from sciunit.Model--------------
         self.name = "Brown et al. 2011 model of PurkinjeCell"
         self.description = "Brown 2011 model of PurkinjeCell (PC) and published in 10.1007/s10827-011-0317-0 This is a multi-compartment (38) model. It is a PPR (preserved path reduction) model. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 126637."

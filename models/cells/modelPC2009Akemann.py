@@ -28,7 +28,7 @@ class PurkinjeCell( sciunit.Model,
         self.modelscale = "cells"
         self.modelname = "PC2009Akemann"
         # ------specify cell-regions from with response are recorded-------
-        self.regions = {"soma": 0.0}
+        self.regions = {"soma": ["v"]}
         # -----------attributed inheritance from sciunit.Model--------------
         self.name = "Akemann et al. 2009 model of PurkinjeCell"
         self.description = "Akemann 2009 model of PurkinjeCell (PC) and published in 10.1016/j.bpj.2009.02.046 This is a single compartment model. It is a modified version of their 2006 PC model. This one has recombinant proteins VSFP2.3 and VSFP3.1. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 123453."

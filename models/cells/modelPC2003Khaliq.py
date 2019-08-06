@@ -28,7 +28,7 @@ class PurkinjeCell( sciunit.Model,
         self.modelscale = "cells"
         self.modelname = "PC2003Khaliq"
         # ------specify cell-regions from with response are recorded-------
-        self.regions = {"soma": 0.0}
+        self.regions = {"soma": ["v"]}
         # -----------attributed inheritance from sciunit.Model--------------
         self.name = "Khaliq et al. 2003 model of PurkinjeCell"
         self.description = "Khaliq & Raman 2003 model of PurkinjeCell (PC) and published in 10.1523/JNEUROSCI.23-12-04899.2003 This is a single compartment model. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 48332."

@@ -28,7 +28,7 @@ class PurkinjeCell( sciunit.Model,
         self.modelscale = "cells"
         self.modelname = "PC2015bForrest"
         # ------specify cell-regions from with response are recorded-------
-        self.regions = {"soma": 0.0, "dend": 0.0}
+        self.regions = {"soma": ["v"], "dend": ["v"]}
         # -----------attributed inheritance from sciunit.Model--------------
         self.name = "Forrest 2015 model of PurkinjeCell"
         self.description = "Forrest 2015 model of PurkinjeCell (PC) and published in 10.1186/s12868-015-0162-6 This is th two compartment model, reduced from the 1088 compartment PC2015aForrest. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 180789."

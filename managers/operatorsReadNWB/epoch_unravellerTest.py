@@ -15,7 +15,6 @@ os.chdir("..") # this moves you up to ~/managers
 os.chdir("..") # you are now in parent /cerebmodels
 rootwd = os.getcwd()
 from models.cells.modelDummyTest import DummyCell
-from managers.operatorsTranscribe.fabricator import Fabricator as fab
 from managers.transcribe import TranscribeManager
 os.chdir(pwd)
 

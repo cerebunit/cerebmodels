@@ -2,7 +2,7 @@
 import unittest
 from pdb import set_trace as breakpoint
 
-from datetime import datetime
+import datetime
 from dateutil.tz import tzlocal
 import uuid
 import os
@@ -14,7 +14,8 @@ pwd = os.getcwd()
 os.chdir("..") # you are now in parent /cerebmodels
 rootwd = os.getcwd()
 from models.cells.modelDummyTest import DummyCell
-from managers.operatorsTranscribe.fabricator import Fabricator as fab
+#from managers.operatorsTranscribe.fabricator import Fabricator as fab
+from managers.transcribe import TranscribeManager
 os.chdir(pwd)
 
 from managers.read import ReadManager as rm
@@ -23,84 +24,43 @@ import numpy
 
 from pynwb import NWBHDF5IO
 
+from random import randint
+
 class ReadManagerTest(unittest.TestCase):
 
     def setUp(self):
         os.chdir(rootwd)
         self.chosenmodel = DummyCell()
+        self.simtime = datetime.datetime.now()
         os.chdir(pwd)
-        now = datetime.now()
-        file_metadata = {
-                 "source": "Where is the data from?, i.e, platform",
-                 "session_description": "How was the data generated?, i.e, simulation of __",
-                 "identifier": "a unique modelID, uuid",
-                 "session_start_time": datetime(now.year, now.month, now.day, now.hour, now.minute,
-                                                now.second, now.microsecond, tzinfo=tzlocal()),
-                 "experimenter": "name of the experimenter/username",
-                 "experiment_description": "described experiment/test description",
-                 "session_id": str(hash(str(uuid.uuid1()))).replace('-',''),
-                 "lab": "name of the lab",
-                 "institution": "name of the institution" }
-        mynwbfile = fab.build_nwbfile(file_metadata)
-        # generate data
-        self.runtimeparam = {"dt": 0.01, "celsius": 30, "tstop": 200, "v_init": 65}
-        stimparameters = {"type": ["current", "IClamp"],
-                          "stimlist": [ {"amp": 0.5, "dur": 100.0, "delay": 10.0},
-                                        {"amp": 1.0, "dur": 50.0, "delay": 10.0+100.0} ],
-                          "tstop": self.runtimeparam["tstop"]}
-        rec_t = [ t*self.runtimeparam["dt"]
-                  for t in range( int( self.runtimeparam["tstop"]/self.runtimeparam["dt"] ) ) ]
-        rec_i = numpy.random.rand(1,len(rec_t))[0]
-        rec_v = numpy.random.rand(2,len(rec_t))
-        # self.chosenmodel.regions = {'soma':0.0, 'axon':0.0}
-        recordings = {"time": rec_t, "response": {"soma": rec_v[0], "axon": rec_v[1]},
-                      "stimulus": rec_i}
-        # create TimeSeries nwb object
-        self.ts_metadata = \
-         {"soma": {"name": "DummyTest_soma",
-                   "data": recordings["response"]["soma"], "unit": "mV",
-                   "resolution": self.runtimeparam["dt"],
-                   "conversion": 1000.0,
-                   "timestamps": recordings["time"],
-                   "comments": "voltage response with stimulation",
-                   "description": "whole single array of voltage response from soma of DummyTest"},
-          "axon": {"name": "DummyTest_axon",
-                   "data": recordings["response"]["axon"], "unit": "mV",
-                   "resolution": self.runtimeparam["dt"],
-                   "conversion": 1000.0,
-                   "timestamps": recordings["time"],
-                   "comments": "voltage response with stimulation",
-                   "description": "whole single array of voltage response from axon of DummyTest"},
-          "stimulus": {"name": "DummyTest_stimulus",
-                       "data": recordings["stimulus"], "unit": "nA",
-                       "resolution": self.runtimeparam["dt"],
-                       "conversion": 1000.0,
-                       "timestamps": recordings["time"],
-                       "comments": "current injection, "+stimparameters["type"][1],
-                       "description": "whole single array of stimulus"} }
-        nwbts = fab.build_nwbseries(chosenmodel = self.chosenmodel, tsmd = self.ts_metadata)
-        updated_mynwbfile = fab.affix_nwbseries_to_nwbfile(nwbts=nwbts, nwbfile=mynwbfile)
-        # Now epochs
-        self.epoch_metadata = \
-            {"epoch0soma": {"source": "soma", "start_time": 0.0, "stop_time": 10.0,
-                   "description": "first epoch",
-                   "tags": ('2_epoch_responses', '0', 'soma', 'DummyTest', 'cells', "epoch0soma",
-                            "soma axon")},
-             "epoch1soma": {"source": "soma", "start_time": 10.0, "stop_time": 110.0,
-                   "description": "second epoch",
-                   "tags": ('2_epoch_responses', '1', 'soma', 'DummyTest', 'cells', "epoch1soma",
-                            "soma axon")},
-             "epoch0axon": {"source": "axon", "start_time": 0.0, "stop_time": 10.0,
-                   "description": "first epoch",
-                   "tags": ('2_epoch_responses', '0', 'axon', 'DummyTest', 'cells', "epoch0axon",
-                            "soma axon")},
-             "epoch1axon": {"source": "axon", "start_time": 10.0, "stop_time": 110.0,
-                   "description": "second epoch",
-                   "tags": ('2_epoch_responses', '1', 'axon', 'DummyTest', 'cells', "epoch1axon",
-                            "soma axon")}}
-        updated_mynwbfile = fab.build_nwbepochs(nwbfile=updated_mynwbfile, nwbts=nwbts,
-                                                epochmd=self.epoch_metadata)
-        self.fullname = fab.write_nwbfile(nwbfile=updated_mynwbfile)
+        # self.chosenmodel.regions ->
+        # {"soma": ["v", "i_cap"], "axon": ["v"],
+        # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
+        # Voltage clamp
+        self.sec_runtimeparam = {"dt": 0.1, "celsius": 30, "tstop": 35, "v_init": 65}
+        self.sec_stimparameters = {"type": ["voltage", "SEClamp"],
+                               "stimlist": [ {'amp1': 0., 'dur1': 10.0},
+                                        {'amp2': -70.0, 'dur2': 20.0} ],
+                               "tstop": self.sec_runtimeparam["tstop"]}
+        self.sec_rec_t = [ t*self.sec_runtimeparam["dt"] for t in
+                   range( int( self.sec_runtimeparam["tstop"]/self.sec_runtimeparam["dt"] ) ) ]
+        self.sec_rec_stim = numpy.random.rand(1,len(self.sec_rec_t))[0]
+        self.sec_rec_resp = numpy.random.rand(7,len(self.sec_rec_t))
+        self.sec_recordings = {"time": self.sec_rec_t,
+           "response": {"soma": [self.sec_rec_resp[0], self.sec_rec_resp[1]],
+                        "axon": [ self.sec_rec_resp[2] ],
+           "channels": {"soma": {"hh": [self.sec_rec_resp[3], self.sec_rec_resp[4]],
+                                 "pas":[ self.sec_rec_resp[5] ]},
+                        "axon": {"pas":[ self.sec_rec_resp[3] ]}}},
+           "stimulus": self.sec_rec_stim}
+        #
+        tm = TranscribeManager()
+        tm.load_metadata( chosenmodel = self.chosenmodel, simtime = self.simtime,
+                          recordings = self.sec_recordings,
+                          runtimeparameters = self.sec_runtimeparam,
+                          stimparameters = self.sec_stimparameters )
+        tm.compile_nwbfile()
+        self.fullname = tm.save_nwbfile()
 
     #@unittest.skip("reason for skipping")
     def test_1_load_nwbfile(self):
@@ -110,6 +70,12 @@ class ReadManagerTest(unittest.TestCase):
 
     #@unittest.skip("reason for skipping")
     def test_2_timestamps_and_data_for_epoch(self):
+        #  <---10--->  <----20---->
+        # 0----------10-----------20------------35
+        # ep0        ep1          ep2
+        # {"soma": ["v", "i_cap"], "axon": ["v"], 
+        # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
+        # notice 7 measuring regions times three points above = 21 epochs in total
         nwbfile = rm.load_nwbfile(self.fullname)
         times = rm.timestamps_for_epoch( nwbfile.epochs[0] )
         data = rm.data_for_epoch( nwbfile.epochs[0] )
@@ -119,25 +85,43 @@ class ReadManagerTest(unittest.TestCase):
 
     #@unittest.skip("reason for skipping")
     def test_3_get_total_epochIDs(self):
+        #  <---10--->  <----20---->
+        # 0----------10-----------20------------35
+        # ep0        ep1          ep2
+        # {"soma": ["v", "i_cap"], "axon": ["v"], 
+        # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
+        # notice 7 measuring regions times three points above = 21 epochs in total
         nwbfile = rm.load_nwbfile(self.fullname)
-        self.assertEqual( rm.total_epochIDs( nwbfile ), 2 ) # two epochs per region
+        self.assertEqual( rm.total_epochIDs( nwbfile ), 3 )
         os.remove( self.fullname )
 
     #@unittest.skip("reason for skipping")
     def test_4_order_all_epocs_for_region(self):
+        #  <---10--->  <----20---->
+        # 0----------10-----------20------------35
+        # ep0        ep1          ep2
+        # {"soma": ["v", "i_cap"], "axon": ["v"], 
+        # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
+        # notice 7 measuring regions times three points above = 21 epochs in total
         nwbfile = rm.load_nwbfile(self.fullname)
-        chosenreg = "soma"
+        chosenreg = "soma v"
         orderedepochs = rm.order_all_epochs_for_region(nwbfile=nwbfile, region=chosenreg)
         #print(len(orderedepochs))
         epoch0 = orderedepochs[0]
         epoch1 = orderedepochs[1]
-        #print(epoch0[1], epoch1[1])
-        #print(epoch0[2], epoch1[2])
-        a0_md = ( epoch0[1] == self.epoch_metadata["epoch0"+chosenreg]["start_time"] )
-        a0_a1 = ( epoch0[1] != epoch1[1] )
-        b1_md = ( epoch1[2] == self.epoch_metadata["epoch1"+chosenreg]["stop_time"] )
-        #print(a0_md, a0_a1, b1_md)
-        self.assertTrue( a0_md and a0_a1 and b1_md )
+        epoch2 = orderedepochs[2]
+        #print( epoch1[0] )
+        #print( epoch1[1] )
+        #print( epoch1[2] )
+        #print( epoch1[3] )
+        #print( epoch0[4] )
+        a = len(orderedepochs) == 3
+        b = epoch0[1] < epoch1[1]
+        c = epoch1[1] < epoch2[1]
+        #print(a, b, c)
+        #print( epoch0[1], epoch1[1], epoch2[1] )
+        self.assertEqual( [a, b, c], [True, True, True] )
+        #self.assertTrue( a and b and c is True )
         os.remove( self.fullname )
 
 if __name__ == '__main__':

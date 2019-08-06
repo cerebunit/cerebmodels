@@ -69,10 +69,12 @@ class ReadManager(object):
 
         """
         total_N = eu.total_overall_epochs( nwbfile )
-        all_regions = nwbfile.epochs[0][3][6] # space separated string
-        list_all_regions = all_regions.split()
-        total_regions = len(list_all_regions)
-        return total_N/total_regions
+        #all_regions = nwbfile.epochs[0][3][] # space separated string
+        #list_all_regions = all_regions.split()
+        #total_regions = len(list_all_regions)
+        #return total_N/total_regions
+        an_epoch = nwbfile.epochs[0]
+        return eu.total_epochs_this_region( an_epoch )
 
     @staticmethod
     def order_all_epochs_for_region(nwbfile=None, region=None):
@@ -87,6 +89,8 @@ class ReadManager(object):
         +-----------+----------------------------------------------------------------------------+
         |``region`` | string; name of the model region, say, cell region like "soma" or "axon"   |
         +-----------+----------------------------------------------------------------------------+
+        region => "region_name rec_site_name" or 
+                  "group_name region_name component_name rec_site_name"
 
         """
         all_epochs_for_region = eu.pull_all_epochs_for_region(nwbfile=nwbfile, region=region)

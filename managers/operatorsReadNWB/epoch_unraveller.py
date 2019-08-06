@@ -133,6 +133,8 @@ class EpochUnraveller(object):
         +-----------+----------------------------------------------------------------------------+
         |``region`` |string representing name of the regions from which response was recorded    |
         +-----------+----------------------------------------------------------------------------+
+        region => "region_name rec_site_name" or
+                  "group_name region_name component_name rec_site_name"
 
         """
         if nwbfile is None:
@@ -143,9 +145,11 @@ class EpochUnraveller(object):
         for i in range( cls.total_overall_epochs(nwbfile) ):
             an_epoch = cls.pluck_epoch_row(nwbfile, i)
             reg = cls.pluck_region(an_epoch)
+            #print( reg )
             if reg==region:
                 all_epochs_a_region.append( an_epoch )
         return all_epochs_a_region
+        
 
     @classmethod
     def pull_indices_tseries_for_epoch( cls, an_epoch ):

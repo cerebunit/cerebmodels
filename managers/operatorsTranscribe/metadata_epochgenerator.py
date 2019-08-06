@@ -174,7 +174,7 @@ class EpochGenerator(object):
                                "tags": ( str(no_of_epochs)+"_epoch_response",# 0 #epochs
                                          str( epochID ), # 1 epochID
                                          compgroup_name +" "+ a_region_name +" "+
-                                           a_comp_name, rec_of,# 2[gp, reg, comp, rec]
+                                          a_comp_name +" "+ rec_of,# 2[gp, reg, comp, rec]
                                          " ".join(model.regions[compgroup_name][a_region_name][a_comp_name]),#3 all rec sites
                                          model.modelname, model.modelscale,# 4, 5 indices
                                          "epoch"+str(epochID)+compgroup_name +" "+

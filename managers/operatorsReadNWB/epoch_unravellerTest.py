@@ -132,15 +132,38 @@ class EpochUnraveller(unittest.TestCase):
         #self.assertTrue( say )
         a = eu.total_epochs_this_region(an_epoch) == 3
         self.assertTrue( a is True )
-        print(an_epoch[3])
+        print( eu.pluck_epoch_row( nwbfile, 0 )[3] )
+        print( eu.pluck_epoch_row( nwbfile, 1 )[3] )
+        print( eu.pluck_epoch_row( nwbfile, 2 )[3] )
+        print( eu.pluck_epoch_row( nwbfile, 3 )[3] )
+        print( eu.pluck_epoch_row( nwbfile, 4 )[3] )
+        print( eu.pluck_epoch_row( nwbfile, 5 )[3] )
+        print( eu.pluck_epoch_row( nwbfile, 6 )[3] )
+        print( eu.pluck_epoch_row( nwbfile, 7 )[3] )
+        print( eu.pluck_epoch_row( nwbfile, 8 )[3] )
+        print( eu.pluck_epoch_row( nwbfile, 9 )[3] )
         os.remove( self.fullname )
 
-    @unittest.skip("reason for skipping")
+    #@unittest.skip("reason for skipping")
     def test_4_pull_all_epochs_for_region(self):
+        #  <---10--->  <----20---->
+        # 0----------10-----------20------------35
+        # ep0        ep1          ep2
+        # self.chosenmodel.regions ->
+        # {"soma": ["v", "i_cap"], "axon": ["v"],
+        # "channels": {"soma": {"hh": ["il", "el"], "pas": ["i"]}, "axon": {"pas": ["i"]}}}
+        # notice 7 measuring regions times three points above = 21 epochs in total
         io = NWBHDF5IO( self.fullname, mode="r")
         nwbfile = io.read()
-        all_epochs_for_region = eu.pull_all_epochs_for_region( nwbfile=nwbfile, region="soma" )
-        self.assertEqual( len(all_epochs_for_region), 4 ) # two epochs per region
+        all_epochs_for_region1 = eu.pull_all_epochs_for_region( nwbfile=nwbfile, region="soma v" )
+        all_epochs_for_region2 = eu.pull_all_epochs_for_region( nwbfile=nwbfile,
+                                                                region="channels soma hh il" )
+        a = len(all_epochs_for_region1) == 3
+        #b = eu.pluck_region( all_epochs_for_region2[0] ) == "channels soma hh il"
+        #print( eu.pluck_region( all_epochs_for_region2[0] ) )
+        print( all_epochs_for_region2 )
+        #self.assertEqual( len(all_epochs_for_region), 3 ) # two epochs per region
+        #self.assertTrue( a and b is True )
         os.remove( self.fullname )
 
     @unittest.skip("reason for skipping")

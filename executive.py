@@ -173,6 +173,24 @@ class ExecutiveControl(object):
         self.fullfilename = self.tm.save_nwbfile()
         return self.fullfilename
 
+    @classmethod
+    def list_regions( cls, modelregions, reglist, oldstr ):
+        # initiate with list_regions(modelregions, [], 0)
+        for key, value in modelregions.items():
+            if oldstr==0:
+                oldstr = key
+            else:
+                oldstr = oldstr+" "+key
+            if type(value) is list:
+                for its_v in value:
+                    reglist.append( oldstr + " " + its_v )
+            else:
+                cls.list_regions( value, reglist, key )
+        return reglist
+
+    def list_modelregions( self, chosenmodel=None ):
+        return self.list_regions( chosenmodel.regions, [], 0 )
+
 #    def load_response( self ):
 #        """Returns file (`NWB <https://www.nwb.org/>`_ formated``.h5`` file) by directing the :ref:`FilingManager` and the ``Reader`` in :ref:`RecordManager` operator to load the response following an earlier simulation run.
 

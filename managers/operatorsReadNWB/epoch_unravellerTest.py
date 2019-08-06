@@ -132,16 +132,6 @@ class EpochUnraveller(unittest.TestCase):
         #self.assertTrue( say )
         a = eu.total_epochs_this_region(an_epoch) == 3
         self.assertTrue( a is True )
-        print( eu.pluck_epoch_row( nwbfile, 0 )[3] )
-        print( eu.pluck_epoch_row( nwbfile, 1 )[3] )
-        print( eu.pluck_epoch_row( nwbfile, 2 )[3] )
-        print( eu.pluck_epoch_row( nwbfile, 3 )[3] )
-        print( eu.pluck_epoch_row( nwbfile, 4 )[3] )
-        print( eu.pluck_epoch_row( nwbfile, 5 )[3] )
-        print( eu.pluck_epoch_row( nwbfile, 6 )[3] )
-        print( eu.pluck_epoch_row( nwbfile, 7 )[3] )
-        print( eu.pluck_epoch_row( nwbfile, 8 )[3] )
-        print( eu.pluck_epoch_row( nwbfile, 9 )[3] )
         os.remove( self.fullname )
 
     #@unittest.skip("reason for skipping")
@@ -159,14 +149,12 @@ class EpochUnraveller(unittest.TestCase):
         all_epochs_for_region2 = eu.pull_all_epochs_for_region( nwbfile=nwbfile,
                                                                 region="channels soma hh il" )
         a = len(all_epochs_for_region1) == 3
-        #b = eu.pluck_region( all_epochs_for_region2[0] ) == "channels soma hh il"
-        #print( eu.pluck_region( all_epochs_for_region2[0] ) )
-        print( all_epochs_for_region2 )
-        #self.assertEqual( len(all_epochs_for_region), 3 ) # two epochs per region
-        #self.assertTrue( a and b is True )
+        b = eu.pluck_region( all_epochs_for_region2[0] ) == "channels soma hh il"
+        c = len(all_epochs_for_region1) == len(all_epochs_for_region2)
+        self.assertTrue( a and b and c is True )
         os.remove( self.fullname )
 
-    @unittest.skip("reason for skipping")
+    #@unittest.skip("reason for skipping")
     def test_5_pull_indices_tseries_for_epoch(self):
         io = NWBHDF5IO( self.fullname, mode="r")
         nwbfile = io.read()
@@ -176,8 +164,8 @@ class EpochUnraveller(unittest.TestCase):
         #
         # start_time to stop_time with dt resolution is t0 and t1 respectively
         # thus, divide real time by its resolution
-        t0 = int(eu.pluck_start_time(an_epoch)/self.runtimeparam["dt"])
-        t1 = int(eu.pluck_stop_time(an_epoch)/self.runtimeparam["dt"])
+        t0 = int(eu.pluck_start_time(an_epoch)/self.sec_runtimeparam["dt"])
+        t1 = int(eu.pluck_stop_time(an_epoch)/self.sec_runtimeparam["dt"])
         #print(indices, len(indices), indices[0], indices[-1])
         #print(t0, t1) # corresponds with start_time and stop_time but scaled with dt
         times = range( t0, 1 + t1 )

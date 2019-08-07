@@ -80,7 +80,7 @@ class PurkinjeCell( sciunit.Model,
                    "stimparameters": dictionary with keys "type" and "stimlist",
                    "onmodel": instantiated model }
         """
-        print("Sim produce_soma_restingVm starting ...")
+        print("Sim produce_soma v_restingVm starting ...")
         ec = ExecutiveControl() # only works when in ~/cerebmodels
         model = ec.launch_model( parameters = kwargs["parameters"],
                                  stimparameters = kwargs["stimparameters"],
@@ -89,15 +89,15 @@ class PurkinjeCell( sciunit.Model,
                                                  "vtest": ProducesElectricalResponse},
                                  mode="capability")
         nwbfile = rm.load_nwbfile(model.fullfilename)
-        orderedepochs = rm.order_all_epochs_for_region(nwbfile=nwbfile, region="soma")
+        orderedepochs = rm.order_all_epochs_for_region(nwbfile=nwbfile, region="soma v")
         timestamps_over_epochs = [ rm.timestamps_for_epoch( orderedepochs[i] )
                                    for i in range(len(orderedepochs)) ]
         data_over_epochs = [ rm.data_for_epoch( orderedepochs[i] )
                                    for i in range(len(orderedepochs)) ]
-        baseVms = spm.distill_Vm_pre_epoch( timestamps = timestamps_over_epochs,
+        baseVms = spm.distill_baseVm_pre_epoch( timestamps = timestamps_over_epochs,
                                             datavalues = data_over_epochs )
         setattr(model, "prediction", baseVms)
-        print("Simulation produce_soma_restingVm Done.")
+        print("Simulation produce_soma v_restingVm Done.")
         return model
 
     # ----------------------- produce_soma_spikeheight ------------------------

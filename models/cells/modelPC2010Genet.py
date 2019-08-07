@@ -103,7 +103,7 @@ class PurkinjeCell( sciunit.Model,
 
     # ----------------------- produce_soma_restingVm --------------------------
     def produce_soma_restingVm(self, **kwargs):
-        return self.produce_restingVm("soma", **kwargs)
+        return self.produce_restingVm("soma v", **kwargs)
 
     # ----------------------- produce_soma_spikeheight ------------------------
     def produce_spikeheight(self, roi, **kwargs):

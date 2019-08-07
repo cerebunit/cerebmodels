@@ -82,7 +82,7 @@ class PurkinjeCell( sciunit.Model,
                    "stimparameters": dictionary with keys "type" and "stimlist",
                    "onmodel": instantiated model }
         """
-        print("Sim produce_"+roi.replace(" ","_")+"_restingVm starting ...")
+        print("Sim produce_"+roi+"_restingVm starting ...")
         ec = ExecutiveControl() # only works when in ~/cerebmodels
         model = ec.launch_model( parameters = kwargs["parameters"],
                                  stimparameters = kwargs["stimparameters"],

@@ -127,19 +127,18 @@ class PurkinjeCell( sciunit.Model,
                                  mode="capability" )
         nwbfile = rm.load_nwbfile(model.fullfilename)
         orderedepochs = rm.order_all_epochs_for_region(nwbfile=nwbfile, region=roi)
-        #timestamps_over_epochs = [ rm.timestamps_for_epoch( orderedepochs[i] )
-        #                           for i in range(len(orderedepochs)) ]
-        #data_over_epochs = [ rm.data_for_epoch( orderedepochs[i] )
-        #                           for i in range(len(orderedepochs)) ]
+        timestamps_over_epochs = [ rm.timestamps_for_epoch( orderedepochs[i] )
+                                   for i in range(len(orderedepochs)) ]
+        data_over_epochs = [ rm.data_for_epoch( orderedepochs[i] )
+                                   for i in range(len(orderedepochs)) ]
         #print(len(data_over_epochs))
-        timestamps_over_epochs = [ rm.timestamps_for_epoch( orderedepochs[1] ) ]
-        data_over_epochs = [ rm.data_for_epoch( orderedepochs[1] ) ]
-        print( data_over_epochs )
-        print( model.fullfilename )
         baseVm = spm.distill_baseVm_pre_epoch( timestamps = timestamps_over_epochs,
                                                 datavalues = data_over_epochs )
-        peakVms = spm.distill_peakVm_from_spikes( timestamps = timestamps_over_epochs,
-                                                  datavalues = data_over_epochs )
+        try:
+            peakVms = spm.distill_peakVm_from_spikes( timestamps = timestamps_over_epochs,
+                                                      datavalues = data_over_epochs )
+        except:
+            peakVms = baseVm
         setattr(model, "prediction", peakVms[0] - baseVm[0])
         print("Simulation produce_"+roi+"_spikeheight Done.")
         return model

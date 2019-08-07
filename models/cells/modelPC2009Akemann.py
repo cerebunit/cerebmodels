@@ -116,15 +116,18 @@ class PurkinjeCell( sciunit.Model,
                                                  "vtest": ProducesElectricalResponse},
                                  mode="capability" )
         nwbfile = rm.load_nwbfile(model.fullfilename)
-        orderedepochs = rm.order_all_epochs_for_region(nwbfile=nwbfile, region="soma")
+        orderedepochs = rm.order_all_epochs_for_region(nwbfile=nwbfile, region="soma v")
         timestamps_over_epochs = [ rm.timestamps_for_epoch( orderedepochs[i] )
                                    for i in range(len(orderedepochs)) ]
         data_over_epochs = [ rm.data_for_epoch( orderedepochs[i] )
                                    for i in range(len(orderedepochs)) ]
         baseVm = spm.distill_baseVm_pre_epoch( timestamps = timestamps_over_epochs,
                                                 datavalues = data_over_epochs )
-        peakVms = spm.distill_peakVm_from_spikes( timestamps = timestamps_over_epochs,
-                                                  datavalues = data_over_epochs )
+        try:
+            peakVms = spm.distill_peakVm_from_spikes( timestamps = timestamps_over_epochs,
+                                                      datavalues = data_over_epochs )
+        except:
+            peakVms = baseVm
         setattr(model, "prediction", peakVms[0] - baseVm[0])
         print("Simulation produce_soma_spikeheight Done.")
         return model

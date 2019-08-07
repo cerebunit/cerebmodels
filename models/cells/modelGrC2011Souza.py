@@ -29,6 +29,7 @@ class GranuleCell( sciunit.Model,
         self.modelname = "GrC2011Souza"
         # ------specify cell-regions from with response are recorded-------
         self.regions = {"soma": ["v"], }
+        self.recordingunits = {"v": "mV"}
         # -----------attributed inheritance from sciunit.Model--------------
         self.name = "Souza and Schutter 2011 model of GranuleCell"
         self.description = "Souza & Schutter 2011 model of GranuleCell (GrC) and published in 10.1186/2042-1001-1-7 This is a single compartment model; it is a modification of Diwakar et al. 2009 multicompartment model. It was used as the component for GrC in the network the authors constructed. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 139656."

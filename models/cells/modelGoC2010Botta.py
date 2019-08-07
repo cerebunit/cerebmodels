@@ -29,6 +29,7 @@ class GolgiCell( sciunit.Model,
         self.modelname = "GoC2010Botta"
         # ------specify cell-regions from with response are recorded-------
         self.regions = {"soma": ["v"], "axon": ["v"],}# "dend": ["v"]}
+        self.recordingunits = {"v": "mV"}
         # -----------attributed inheritance from sciunit.Model--------------
         self.name = "Botta et al. 2010 model of GolgiCell"
         self.description = "Botta et al. 2010 model of GolgiCell (GoC) and published in 10.1038/npp.2010.76 This is a multi-compartment (131) model modified version of the Solinas et al. 2007 model. A Na+/K+ ATPase and ionic concentration pools for Na+, K+, Ca2+ were incorporated into the soma of the model. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 127021."

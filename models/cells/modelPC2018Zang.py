@@ -31,6 +31,7 @@ class PurkinjeCell( sciunit.Model,
         # ------specify cell-regions from with response are recorded-------
         self.regions = {"soma": ["v"], "ais": ["v"], "dend_root": ["v"],
                         "dend_sm": ["v"], "dend_sp": ["v"]}
+        self.recordingunits = {"v": "mV"}
         # -----------attributed inheritance from sciunit.Model--------------
         self.name = "Zang et al. 2018 model of PurkinjeCell"
         self.description = "Zang et al. 2018 model of PurkinjeCell (PC) and published in 10.1016/j.celrep.2018.07.011 This is a multi-compartment modified version of the Purkinje cell from Mike Hausser (cell 2, 19.2.97). This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 243446."

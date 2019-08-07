@@ -29,6 +29,7 @@ class GolgiCell( sciunit.Model,
         self.modelname = "GoC2011Souza"
         # ------specify cell-regions from with response are recorded-------
         self.regions = {"soma": ["v"], }# "dend": ["v"]}
+        self.recordingunits = {"v": "mV"}
         # -----------attributed inheritance from sciunit.Model--------------
         self.name = "Souza and Schutter 2011 model of GolgiCell"
         self.description = "Souza & Schutter 2011 model of GolgiCell (GoC) and published in 10.1186/2042-1001-1-7 This is a multi-compartment (31) model without the axon; it is a modification of Solinas et al. 2007 model. It was used as the component for GoC in the network the authors constructed. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 139656."

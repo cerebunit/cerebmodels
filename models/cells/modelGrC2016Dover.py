@@ -30,6 +30,7 @@ class GranuleCell( sciunit.Model,
         self.modelname = "GrC2016Dover"
         # ------specify cell-regions from with response are recorded-------
         self.regions = {"soma": ["v"]}
+        self.recordingunits = {"v": "mV"}
         # -----------attributed inheritance from sciunit.Model--------------
         self.name = "Dover et al. 2016 model of GranuleCell"
         self.description = "Dover et al. 2016 model of GranuleCell (GrC) and published in 10.1038/ncomms12895 This is the multi-compartment model. It models the rat granule cells because the model was derived from slices taken from 20 +/- 2 days old rats. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 206267."

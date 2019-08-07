@@ -29,6 +29,7 @@ class DeepCerebellarNucleiCell( sciunit.Model,
         self.modelname = "DCN2011Luthman"
         # ------specify cell-regions from with response are recorded-------
         self.regions = {"soma": ["v"]}
+        self.recordingunits = {"v": "mV"}
         # -----------attributed inheritance from sciunit.Model--------------
         self.name = "Luthman et al. 2011 model of DeepCerebellarNucleiCell"
         self.description = "Luthman 2011 model of a neuron in Deep Cerebellar Nuclei (DCN) and published in 10.1007/s12311-011-0295-9 This is a multi-compartment (517) model. This model is the SciUnit wrapped version of the NEURON model in modelDB accession # 144523."

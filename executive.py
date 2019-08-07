@@ -2,14 +2,17 @@
 import importlib
 import time
 import datetime
+import math
 
 from neuron import h
+import matplotlib.pyplot as plt
 
 from utilities import UsefulUtils as uu
 from managers.filing import FilingManager as fm
 from managers.simulation import SimulationManager as sm
 from managers.record import RecordManager as rm
 from managers.transcribe import TranscribeManager
+from managers.read import ReadManager as rdm
 #from managers.operatorsVisualize.reader import Reader
 
 class ExecutiveControl(object):
@@ -190,6 +193,24 @@ class ExecutiveControl(object):
 
     def list_modelregions( self, chosenmodel=None ):
         return self.list_regions( chosenmodel.regions, [], 0 )
+
+    @staticmethod
+    def visualize_all( chosenmodel=None, roi=None ):
+        nwbfile = rdm.load_nwbfile( chosenmodel.fullfilename )
+        orderedepochs = rdm.order_all_epochs_for_region( nwbfile=nwbfile, region=roi )
+        #
+        timestamps_over_epochs = [ rdm.timestamps_for_epoch( orderedepochs[i] )
+                                   for i in range(len(orderedepochs)) ]
+        data_over_epochs = [ rdm.data_for_epoch( orderedepochs[i] )
+                             for i in range(len(orderedepochs)) ]
+        #
+        n_epochs = len(orderedepochs)
+        cols = 2
+        rows = math.ceil( n_epochs/cols )
+        axes = []
+        for i in range( n_epochs ):
+            axes.append( plt.subplot(rows, cols, i+1) )
+            axes[i].plot( timestamps_over_epochs[i], data_over_epochs[i] )
 
 #    def load_response( self ):
 #        """Returns file (`NWB <https://www.nwb.org/>`_ formated``.h5`` file) by directing the :ref:`FilingManager` and the ``Reader`` in :ref:`RecordManager` operator to load the response following an earlier simulation run.

@@ -127,10 +127,15 @@ class PurkinjeCell( sciunit.Model,
                                  mode="capability" )
         nwbfile = rm.load_nwbfile(model.fullfilename)
         orderedepochs = rm.order_all_epochs_for_region(nwbfile=nwbfile, region=roi)
-        timestamps_over_epochs = [ rm.timestamps_for_epoch( orderedepochs[i] )
-                                   for i in range(len(orderedepochs)) ]
-        data_over_epochs = [ rm.data_for_epoch( orderedepochs[i] )
-                                   for i in range(len(orderedepochs)) ]
+        #timestamps_over_epochs = [ rm.timestamps_for_epoch( orderedepochs[i] )
+        #                           for i in range(len(orderedepochs)) ]
+        #data_over_epochs = [ rm.data_for_epoch( orderedepochs[i] )
+        #                           for i in range(len(orderedepochs)) ]
+        #print(len(data_over_epochs))
+        timestamps_over_epochs = [ rm.timestamps_for_epoch( orderedepochs[1] ) ]
+        data_over_epochs = [ rm.data_for_epoch( orderedepochs[1] ) ]
+        print( data_over_epochs )
+        print( model.fullfilename )
         baseVm = spm.distill_baseVm_pre_epoch( timestamps = timestamps_over_epochs,
                                                 datavalues = data_over_epochs )
         peakVms = spm.distill_peakVm_from_spikes( timestamps = timestamps_over_epochs,
@@ -141,7 +146,7 @@ class PurkinjeCell( sciunit.Model,
 
     # ----------------------- produce_soma_spikeheight ------------------------
     def produce_soma_spikeheight(self, **kwargs):
-        return self.produce_spikeheight("soma", **kwargs)
+        return self.produce_spikeheight("soma v", **kwargs)
 
     # ----------------------- produce_spike_train ---------------------------
     def produce_spike_train(self, **kwargs):

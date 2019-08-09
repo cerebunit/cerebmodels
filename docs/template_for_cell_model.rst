@@ -30,7 +30,7 @@ The ``Cellname.py`` will contain a class whose name is ``Cellname``. For instanc
 
 *Note:*
 
-* no setup for recording should be made here
+* **no setup for recording should be made here**
 * comment out, if the source file have lines for recording (say time and voltages). Hint: this usually takes place under ``__init__`` method.
 
 2. Model Template
@@ -82,7 +82,7 @@ from managers.signalprocessing import SignalProcessingManager as spm
 
 where ``<capability-category>`` is a category of a capability which in turn is the class ``<BrandCategory>``. Details on how to implement a capability is given below.
 
-Note that, depending on the model it may have more than one capability.
+Note that, depending on the model it may have more than one capability. Refer to `cerebtest <https://github.com/cerebunit/cerebtests>`_ to see what capabilities can be imported.
 
 2.1.4 Passing the capabilities into the class
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -111,12 +111,31 @@ This is a mandatory step if one intends to validate the model via the `HBP Valid
    self.modelscale = "cells"
    self.modelname = "ABYearSmith"
    # --------------specify cell-regions from with response are recorded----------------
-   self.regions = {<region_name1>: <float>, <region_name2>: <float>}
+   self.regions = { <region_name1>: [ <recordA>, <recordB> ],
+                    <region_name2>: [ <recordA>, <recordC> ],
+                    <component_group1>: { <region_name1>:
+                                               { <component1>: [ <recX>, <recY> ],
+                                                 <component2>: [ <recZ> ] },
+                                          <region_name2>:
+                                               { <component2>: [ <recZ> ] }
+                                         }
+                   }
    # -------------------attribute inheritance from sciunit.Model----------------------
    self.name = "Smith et al. Year model of <Cellname>Cell"
    self.description = "a brief description of the model"
 
 Notice that the value for the ``.modelname`` attribute is also the name of the directory ``ABYearSmith/`` which has the cell template ``<Cellname>.py``.
+
+While defining the regions it should be noted that all ``<...>`` are strings. An example for the defining the values for ``self.regions`` is
+
+::
+
+   self.regions = { "soma": [ "v", "i_cap" ], "axon": [ "v" ],
+                    "channels": { "soma": { "hh": [ "il", "ek" ], "pas": [ "i" ] },
+                                  "axon": { "pas": [ "i" ] }
+                                }
+                   }
+   
 
 2.3.2 Instantiating the cell template
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -203,15 +222,15 @@ COMMENTS
 
 Therefore, the ``self.regions`` in the corresponding model-template ``~/cells/modelDummyTest.py`` will look like
   ``
-  self.regions = {'soma': 0.0, 'axon': 0.0}
+  self.regions = { "soma": ["v", "i_cap"], "axon": ["v"] }
   ``
 Notice that dendrite is not a region because it is not in this cell-template. However, ``self.regions`` does not have to include all the the NEURON sections. For instance it is prefectly fine for the ``self.regions`` in the model-template ``~/cells/modelDummyTest.py`` to be like
   ``
-  self.regions = {'soma': 0.0}
+  self.regions = { "soma": ["v"] }
   ``
 Its upto the user what he/she wants to do with the model.
 
 * it is good practice to have both the name of the section (eg soma inside ``h.Section('soma')``) and name of the cell attribute be the same (eg, soma in ``self.soma``). The keys in ``self.regions`` are the cell attribute name. Therefore, the key 'soma' in ``self.regions`` corresponds to "soma" of ``self.soma`` NOT "soma" in ``h.Section('soma')``.
-* generally, ``float=0.0`` which means that the membrane voltage taken from the respective ``self.regions`` *whenever* required to transform them to spike-trains (zeros & ones) takes 0.0mV as the threshold for considering spike.
+* generally, ``[ "v" ]`` means that the membrane voltage (based on NEURON's segment(0.5).__ref__**v**) is taken for recording.
 * The :ref:`SimulationManager` is deployed from the model template so as to load the ``nmodl`` files before instantiating the cell-template. This is done by calling ``lock_and_load_model_libraries()``
 * If the cell-template requires loading custom files (generally located in same directory as the cell-template) required for its constructing then you must temporarily change the current working directory to the directory location of the cell-template. Then instantiate the cell-template and once done return to default working directory. Therefore, this change of directory is not necessary if the cell-template does not require loading any configuration files for its template.

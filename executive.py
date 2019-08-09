@@ -212,6 +212,24 @@ class ExecutiveControl(object):
             axes.append( plt.subplot(rows, cols, i+1) )
             axes[i].plot( timestamps_over_epochs[i], data_over_epochs[i] )
 
+    @staticmethod
+    def visualize_aio( chosenmodel=None, roi=None ):
+        nwbfile = rdm.load_nwbfile( chosenmodel.fullfilename )
+        orderedepochs = rdm.order_all_epochs_for_region( nwbfile=nwbfile, region=roi )
+        #
+        timestamps_over_epochs = [ rdm.timestamps_for_epoch( orderedepochs[i] )
+                                   for i in range(len(orderedepochs)) ]
+        data_over_epochs = [ rdm.data_for_epoch( orderedepochs[i] )
+                             for i in range(len(orderedepochs)) ]
+        #
+        n_epochs = len(orderedepochs)
+        t_axis = timestamps_over_epochs[0] 
+        y_axis = data_over_epochs[0]
+        for i in range( 1, n_epochs ):
+            t_axis = t_axis + timestamps_over_epochs[i]
+            y_axis = y_axis + data_over_epochs[i]
+        plt.plot( t_axis, y_axis )
+
 #    def load_response( self ):
 #        """Returns file (`NWB <https://www.nwb.org/>`_ formated``.h5`` file) by directing the :ref:`FilingManager` and the ``Reader`` in :ref:`RecordManager` operator to load the response following an earlier simulation run.
 

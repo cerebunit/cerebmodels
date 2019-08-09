@@ -167,7 +167,7 @@ class EpochUnraveller(unittest.TestCase):
         t1 = int(eu.pluck_stop_time(an_epoch)/self.sec_runtimeparam["dt"])
         #print(indices, len(indices), indices[0], indices[-1])
         #print(t0, t1) # corresponds with start_time and stop_time but scaled with dt
-        times = range( t0, 1 + t1 )
+        times = range( t0, t1 )#1 + t1 )
         #print(len(times), times[0], times[-1])
         #
         self.assertEqual( len(indices), len(times) )

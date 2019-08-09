@@ -162,10 +162,12 @@ class EpochUnraveller(object):
         #
         # Using transformed start_time and stop_time
         #start_up = (start_time/nwbts.resolution) + nwbts.resolution #can miss last few deci.points
+        start = start_time / nwbts.resolution
         start_up = (start_time + nwbts.resolution) / nwbts.resolution
-        start_low = (start_time - nwbts.resolution) / nwbts.resolution
-        stop_up = (stop_time + nwbts.resolution) / nwbts.resolution
+        #start_low = (start_time - nwbts.resolution) / nwbts.resolution
+        #stop_up = (stop_time + nwbts.resolution) / nwbts.resolution
         stop_low = (stop_time - nwbts.resolution) / nwbts.resolution
+        stop = stop_time / nwbts.resolution
         # Transform timestamps
         t_transformed = nwbts.timestamps/nwbts.resolution
         #
@@ -174,15 +176,20 @@ class EpochUnraveller(object):
         #print(start_up, start_low, stop_up, stop_low)
         #
         start_i = [ indx for indx in range(nwbts.num_samples)
-                              if t_transformed[indx] >= start_low and
-                                 t_transformed[indx] <= start_up ][0]
+                              if t_transformed[indx] >= start and
+                                 t_transformed[indx] < start_up ][0]
         stop_i = [ indx for indx in range(nwbts.num_samples)
-                              if t_transformed[indx] >= stop_low and
-                                 t_transformed[indx] <= stop_up ][0]
+                              if t_transformed[indx] > stop_low and
+                                 t_transformed[indx] <= stop ][0]
         # because if start_i = 0 stop_i < stop_up but stop_i = stop_up is desired
-        stop_i = (lambda i0, i1: i1+1 if i0==0 else i1)(start_i, stop_i)
+        #stop_i = (lambda i0, i1: i1+1 if i0==0 else i1)(start_i, stop_i)
         #print(start_i, stop_i)
         #print("index length", len(range(start_i, stop_i+1)))
+        #print( stop_time )
+        #print( len(nwbts.timestamps) )
+        #print( stop_i )
+        #print( start_i )
+        #print( nwbts.timestamps[stop_i] )
         return range(start_i, stop_i+1) # add 1 to include stop_i
 
 #    @classmethod

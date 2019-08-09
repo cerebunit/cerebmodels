@@ -133,7 +133,11 @@ for scenario 3
 
 The ``ExecutiveControl`` for cerebmodels can also save response. It saves it in a `HDF5 file (.h5 extension) <https://www.hdfgroup.org/solutions/hdf5/>`_. The file is saved based on `NWB 2.0 <https://www.nwb.org/how-to-use/>`_ scheme.
 
-To save response the required response is ``excN.save_response()``. Thus, for the each of the above three scenarios just replace the ``N`` with 1, 2 or 3.
+To save response the required response is ``excN.save_response()``. Thus, for the each of the above three scenarios just replace the ``N`` with 1, 2 or 3 as shown below
+
+* ``desired_model_c1.fullfilename = exc1.save_response()``
+* ``desired_model_c2.fullfilename = exc2.save_response()``
+* ``desired_model_c3.fullfilename = exc3.save_response()``
 
 4. Visualizing the response
 ===========================

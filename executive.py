@@ -145,7 +145,7 @@ class ExecutiveControl(object):
                                                  stimuli = stimuli_clamp,
                                                  stimtype = get_stimtype(stimparameters) )
             if mode == "raw":
-                sm.engage_NEURON()
+                sm.trigger_NEURON( onmodel )
             elif mode == "capability":
                 sm.trigger_NEURON( onmodel, modelcapability = capabilities['model'],
                                    # Below are the **kwargs for lock_and_load_capability

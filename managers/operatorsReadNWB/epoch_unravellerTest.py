@@ -163,14 +163,18 @@ class EpochUnraveller(unittest.TestCase):
         #
         # start_time to stop_time with dt resolution is t0 and t1 respectively
         # thus, divide real time by its resolution
-        t0 = int(eu.pluck_start_time(an_epoch)/self.sec_runtimeparam["dt"])
-        t1 = int(eu.pluck_stop_time(an_epoch)/self.sec_runtimeparam["dt"])
+        t0 = int(eu.pluck_start_time(an_epoch))#/self.sec_runtimeparam["dt"])
+        t1 = int(eu.pluck_stop_time(an_epoch))#/self.sec_runtimeparam["dt"])
         #print(indices, len(indices), indices[0], indices[-1])
         #print(t0, t1) # corresponds with start_time and stop_time but scaled with dt
-        times = range( t0, t1 )#1 + t1 )
+        #times = range( t0, t1+1 ) # to include t1
+        times = numpy.arange( t0, t1, self.sec_runtimeparam["dt"] )
         #print(len(times), times[0], times[-1])
         #
-        self.assertEqual( len(indices), len(times) )
+        a = ( len(times) == len(indices) or len(times) == len(indices)+1 )
+        #nwbts = eu.pluck_timeseries_object(an_epoch)
+        #print( t0, t1, nwbts.timestamps[indices[0]], nwbts.timestamps[indices[-1]] )
+        self.assertEqual( a, True )
         os.remove( self.fullname )
 
 if __name__ == '__main__':

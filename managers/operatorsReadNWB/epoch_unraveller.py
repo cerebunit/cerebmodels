@@ -190,7 +190,7 @@ class EpochUnraveller(object):
         #print( stop_i )
         #print( start_i )
         #print( nwbts.timestamps[stop_i] )
-        return range(start_i, stop_i+1) # add 1 to include stop_i
+        return range(start_i, stop_i)#+1) # add 1 to include stop_i
 
 #    @classmethod
 #    def pull_indices_epochs_for_region(cls, nwbfile=None, region=None ):

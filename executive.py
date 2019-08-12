@@ -211,9 +211,18 @@ class ExecutiveControl(object):
         cols = 2
         rows = math.ceil( n_epochs/cols )
         axes = []
-        for i in range( n_epochs ):
-            axes.append( plt.subplot(rows, cols, i+1) )
-            axes[i].plot( timestamps_over_epochs[i], data_over_epochs[i] )
+        try:
+            stim = nwbfile.get_stimulus()
+            axes.append( plt.subplot(rows+1, 1, 1) )
+            axes[0].plot( stim.timestamps, stim.data )
+            for i in range( n_epochs ):
+                axes.append( plt.subplot(rows+1, cols, i+3) )
+                axes[i+1].plot( timestamps_over_epochs[i], data_over_epochs[i] )
+        except:
+            axes = []
+            for i in range( n_epochs ):
+                axes.append( plt.subplot(rows, cols, i+1) )
+                axes[i].plot( timestamps_over_epochs[i], data_over_epochs[i] )
 
     @staticmethod
     def visualize_aio( chosenmodel=None, roi=None ):
@@ -234,7 +243,15 @@ class ExecutiveControl(object):
         for i in range( 1, n_epochs ):
             t_axis = t_axis + timestamps_over_epochs[i]
             y_axis = y_axis + data_over_epochs[i]
-        plt.plot( t_axis, y_axis )
+        try:
+            axes = []
+            stim = nwbfile.get_stimulus()
+            axes.append( plt.subplot(2, 1, 1) )
+            axes[0].plot( stim.timestamps, stim.data )
+            axes.append( plt.subplot(2, 1, 2) )
+            axes[1].plot( t_axis, y_axis )
+        except:
+            plt.plot( t_axis, y_axis )
 
 #    def load_response( self ):
 #        """Returns file (`NWB <https://www.nwb.org/>`_ formated``.h5`` file) by directing the :ref:`FilingManager` and the ``Reader`` in :ref:`RecordManager` operator to load the response following an earlier simulation run.

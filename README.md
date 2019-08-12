@@ -2,7 +2,9 @@
 
 # cerebmodels
 
-All cerebellum related models for running validation tests in [CerebUnit](https://github.com/myHBPwork/cerebunit) against experimental data in [CerebData](https://github.com/myHBPwork/cerebdata).
+All cerebellum related models for running validation tests in [CerebTests](https://github.com/cerebunit/cerebtests) against experimental data in [CerebData](https://github.com/cerebunit/cerebdata).
+
+[CerebModels documentation](https://cerebmodels.readthedocs.io/en/latest/)
 
 
 

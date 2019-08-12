@@ -33,7 +33,7 @@ release = '0.3.0'
 # ones.
 extensions = [
     "recommonmark",
-    #"nbsphinx",
+    "nbsphinx",
     "sphinx.ext.autodoc",
     "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
@@ -63,3 +63,11 @@ html_theme = 'bizstyle'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+# -- Options for Notebooks ---------------------------------------------------
+
+# Execute in advance. If notebooks tests code you may run them at build time.
+nbsphinx_execute = "never"
+nbsphinx_allow_errors = True
+
+#source_suffix = [".rst", ".ipynb"]

@@ -21,6 +21,7 @@ How to run models in cerebmodels
    :caption: Contents:
 
    quickstart_guide_to_run_model.rst
+   notebooks/executing_models_no_stimulation_case1.ipynb
 
 Code Documentation
 ******************

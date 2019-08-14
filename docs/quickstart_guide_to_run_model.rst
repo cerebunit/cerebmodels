@@ -36,7 +36,7 @@ Models available in cerebmodels ranges across various modelling scales, from sub
 
 ::
 
-   ec.list_modelscale()
+   ec.list_modelscales()
 
 2.2. Get available models for a particular scale
 ------------------------------------------------
@@ -101,9 +101,7 @@ which is the same as
 
    desired_model_c1 = exc1.launch_model( parameters = runtimeparam_c1,
                                          onmodel = desired_model,
-u                                        mode = "raw" )
-`ram_c1 = { "dt": 0.025, "celsius": 37, "tstop": 500, "v_init": -65 }`exc = ExecutiveControl``
-
+                                         mode = "raw" )
 
 for scenario 2
 
@@ -154,11 +152,15 @@ To save response the required response is ``excN.save_response()``. Thus, for th
 
 ::
 
-   ec.visualize_all( chosenmodel = desired_model, roi = "soma v" )
+   exc1.visualize_all( chosenmodel = desired_model_c1, roi = "soma v" )
+   exc2.visualize_all( chosenmodel = desired_model_c2, roi = "soma v" )
+   exc3.visualize_all( chosenmodel = desired_model_c3, roi = "soma v" )
 
 4.3. Visualize all events in one plot
 -------------------------------------
 
 ::
 
-   ec.visualize_aio( chosenmodel = desired_model, roi = "soma v" )
+   exc1.visualize_aio( chosenmodel = desired_model_c1, roi = "soma v" )
+   exc2.visualize_aio( chosenmodel = desired_model_c2, roi = "soma v" )
+   exc3.visualize_aio( chosenmodel = desired_model_c3, roi = "soma v" )

@@ -145,6 +145,10 @@ class PurkinjeCell( sciunit.Model,
     def produce_soma_spikeheight(self, **kwargs):
         return self.produce_spikeheight("soma v", **kwargs)
 
+    # ------------------ produce_soma_spikeheight_antidromic ------------------
+    def produce_soma_spikeheight_antidromic(self, **kwargs):
+        return self.produce_spikeheight("axonAIS v", **kwargs)
+
     # ----------------------- produce_inputR ----------------------------------
     def _compute_inputR(self, baseVms, stimpar):
         "private function called by produce_inputR"

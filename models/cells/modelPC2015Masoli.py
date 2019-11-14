@@ -147,7 +147,8 @@ class PurkinjeCell( sciunit.Model,
 
     # ------------------ produce_soma_spikeheight_antidromic ------------------
     def produce_soma_spikeheight_antidromic(self, **kwargs):
-        return self.produce_spikeheight("axonAIS v", **kwargs)
+        kwargs["stimloc"] = "axonAIS"
+        return self.produce_soma_spikeheight(**kwargs)
 
     # ----------------------- produce_inputR ----------------------------------
     def _compute_inputR(self, baseVms, stimpar):

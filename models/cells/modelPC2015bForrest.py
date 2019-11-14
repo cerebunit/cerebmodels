@@ -144,7 +144,8 @@ class PurkinjeCell( sciunit.Model,
 
     # ------------------ produce_soma_spikeheight_antidromic ------------------
     def produce_soma_spikeheight_antidromic(self, **kwargs):
-        return self.produce_spikeheight("dend v", **kwargs)
+        kwargs["stimloc"] = "dend"
+        return self.produce_soma_spikeheight(**kwargs)
 
     # ----------------------- produce_spike_train ---------------------------
     def produce_spike_train(self, **kwargs):

@@ -71,7 +71,7 @@ class ExecutiveControlTest(unittest.TestCase):
                                         {"amp": 1.0, "dur": 5.0, "delay": 0.0+5.0} ],
                           "tstop": parameters["tstop"]}
         model = self.ec.launch_model( parameters = parameters, onmodel = pickedmodel,
-                                      stimparameters = stimparameters, stimloc = pickedmodel.cell.soma )
+                                      stimparameters = stimparameters, stimloc = "soma" )
         fullfilename = self.ec.save_response()
         #
         sesstime = str(self.ec.tm.nwbfile.session_start_time).replace(" ", "_")[0:-6]

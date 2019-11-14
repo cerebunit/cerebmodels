@@ -103,27 +103,27 @@ class ExecutiveControl(object):
 
         **Keyword Arguments:**
 
-        +-------------------------------+---------------------------------+
-        | Key                           | Value type                      |
-        +===============================+=================================+
-        | ``parameters``                | dictionary                      |
-        +-------------------------------+---------------------------------+
-        |  ``onmodel``                  | instantiated model              |
-        +-------------------------------+---------------------------------+
-        | ``stimparameters`` (optional) | dictionary                      |
-        +-------------------------------+---------------------------------+
-        | ``stimloc`` (optional)        | attribute of instantiated model |
-        +-------------------------------+---------------------------------+
-        | ``capabilities`` (optional)   | dictionary                      |
-        +-------------------------------+---------------------------------+
-        | ``mode`` (optional)           | string;                         |
-        |                               |- "raw" (default), "capability"  |
-        +-------------------------------+---------------------------------+
+        +-------------------------------+----------------------------------------------+
+        | Key                           | Value type                                   |
+        +===============================+==============================================+
+        | ``parameters``                | dictionary                                   |
+        +-------------------------------+----------------------------------------------+
+        |  ``onmodel``                  | instantiated model                           |
+        +-------------------------------+----------------------------------------------+
+        | ``stimparameters`` (optional) | dictionary                                   |
+        +-------------------------------+----------------------------------------------+
+        | ``stimloc`` (optional)        | string; attribute name of instantiated model |
+        +-------------------------------+----------------------------------------------+
+        | ``capabilities`` (optional)   | dictionary                                   |
+        +-------------------------------+----------------------------------------------+
+        | ``mode`` (optional)           | string;                                      |
+        |                               |- "raw" (default), "capability"               |
+        +-------------------------------+----------------------------------------------+
 
         * ``parameters``- *mandatory* whose value is a dictionary. For example, ``parameters = {"dt": 0.01, "celsius": 30, "tstop": 100, "v_init": 65}``
         * ``onmodel``- *mandatory* whose value is the instantiated model using :py:meth:`.choose_model()`. For example, ``onmodel = <instance>.choose_model(modelscale="a_chosen_scale", modelname="a_chosen_name")``.
         * ``stimparameters``- optional whose value is a dictionary. For example, ``{"type": ["current", "IClamp"], "stimlist": [ {'amp': 0.5, 'dur': 100.0, 'delay': 10.0}, {'amp': 1.0, 'dur': 50.0, 'delay': 10.0+100.0} ] }``.
-        * ``stimloc``- optional (mandatory only if ``stimparameters`` argument is provided). Its value is an attribute of the instantiated model. Note that this instantiated model is the value for the mandatory keyword argument ``onmodel``.
+        * ``stimloc``- optional (mandatory only if ``stimparameters`` argument is provided). Its value is string representing the namse of an attribute of the instantiated model. Note that this instantiated model is the value for the mandatory keyword argument ``onmodel``.
         * ``capabilties``- optional whose value is a dictionary. The dictionary **must** have the keys ``model`` and ``vtest``. The value for ``model`` key is a string representing the models method. For example, ``model: "produce_voltage_response"``. The value for ``vtest`` key is a class imported from the installed ``CerebUnit``.
 
         *NOTE*: Calling this function returns the model as the attribute ``ExecutiveControl.chosenmodel``.
@@ -134,12 +134,14 @@ class ExecutiveControl(object):
         get_stimtype=(lambda stimpar: None if stimpar is None else stimpar["type"])
         self.simtime = datetime.datetime.now()
         if onmodel.modelscale is "cells":
+            get_stimloc = (lambda stimloc: None if stimloc is None else
+                                  getattr(onmodel.cell, stimloc))
             sm.prepare_model_NEURON( parameters=parameters, chosenmodel=onmodel,
                                      modelcapability = capabilities['model'],
                                      cerebunitcapability = capabilities['vtest'] )
             stimuli_clamp = sm.stimulate_model_NEURON(
                                           stimparameters = stimparameters,
-                                          modelsite = stimloc )
+                                          modelsite = get_stimloc(stimloc) )
             self.recordings["time"], self.recordings["response"], rec_clamp_indivs = \
                     rm.prepare_recording_NEURON( onmodel,
                                                  stimuli = stimuli_clamp,

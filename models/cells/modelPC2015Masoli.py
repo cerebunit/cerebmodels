@@ -194,7 +194,7 @@ class PurkinjeCell( sciunit.Model,
 
     # ----------------------- produce_soma_inputR -----------------------------
     def produce_soma_inputR(self, **kwargs):
-        return self.produce_inputR("soma", **kwargs)
+        return self.produce_inputR("soma v", **kwargs)
 
     # ----------------------- produce_spike_train ---------------------------
     def produce_spike_train(self, **kwargs):

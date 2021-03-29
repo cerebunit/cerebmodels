@@ -53,7 +53,7 @@ Pillow==5.4.1
 prometheus-client==0.6.0
 prompt-toolkit==1.0.15
 ptyprocess==0.6.0
-Pygments==2.3.1
+Pygments==2.7.4
 pynwb==1.0.2
 pyparsing==2.3.1
 pyrsistent==0.14.11

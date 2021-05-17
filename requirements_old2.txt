@@ -5,7 +5,7 @@ backports-abc==0.5
 backports.functools-lru-cache==1.5
 backports.shutil-get-terminal-size==1.0.0
 beautifulsoup4==4.7.1
-bleach==3.1.0
+#bleach==3.1.0
 bokeh==1.0.4
 bs4==0.0.1
 certifi==2018.11.29
@@ -36,7 +36,7 @@ ipython==5.8.0
 ipython-genutils==0.2.0
 ipywidgets==7.4.2
 jsonschema==3.0.0
-lxml==4.3.1
+#lxml==4.3.1
 MarkupSafe==1.1.1
 mistune==0.8.4
 nbconvert==5.4.1
@@ -49,11 +49,11 @@ pandocfilters==1.4.2
 pathlib2==2.3.3
 pexpect==4.6.0
 pickleshare==0.7.5
-Pillow==5.4.1
+#Pillow==5.4.1
 prometheus-client==0.6.0
 prompt-toolkit==1.0.15
 ptyprocess==0.6.0
-Pygments==2.3.1
+#Pygments==2.3.1
 pynwb==1.0.2
 pyparsing==2.3.1
 pyrsistent==0.14.11

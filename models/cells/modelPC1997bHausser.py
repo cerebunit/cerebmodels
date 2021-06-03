@@ -12,12 +12,11 @@ from managers.signalprocessing import SignalProcessingManager as spm
 
 import sciunit
 from cerebunit.capabilities.cells.response import ProducesElectricalResponse
-from cerebunit.capabilities.cells.measurements import ProducesEphysMeasurement
+from cerebunit.capabilities.cells.measurements import ProducesSomaRestingVm, ProducesSomaSpikeHeight
 #from pdb import set_trace as breakpoint
-
 class PurkinjeCell( sciunit.Model,
                    ProducesElectricalResponse,
-                   ProducesEphysMeasurement ):
+                   ProducesSomaRestingVm ):
     """USE CASE:
     """
 

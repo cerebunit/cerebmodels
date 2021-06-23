@@ -280,11 +280,11 @@ class SimulationManager(object):
 
         """
         if (modelcapability is not None): #and (len(kwargs) != 0):
-            start_time = time.clock()
+            start_time = time.process_time()
             cls.lock_and_load_capability( chosenmodel,
                                           modelcapability = modelcapability, **kwargs )
         else:
-            start_time = time.clock()
+            start_time = time.process_time()
             cls.engage_NEURON()
-        print("--- %s seconds ---" % (time.clock() - start_time))
+        print("--- %s seconds ---" % (time.process_time() - start_time))
         return "model was successfully triggered via NEURON" # for managerSimulationTest.py

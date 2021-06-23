@@ -1,0 +1,73 @@
+
+./bkpkj.c: ../bkpkj.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd ".."; MODLUNIT=$(NRNUNITS) $(NOCMODL) bkpkj.mod -o "/home/cereb/cerebmodels/models/cells/PC2003Khaliq/mod_files/x86_64")
+
+./bkpkj.o: ./bkpkj.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./cadiff.c: ../cadiff.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd ".."; MODLUNIT=$(NRNUNITS) $(NOCMODL) cadiff.mod -o "/home/cereb/cerebmodels/models/cells/PC2003Khaliq/mod_files/x86_64")
+
+./cadiff.o: ./cadiff.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./cap.c: ../cap.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd ".."; MODLUNIT=$(NRNUNITS) $(NOCMODL) cap.mod -o "/home/cereb/cerebmodels/models/cells/PC2003Khaliq/mod_files/x86_64")
+
+./cap.o: ./cap.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./ihpkj.c: ../ihpkj.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd ".."; MODLUNIT=$(NRNUNITS) $(NOCMODL) ihpkj.mod -o "/home/cereb/cerebmodels/models/cells/PC2003Khaliq/mod_files/x86_64")
+
+./ihpkj.o: ./ihpkj.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./kpkj.c: ../kpkj.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd ".."; MODLUNIT=$(NRNUNITS) $(NOCMODL) kpkj.mod -o "/home/cereb/cerebmodels/models/cells/PC2003Khaliq/mod_files/x86_64")
+
+./kpkj.o: ./kpkj.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./kpkj2.c: ../kpkj2.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd ".."; MODLUNIT=$(NRNUNITS) $(NOCMODL) kpkj2.mod -o "/home/cereb/cerebmodels/models/cells/PC2003Khaliq/mod_files/x86_64")
+
+./kpkj2.o: ./kpkj2.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./kpkjslow.c: ../kpkjslow.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd ".."; MODLUNIT=$(NRNUNITS) $(NOCMODL) kpkjslow.mod -o "/home/cereb/cerebmodels/models/cells/PC2003Khaliq/mod_files/x86_64")
+
+./kpkjslow.o: ./kpkjslow.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./pkjlk.c: ../pkjlk.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd ".."; MODLUNIT=$(NRNUNITS) $(NOCMODL) pkjlk.mod -o "/home/cereb/cerebmodels/models/cells/PC2003Khaliq/mod_files/x86_64")
+
+./pkjlk.o: ./pkjlk.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./rsg.c: ../rsg.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd ".."; MODLUNIT=$(NRNUNITS) $(NOCMODL) rsg.mod -o "/home/cereb/cerebmodels/models/cells/PC2003Khaliq/mod_files/x86_64")
+
+./rsg.o: ./rsg.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+

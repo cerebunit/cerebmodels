@@ -17,15 +17,15 @@ void modl_reg(){
   if (!nrn_nobanner_) if (nrnmpi_myid < 1) {
     fprintf(stderr, "Additional mechanisms from files\n");
 
-    fprintf(stderr," \"bkpkj.mod\"");
-    fprintf(stderr," \"cadiff.mod\"");
-    fprintf(stderr," \"cap.mod\"");
-    fprintf(stderr," \"ihpkj.mod\"");
-    fprintf(stderr," \"kpkj.mod\"");
-    fprintf(stderr," \"kpkj2.mod\"");
-    fprintf(stderr," \"kpkjslow.mod\"");
-    fprintf(stderr," \"pkjlk.mod\"");
-    fprintf(stderr," \"rsg.mod\"");
+    fprintf(stderr," \"mod_files/bkpkj.mod\"");
+    fprintf(stderr," \"mod_files/cadiff.mod\"");
+    fprintf(stderr," \"mod_files/cap.mod\"");
+    fprintf(stderr," \"mod_files/ihpkj.mod\"");
+    fprintf(stderr," \"mod_files/kpkj.mod\"");
+    fprintf(stderr," \"mod_files/kpkj2.mod\"");
+    fprintf(stderr," \"mod_files/kpkjslow.mod\"");
+    fprintf(stderr," \"mod_files/pkjlk.mod\"");
+    fprintf(stderr," \"mod_files/rsg.mod\"");
     fprintf(stderr, "\n");
   }
   _bkpkj_reg();

@@ -14,4 +14,4 @@ if test "" = "yes" ; then
 else
     NRNIV="${NRNBIN}/nrniv"
 fi
-"${NRNIV}" -dll "/home/cereb/cerebmodels/models/cells/PC2003Khaliq/mod_files/x86_64/.libs/libnrnmech.so" "$@"
+"${NRNIV}" -dll "/home/cereb/cerebmodels/models/cells/PC2003Khaliq/x86_64/.libs/libnrnmech.so" "$@"

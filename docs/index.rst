@@ -6,9 +6,9 @@
 Welcome to CerebModels component documentation (a CerebUnit component)!
 =========================================================================
 
-Models of cerebellum covers various modeling scales; cells to network level. Validation of each models is based on the `SciUnit <https://github.com/scidash/sciunit>`_ framework. This is the basis for `CerebUnit <https://github.com/myHBPwork/cerebunit>`_.
+Models of cerebellum covers various modeling scales; cells to network level. Validation of each models is based on the `SciUnit <https://github.com/scidash/sciunit>`_ framework. This is the basis for `CerebUnit <https://github.com/cerebunit>`_.
 
-The workflow has been designed such that the models, `CerebModels <https://github.com/myHBPwork/cerebmodels>`_ are separate from the validation tests in `CerebUnit <https://github.com/myHBPwork/cerebunit>`_.
+The workflow has been designed such that the models, `CerebModels <https://github.com/cerebunit/cerebmodels>`_ are separate from the validation tests in `CerebTests <https://github.com/cerebunit/cerebtests>`_.
 
 This is the documentation for the **CerebModels** component.
 

@@ -1,7 +1,7 @@
 # ../managers/signalprocessing.py
 
 import efel
-from quantities import mV
+from quantities import mV, Hz
 
 from managers.operatorsSignaling.converter import Converter as co
 from managers.operatorsSignaling.reconstructer import Reconstructer as recons
@@ -18,6 +18,8 @@ class SignalProcessingManager(object):
     | :py:meth:`.distill_baseVm_pre_epoch` | static method   |
     +--------------------------------------+-----------------+
     | :py:meth:`.distill_peakVm_pre_epoch` | static method   |
+    +--------------------------------------+-----------------+
+    | :py:meth:`.distill_spike_freq`       | static method   |
     +--------------------------------------+-----------------+
 
     """
@@ -136,4 +138,30 @@ class SignalProcessingManager(object):
                            for a_trace in traces ]
             return [ a_value["peak_voltage"]*mV                    # mV unit
                      for a_value in efelvalues if a_value!="nil" ] # ~ efelvalues.remove("nil")
+
+    @staticmethod
+    def distill_spike_meanfreq(timestamps=None, datavalues=None):
+        """Returns an array of voltage for each epoch, such that, each voltage is the voltage right before an epoch.
+
+        **Keyword Arguments:**
+
+        +----------------+-------------------------------+
+        | Key            | Value type                    |
+        +================+===============================+
+        | ``timestamps`` | list of array of timestamps   |
+        +----------------+-------------------------------+
+        | ``datavalues`` | list of array of data values  |
+        +----------------+-------------------------------+
+
+        *NOTE:* Think of each array within a list corresponding to respective values (timestamps or data) of *an* epoch.
+
+        """
+        if (timestamps is None) or (datavalues is None):
+            raise ValueError("Must pass list of array of times and list of array of data (voltage) values.")
+        else:
+            traces = recons.construct_base_efel_trace_overall(timestamps, datavalues)
+            efelvalues = [(lambda tr: efel.getFeatureValues([tr], ["mean_frequency"])[0])(a_trace)
+                          for a_trace in traces]
+            return [a_value["mean_frequency"] * Hz  # Hz unit
+                    for a_value in efelvalues if a_value != "nil"]  # ~ efelvalues.remove("nil")
 

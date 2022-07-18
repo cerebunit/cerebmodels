@@ -11,8 +11,8 @@ from managers.read import ReadManager as rm
 from managers.signalprocessing import SignalProcessingManager as spm
 
 import sciunit
-from cerebunit.capabilities.cells.response import ProducesElectricalResponse
-from cerebunit.capabilities.cells.measurements import ProducesSomaRestingVm, ProducesSomaSpikeHeight
+from cerebtests.capabilities.cells.response import ProducesElectricalResponse
+from cerebtests.capabilities.cells.measurements import ProducesSomaRestingVm, ProducesSomaSpikeHeight
 #from pdb import set_trace as breakpoint
 class PurkinjeCell( sciunit.Model,
                    ProducesElectricalResponse,

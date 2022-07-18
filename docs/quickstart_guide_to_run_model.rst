@@ -12,7 +12,7 @@ Before proceeding it should be pointed out that CerebUnit is based on Python3 an
 * For obvious reasons getting `cerebmodels <https://github.com/cerebunit/cerebmodels>`_ is essential for following the steps given below.
 * To get cerebmodels do ``git clone https://github.com/cerebunit/cerebmodels.git``.
 * Although, not essential to install `cerebtests <https://github.com/cerebunit/cerebtests>`_ especially if you have not intention to run validation tests it is **recommended to install cerebtests**.
-* To install cerebunit do ``pip install git+https://github.com/cerebunit/cerebtests.git``.
+* To install cerebtests do ``pip install git+https://github.com/cerebunit/cerebtests.git``.
 
 1.2. Set working directory to the root of ``~/cerebmodels/``
 ------------------------------------------------------------

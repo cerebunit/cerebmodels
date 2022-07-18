@@ -68,9 +68,10 @@ After setting up the path to the model libraries at the start of the ``ABYearSmi
    from managers.read import ReadManager as rm
 
 And depending on the *capability* (see below) of the cell
-``
-from managers.signalprocessing import SignalProcessingManager as spm
-``
+
+::
+
+    from managers.signalprocessing import SignalProcessingManager as spm
 
 2.1.3 Import `SciUnit <https://github.com/scidash/sciunit>`_ module and the particular *capability* the model will have
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -87,18 +88,22 @@ Note that, depending on the model it may have more than one capability. Refer to
 2.1.4 Passing the capabilities into the class
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Finally, our ``modelABYearSmith.py`` will have a class named ``<Cellname>Cell`` inheriting the required capabilities.
-``
-class <Cellname>Cell( sciunit.Model, <BrandCategory1>, <BrandCategory2> ):
-``
+
+::
+
+    class <Cellname>Cell( sciunit.Model, <BrandCategory1>, <BrandCategory2> ):
+
 Details on how to implement tha capability(s) is given below.
 
 2.2 Model UUID (optional)
 -------------------------
 Although it is not mandatory to set a uuid, if one intends to assign a uuid it is recommended to do it above the constructor ``__init__`` method.
-``
-uuid = "some-12134234-id"
-``
-This is a mandatory step if one intends to validate the model via the `HBP Validation Framework_<https://github.com/HumanBrainProject/hbp-validation-client>`_. After the model is registered to the HBP Validation Framework Model catalog, it assigns a uuid. This generated uuid will be the value for above.
+
+::
+
+    uuid = "some-12134234-id"
+
+This is a mandatory step if one intends to validate the model via the `HBP Validation Framework <https://github.com/HumanBrainProject/hbp-validation-client>`_. After the model is registered to the HBP Validation Framework Model catalog, it assigns a uuid. This generated uuid will be the value for above.
 
 2.3 Setting up the constructor ``__init__``
 -------------------------------------------
@@ -160,7 +165,7 @@ While defining the regions it should be noted that all ``<...>`` are strings. An
 ---------------------------------------
 Following the constructor method a model template can have any number of desired methods, each representing a capability of the model. For e.g., ``produce_voltage_response``. What is critical is that the **__method name__ should be same as the method in its corresponding <BrandCategory>**.
 
-Once the method name is consistent with the inherited ``<BrandCategory>`` capability one may write it however one wants, tailored to the validation test in `CerebUnit <https://github.com/myHBPwork/cerebunit>`_ that would call it.
+Once the method name is consistent with the inherited ``<BrandCategory>`` capability one may write it however one wants, tailored to the validation test in `CerebTests <https://github.com/cerebunit/cerebtests>`_ that would call it.
 
 However, below is a template for how might go about writing it.
 
@@ -221,13 +226,17 @@ COMMENTS
      #self.dendrite = h.Section('dendrite')
 
 Therefore, the ``self.regions`` in the corresponding model-template ``~/cells/modelDummyTest.py`` will look like
-  ``
-  self.regions = { "soma": ["v", "i_cap"], "axon": ["v"] }
-  ``
+
+  ::
+
+     self.regions = { "soma": ["v", "i_cap"], "axon": ["v"] }
+
 Notice that dendrite is not a region because it is not in this cell-template. However, ``self.regions`` does not have to include all the the NEURON sections. For instance it is prefectly fine for the ``self.regions`` in the model-template ``~/cells/modelDummyTest.py`` to be like
-  ``
-  self.regions = { "soma": ["v"] }
-  ``
+
+  ::
+
+     self.regions = { "soma": ["v"] }
+
 Its upto the user what he/she wants to do with the model.
 
 * it is good practice to have both the name of the section (eg soma inside ``h.Section('soma')``) and name of the cell attribute be the same (eg, soma in ``self.soma``). The keys in ``self.regions`` are the cell attribute name. Therefore, the key 'soma' in ``self.regions`` corresponds to "soma" of ``self.soma`` NOT "soma" in ``h.Section('soma')``.
